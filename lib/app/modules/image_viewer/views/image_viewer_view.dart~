@@ -1,0 +1,32 @@
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+
+class ImageViewerView extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final List<String> mediaUrls = Get.arguments["mediaUrls"];
+    final int initialIndex = Get.arguments["index"];
+
+    return Scaffold(
+      backgroundColor: Colors.black,
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        iconTheme: IconThemeData(color: Colors.white),
+      ),
+      body: PageView.builder(
+        itemCount: mediaUrls.length,
+        controller: PageController(initialPage: initialIndex),
+        itemBuilder: (context, index) {
+          return Center(
+            child: InteractiveViewer(
+              child: Image.asset(
+                "assets/images/${mediaUrls[index]}",
+                fit: BoxFit.contain,
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
