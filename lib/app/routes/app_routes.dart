@@ -3,10 +3,24 @@ part of 'app_pages.dart';
 
 abstract class Routes {
   Routes._();
-  static const SHOP_DETAIL = _Paths.SHOP_DETAIL;
+  static const SHOP = _Paths.SHOP;
+  static const PRODUCT_LIST_SHOP = _Paths.PRODUCT_LIST_SHOP;
+  static const ADD_PRODUCT = _Paths.ADD_PRODUCT;
+  static const ADD_DISCOUNT = _Paths.ADD_DISCOUNT;
+  static const EDIT_PRODUCT = _Paths.EDIT_PRODUCT;
+  static const ADD_BANNER = _Paths.ADD_BANNER;
+  static const PRODUCT_FORM = _Paths.PRODUCT_FORM;
+  static const SHOP_REGISTER = _Paths.SHOP_REGISTER;
 }
 
 abstract class _Paths {
   _Paths._();
-  static const SHOP_DETAIL = '/shop-detail';
+  static const SHOP = '/shop';
+  static const PRODUCT_LIST_SHOP = '/product-list-shop';
+  static const ADD_PRODUCT = '/add-product';
+  static const ADD_DISCOUNT = '/add-discount';
+  static const EDIT_PRODUCT = '/edit-product';
+  static const ADD_BANNER = '/add-banner';
+  static const PRODUCT_FORM = '/product-form';
+  static const SHOP_REGISTER = '/shop-register';
 }

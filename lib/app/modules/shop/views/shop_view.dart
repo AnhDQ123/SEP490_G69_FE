@@ -1,0 +1,165 @@
+import 'package:ffb_fe_flutter/app/routes/app_pages.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import '../controllers/shop_controller.dart';
+
+class ShopView extends GetView<ShopController> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Cửa hàng của tôi', style: TextStyle(fontWeight: FontWeight.bold)),
+        actions: [
+          IconButton(icon: Icon(Icons.notifications), onPressed: () {}),
+          IconButton(icon: Icon(Icons.settings), onPressed: () {}),
+        ],
+      ),
+      body: SingleChildScrollView( // Tránh lỗi overflow do layout dài
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildShopHeader(),
+              SizedBox(height: 10),
+              _buildToggleButtons(),
+              SizedBox(height: 10),
+              _buildOrdersSection(),
+              SizedBox(height: 10),
+              _buildManagementGrid(),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildShopHeader() {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Row(
+          children: [
+            CircleAvatar(
+              backgroundColor: Colors.grey,
+              child: Icon(Icons.store, color: Colors.white),
+            ),
+            SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Cơm rang Minh Nhật',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                    overflow: TextOverflow.ellipsis, // Tránh tràn chữ
+                  ),
+                  Row(
+                    children: [
+                      ...List.generate(4, (index) => Icon(Icons.star, color: Colors.amber, size: 18)),
+                      Icon(Icons.star_half, color: Colors.amber, size: 18),
+                      SizedBox(width: 5),
+                      Text('8.5 (50+)', style: TextStyle(color: Colors.grey)),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            TextButton(
+              onPressed: () {},
+              child: Text('Chỉnh sửa'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildToggleButtons() {
+    return Column(
+      children: [
+        _buildSwitchTile('Miễn phí vận chuyển', controller.isFreeShipping),
+        _buildSwitchTile('Tạm đóng cửa hàng', controller.isShopClosed),
+      ],
+    );
+  }
+
+  Widget _buildSwitchTile(String title, RxBool value) {
+    return Obx(() => SwitchListTile(
+      title: Text(title),
+      value: value.value,
+      onChanged: (val) => value.value = val,
+    ));
+  }
+
+  Widget _buildOrdersSection() {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            ListTile(
+              title: Text('Đơn hàng của tôi', style: TextStyle(fontWeight: FontWeight.bold)),
+              trailing: TextButton(onPressed: () {}, child: Text('Xem thêm >')),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _buildOrderStatus('2', 'Chờ xác nhận'),
+                _buildOrderStatus('0', 'Đang chuẩn bị'),
+                _buildOrderStatus('3', 'Đang giao'),
+                _buildOrderStatus('20', 'Đã giao'),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildOrderStatus(String count, String status) {
+    return Flexible( // Sử dụng Flexible để tránh tràn
+      child: Column(
+        children: [
+          Text(count, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          Text(status, style: TextStyle(color: Colors.grey), textAlign: TextAlign.center),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildManagementGrid() {
+    return GridView.count(
+      shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
+      crossAxisCount: 2,
+      childAspectRatio: 2.5, // Điều chỉnh tỉ lệ để tránh overflow
+      children: [
+        _buildGridItem(Icons.category, 'Sản phẩm', () => Get.toNamed(Routes.PRODUCT_LIST_SHOP)),
+        _buildGridItem(Icons.pie_chart, 'Thống kê', () {}),
+        _buildGridItem(Icons.percent, 'Giảm giá', () {}),
+        _buildGridItem(Icons.description, 'Báo cáo', () {}),
+        _buildGridItem(Icons.local_offer, 'Voucher', () {}),
+        _buildGridItem(Icons.campaign, 'Banner', () => Get.toNamed(Routes.ADD_BANNER)),
+      ],
+    );
+  }
+
+  Widget _buildGridItem(IconData icon, String title, VoidCallback onTap) {
+    return Card(
+      child: InkWell(
+        onTap: onTap,
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min, // Tránh lỗi overflow trong GridView
+            children: [
+              Icon(icon, size: 30),
+              SizedBox(height: 5),
+              Text(title, style: TextStyle(fontWeight: FontWeight.bold), textAlign: TextAlign.center),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
