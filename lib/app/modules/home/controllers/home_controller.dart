@@ -1,5 +1,8 @@
+import 'package:ffb_fe_flutter/app/models/product.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
+import '../../../service/home_api_service.dart';
 
 class HomeController extends GetxController {
   // (0 = Đồ ăn, 1 = Chợ tươi sống)
@@ -12,19 +15,63 @@ class HomeController extends GetxController {
   final currentBannerIndex = 0.obs;
 
   // fake data category
-  final List<Map<String, dynamic>> categories = [
-    {'name': 'Giảm giá', 'image': 'assets/images/giam_gia.jpg'},
-    {'name': 'Trà sữa', 'image': 'assets/images/tra_sua.jpg'},
-    {'name': 'Đồ ăn nhanh', 'image': 'assets/images/do_an_nhanh.jpg'},
-    {'name': 'Mỳ,bún,phở', 'image': 'assets/images/my_bun_pho.jpg'},
-    {'name': 'Voucher', 'image': 'assets/images/voucher.jpg'},
-    {'name': 'Các quán ăn', 'image': 'assets/images/quan_an.jpg'},
-    {'name': 'Đồ chay', 'image': 'assets/images/do_chay.jpg'},
-    {'name': 'Rau', 'image': 'assets/images/rau.jpg'},
-    {'name': 'Cá', 'image': 'assets/images/ca.jpg'},
-    {'name': 'Thịt & trứng', 'image': 'assets/images/thit_trung.jpg'},
-    {'name': 'Khác', 'image': 'assets/images/khac.png'},
-  ];
+
+  // final List<Map<String, dynamic>> categories = [
+  //   {'name': 'Giảm giá', 'image': 'assets/images/giam_gia.jpg'},
+  //   {'name': 'Trà sữa', 'image': 'assets/images/tra_sua.jpg'},
+  //   {'name': 'Đồ ăn nhanh', 'image': 'assets/images/do_an_nhanh.jpg'},
+  //   {'name': 'Mỳ,bún,phở', 'image': 'assets/images/my_bun_pho.jpg'},
+  //   {'name': 'Voucher', 'image': 'assets/images/voucher.jpg'},
+  //   {'name': 'Các quán ăn', 'image': 'assets/images/quan_an.jpg'},
+  //   {'name': 'Đồ chay', 'image': 'assets/images/do_chay.jpg'},
+  //   {'name': 'Rau', 'image': 'assets/images/rau.jpg'},
+  //   {'name': 'Cá', 'image': 'assets/images/ca.jpg'},
+  //   {'name': 'Thịt & trứng', 'image': 'assets/images/thit_trung.jpg'},
+  //   {'name': 'Khác', 'image': 'assets/images/khac.png'},
+  // ];
+
+  // Biến quản lý danh sách category từ API
+  var categoryList = <dynamic>[].obs;
+
+  // Danh sách sản phẩm lấy từ API
+  var productList = <Product>[].obs;
+
+  // Service gọi API
+  final HomeApiService _apiService = HomeApiService();
+
+  @override
+  void onInit() {
+    super.onInit();
+    fetchCategories(); // Gọi hàm fetchCategories() khi controller khởi tạo
+    fetchAllProducts(); // Gọi hàm fetchAllProducts() để lấy danh sách sản phẩm từ API
+
+  }
+
+  /// Hàm gọi API để lấy category
+  void fetchCategories() async {
+    try {
+      final data = await _apiService.fetchCategories();
+      categoryList.value = data;
+      // Lúc này categoryList là danh sách các category từ backend
+    } catch (e) {
+      // Xử lý lỗi, ví dụ:
+      print('Lỗi khi fetch categories: $e');
+    }
+  }
+
+  /// Hàm gọi API để lấy danh sách sản phẩm
+  void fetchAllProducts() async {
+    try {
+      final data = await _apiService.fetchAllProducts();
+      productList.value = data;
+      // Bây giờ productList chứa danh sách các sản phẩm từ backend
+    } catch (e) {
+      print('Lỗi khi fetch sản phẩm: $e');
+    }
+  }
+
+  /// Getter trả về danh sách sản phẩm hiện tại dùng cho cả hai tab
+  List<Product> get currentList => productList;
 
   // best seller day
   final List<Map<String, String>> bestSellerFoods = [
@@ -217,10 +264,11 @@ class HomeController extends GetxController {
     },
   ];
 
-  // Lấy danh sách hiển thị theo tab (0 = Đồ ăn, 1 = Chợ tươi sống)
-  List<Map<String, String>> get currentList =>
-      (selectedFoodTab.value == 0) ? doAnList : choTuoiSongList;
+  // // Lấy danh sách hiển thị theo tab (0 = Đồ ăn, 1 = Chợ tươi sống)
+  // List<Map<String, String>> get currentList =>
+  //     (selectedFoodTab.value == 0) ? doAnList : choTuoiSongList;
 
+  /// Hàm chuyển đổi tab (hiện tại không lọc dữ liệu theo tab, nên chỉ cập nhật giao diện)
   void switchFoodTab(int tabIndex) {
     selectedFoodTab.value = tabIndex;
   }

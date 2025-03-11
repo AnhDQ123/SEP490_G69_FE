@@ -1,6 +1,7 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../models/product.dart';
 import '../../../resources/widget/bottom_nav.dart';
 import '../../../service/home_api_service.dart';
 import '../controllers/home_controller.dart';
@@ -26,7 +27,7 @@ class HomeView extends GetView<HomeController> {
             _sectionCard(_buildBannerSection()),
             _sectionCard(_buildCategorySection()),
             _sectionCard(_buildBestSellerFoods()),
-            _sectionCard(_buildRecommendedFoods()),
+            // _sectionCard(_buildRecommendedFoods()),
             _sectionCard(_buildFoodTabs()),
             _sectionCard(_buildFoodList()),
             const SizedBox(height: 16),
@@ -196,64 +197,69 @@ class HomeView extends GetView<HomeController> {
   }
 
   Widget _buildCategorySection() {
-    final categories = controller.categories;
-    int rowCount = categories.length <= 5 ? 1 : 2;
-    double cellHeight = 70;
-    double sectionHeight = (cellHeight * rowCount) + 16 + 40;
+    return Obx(() {
+      final categories = controller.categoryList;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          child: Text(
-            'Danh mục',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+      if (categories.isEmpty) {
+        return const Center(child: CircularProgressIndicator());
+      }
+
+      int rowCount = categories.length <= 5 ? 1 : 2;
+      double cellHeight = 70;
+      double sectionHeight = (cellHeight * rowCount) + 16 + 40;
+
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Text(
+              'Danh mục',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
           ),
-        ),
-        SizedBox(
-          height: sectionHeight,
-          child: GridView.count(
-            scrollDirection: Axis.horizontal,
-            crossAxisCount: rowCount,
-            childAspectRatio: 0.9,
-            mainAxisSpacing: 4,
-            crossAxisSpacing: 8,
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            children: categories.map((category) {
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    width: 40,
-                    height: 40,
-                    decoration: const BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.black12,
-                    ),
-                    child: ClipOval(
-                      child: Image.asset(
-                        category['image'],
-                        fit: BoxFit.cover,
-                      ),
+          SizedBox(
+            height: sectionHeight,
+            child: GridView.count(
+              scrollDirection: Axis.horizontal,
+              crossAxisCount: rowCount,
+              childAspectRatio: 0.9,
+              mainAxisSpacing: 4,
+              crossAxisSpacing: 8,
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              children: categories.map((category) {
+                // return Center(
+                //   child: Text(
+                //     category.name,
+                //     style: const TextStyle(fontSize: 12),
+                //     textAlign: TextAlign.center,
+                //     maxLines: 2,
+                //     overflow: TextOverflow.ellipsis,
+                //   ),
+                // );
+                return InkWell(
+                  onTap: () {
+                    // Điều hướng sang trang Filter, truyền tên danh mục được bấm
+                    Get.toNamed('/filter', arguments: {'categoryName': category.name});
+                  },
+                  child: Center(
+                    child: Text(
+                      category.name,
+                      style: const TextStyle(fontSize: 12),
+                      textAlign: TextAlign.center,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    category['name'],
-                    style: const TextStyle(fontSize: 10),
-                    textAlign: TextAlign.center,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-              );
-            }).toList(),
+                );
+              }).toList(),
+            ),
           ),
-        ),
-      ],
-    );
+        ],
+      );
+    });
   }
+
 
   /// Best Seller Foods section
   Widget _buildBestSellerFoods() {
@@ -307,53 +313,53 @@ class HomeView extends GetView<HomeController> {
   }
 
   /// Recommended Foods section
-  Widget _buildRecommendedFoods() {
-    final recommendedItems = controller.recommendedFoods;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Title + xem thêm
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Row(
-            children: [
-              const Text(
-                'Món ăn đề xuất',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              const Spacer(),
-              GestureDetector(
-                onTap: () {
-                  // xem thêm
-                },
-                child: const Text(
-                  'xem thêm',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.blue,
-                    decoration: TextDecoration.underline,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 8),
-        SizedBox(
-          height: 120,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: recommendedItems.length,
-            itemBuilder: (context, index) {
-              final item = recommendedItems[index];
-              return _buildFoodCardItem(item, index, recommendedItems.length);
-            },
-          ),
-        ),
-      ],
-    );
-  }
+  // Widget _buildRecommendedFoods() {
+  //   final recommendedItems = controller.recommendedFoods;
+  //
+  //   return Column(
+  //     crossAxisAlignment: CrossAxisAlignment.start,
+  //     children: [
+  //       // Title + xem thêm
+  //       // Padding(
+  //       //   padding: const EdgeInsets.symmetric(horizontal: 16.0),
+  //       //   child: Row(
+  //       //     children: [
+  //       //       const Text(
+  //       //         'Món ăn đề xuất',
+  //       //         style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+  //       //       ),
+  //       //       const Spacer(),
+  //       //       GestureDetector(
+  //       //         onTap: () {
+  //       //           // xem thêm
+  //       //         },
+  //       //         child: const Text(
+  //       //           'xem thêm',
+  //       //           style: TextStyle(
+  //       //             fontSize: 14,
+  //       //             color: Colors.blue,
+  //       //             decoration: TextDecoration.underline,
+  //       //           ),
+  //       //         ),
+  //       //       ),
+  //       //     ],
+  //       //   ),
+  //       // ),
+  //       const SizedBox(height: 8),
+  //       SizedBox(
+  //         height: 120,
+  //         child: ListView.builder(
+  //           scrollDirection: Axis.horizontal,
+  //           itemCount: recommendedItems.length,
+  //           itemBuilder: (context, index) {
+  //             final item = recommendedItems[index];
+  //             return _buildFoodCardItem(item, index, recommendedItems.length);
+  //           },
+  //         ),
+  //       ),
+  //     ],
+  //   );
+  // }
 
   /// Hiển thị card món ăn cho Best Seller & Recommended
   Widget _buildFoodCardItem(Map<String, String> item, int index, int total) {
@@ -440,7 +446,9 @@ class HomeView extends GetView<HomeController> {
   }
 
   /// Widget hiển thị thông tin sản phẩm cho tab "Đồ ăn" và "Chợ tươi sống"
-  Widget _buildProductCard(Map<String, String> item) {
+  /// Hiển thị card sản phẩm từ API
+  /// Sửa widget _buildProductCard để nhận đối tượng Product thay vì Map<String, String>
+  Widget _buildProductCard(Product product) {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 4),
       padding: const EdgeInsets.all(8),
@@ -465,14 +473,14 @@ class HomeView extends GetView<HomeController> {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(4),
               color: Colors.grey.shade300,
-              image: item['image'] != null
+              image: (product.image != null && product.image!.isNotEmpty)
                   ? DecorationImage(
-                image: AssetImage(item['image']!),
+                image: NetworkImage(product.image!),
                 fit: BoxFit.cover,
               )
                   : null,
             ),
-            child: item['image'] == null
+            child: (product.image == null || product.image!.isEmpty)
                 ? const Icon(Icons.image, color: Colors.white)
                 : null,
           ),
@@ -484,88 +492,36 @@ class HomeView extends GetView<HomeController> {
               children: [
                 // Tên sản phẩm
                 Text(
-                  item['name'] ?? '',
+                  product.name ?? '',
                   style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 4),
-                // Đã bán và lượt thích (nếu có)
-                if (item.containsKey('sold') && item.containsKey('likes'))
-                  Text(
-                    "Đã bán ${item['sold']} | ${item['likes']} lượt thích",
-                    style: const TextStyle(fontSize: 12, color: Colors.grey),
-                  ),
-                const SizedBox(height: 4),
-                // Giá & Sale
-                Row(
-                  children: [
-                    if (item.containsKey('price'))
-                      Text(
-                        item['price']!,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.orange,
-                        ),
-                      ),
-                    const SizedBox(width: 8),
-                    if (item.containsKey('sale'))
-                      Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          Image.asset(
-                            'assets/images/sale_badge.png',
-                            width: 50,
-                            height: 50,
-                          ),
-                          Text(
-                            item['sale']!,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 10,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                  ],
+                // Ví dụ hiển thị số lượng và discount (nếu có)
+                Text(
+                  "Số lượng: ${product.quantity ?? 0}",
+                  style: const TextStyle(fontSize: 12, color: Colors.grey),
                 ),
-                if (item.containsKey('oldPrice'))
-                  Text(
-                    item['oldPrice']!,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey,
-                      decoration: TextDecoration.lineThrough,
+                const SizedBox(height: 4),
+                if ((product.discount ?? 0) > 0)
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: Colors.red,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Text(
+                      '-${product.discount?.toStringAsFixed(0)}%',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
               ],
             ),
           ),
-          // Nút thêm vào giỏ hàng
-          InkWell(
-            onTap: () async {
-              // Gọi fake API để thêm sản phẩm vào giỏ hàng
-              bool success = await addProductToCart(item);
-              if (success) {
-                Get.snackbar("Thành công", "Đã thêm sản phẩm vào giỏ hàng");
-              } else {
-                Get.snackbar("Lỗi", "Không thể thêm sản phẩm");
-              }
-            },
-            child: Container(
-              width: 32,
-              height: 32,
-              decoration: BoxDecoration(
-                color: Colors.orange,
-                borderRadius: BorderRadius.circular(4),
-              ),
-              child: const Icon(
-                Icons.add,
-                color: Colors.white,
-                size: 20,
-              ),
-            ),
-          ),
+          // (Có thể thêm nút "Thêm vào giỏ hàng" nếu cần)
         ],
       ),
     );
@@ -613,6 +569,9 @@ class HomeView extends GetView<HomeController> {
   Widget _buildFoodList() {
     return Obx(() {
       final list = controller.currentList;
+      if (list.isEmpty) {
+        return const Center(child: CircularProgressIndicator());
+      }
       return AnimatedSwitcher(
         duration: const Duration(milliseconds: 300),
         transitionBuilder: (child, animation) => FadeTransition(
@@ -625,8 +584,8 @@ class HomeView extends GetView<HomeController> {
           shrinkWrap: true,
           itemCount: list.length,
           itemBuilder: (context, index) {
-            final item = list[index];
-            return _buildProductCard(item);
+            final product = list[index] as Product;
+            return _buildProductCard(product);
           },
         ),
       );
