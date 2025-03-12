@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import '../../../models/foodOption.dart';
+import '../../../models/food_option.dart';
 import '../controllers/product_form_controller.dart';
 
 class ProductFormView extends GetView<ProductFormController> {
@@ -37,13 +37,19 @@ class ProductFormView extends GetView<ProductFormController> {
               options: controller.sizes,
               onAdd: (size) => controller.addSizeOption(size),
               onRemove: (id) => controller.removeSizeOption(id),
+              onEdit: (size) => controller.editSizeOption(size), // 🆕 Thêm chức năng chỉnh sửa
+              isSize: true, // 🆕 Xác định đây là kích cỡ
             )),
+
             _buildCard(buildFoodOptionSelector(
               title: "Lựa chọn sản phẩm",
               options: controller.options,
               onAdd: (option) => controller.addFoodOption(option),
               onRemove: (id) => controller.removeFoodOption(id),
+              onEdit: (option) => controller.editFoodOption(option), // 🆕 Thêm chức năng chỉnh sửa
+              isSize: false, // 🆕 Xác định đây là lựa chọn
             )),
+
 
             _buildCard(_buildSupplierManufacturerFields()), // Nhà sản xuất & Nhà cung cấp
           ],
@@ -268,9 +274,11 @@ class ProductFormView extends GetView<ProductFormController> {
 
   Widget buildFoodOptionSelector({
     required String title,
-    required List<FoodOption> options,
+    required RxList<FoodOption> options,
     required Function(FoodOption) onAdd,
     required Function(int) onRemove,
+    required Function(FoodOption) onEdit,
+    required bool isSize,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -281,7 +289,10 @@ class ProductFormView extends GetView<ProductFormController> {
             Text(title, style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
             IconButton(
               icon: Icon(Icons.add_circle_outline, color: Colors.black),
-              onPressed: () => showAddFoodOptionBottomSheet(onAdd),
+              onPressed: () => showFoodOptionBottomSheet(
+                onSubmit: onAdd,
+                isSize: isSize,
+              ),
             ),
           ],
         ),
@@ -289,17 +300,26 @@ class ProductFormView extends GetView<ProductFormController> {
         Obx(() => Column(
           children: options.isEmpty
               ? [Text("Chưa có lựa chọn nào", style: TextStyle(color: Colors.grey))]
-              : options.map((option) => buildFoodOptionItem(option, onRemove)).toList(),
+              : options.map((option) => buildFoodOptionItem(option, onRemove, onEdit)).toList(),
         )),
       ],
     );
   }
 
-  void showAddFoodOptionBottomSheet(Function(FoodOption) onAdd) {
-    TextEditingController nameController = TextEditingController();
-    TextEditingController priceController = TextEditingController();
+
+
+  void showFoodOptionBottomSheet({
+    required Function(FoodOption) onSubmit,
+    FoodOption? existingOption, // Nếu có nghĩa là đang sửa
+    bool isSize = false, // Xác định đây là kích cỡ hay lựa chọn
+  }) {
+    // Nếu là sửa, điền sẵn thông tin
+    TextEditingController nameController =
+    TextEditingController(text: existingOption?.name ?? "");
+    TextEditingController priceController =
+    TextEditingController(text: existingOption?.price.toString() ?? "");
     final ImagePicker _picker = ImagePicker();
-    Rxn<File> selectedImage = Rxn<File>();
+    Rxn<File> selectedImage = Rxn<File>(existingOption?.image);
 
     Get.bottomSheet(
       Container(
@@ -311,13 +331,26 @@ class ProductFormView extends GetView<ProductFormController> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text("Thêm lựa chọn sản phẩm", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            // 🏷 Tiêu đề (Thêm hoặc Chỉnh sửa)
+            Text(
+              existingOption == null
+                  ? (isSize ? "Thêm Kích Cỡ" : "Thêm Lựa Chọn")
+                  : (isSize ? "Chỉnh Sửa Kích Cỡ" : "Chỉnh Sửa Lựa Chọn"),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
             SizedBox(height: 12),
 
-            _buildBottomSheetTextField("Tên lựa chọn", nameController),
-            _buildBottomSheetTextField("Giá", priceController, isNumber: true),
+            // 📌 Tiêu đề ảnh
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                isSize ? "Ảnh kích cỡ" : "Ảnh lựa chọn",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+            ),
+            SizedBox(height: 8),
 
-            // Khu vực chọn ảnh
+            // 🖼 Khu vực chọn ảnh
             Obx(() => Column(
               children: [
                 if (selectedImage.value != null)
@@ -328,8 +361,8 @@ class ProductFormView extends GetView<ProductFormController> {
                         borderRadius: BorderRadius.circular(8),
                         child: Image.file(
                           selectedImage.value!,
-                          width: 80,
-                          height: 80,
+                          width: 120,
+                          height: 120,
                           fit: BoxFit.cover,
                         ),
                       ),
@@ -341,7 +374,8 @@ class ProductFormView extends GetView<ProductFormController> {
                             color: Colors.red,
                             shape: BoxShape.circle,
                           ),
-                          child: Icon(Icons.close, color: Colors.white, size: 20),
+                          child:
+                          Icon(Icons.close, color: Colors.white, size: 20),
                         ),
                       ),
                     ],
@@ -349,25 +383,37 @@ class ProductFormView extends GetView<ProductFormController> {
                 if (selectedImage.value == null)
                   GestureDetector(
                     onTap: () async {
-                      final XFile? pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+                      final XFile? pickedFile =
+                      await _picker.pickImage(source: ImageSource.gallery);
                       if (pickedFile != null) {
                         selectedImage.value = File(pickedFile.path);
                       }
                     },
                     child: Container(
-                      width: 80,
-                      height: 80,
+                      width: 120,
+                      height: 120,
                       decoration: BoxDecoration(
                         color: Colors.grey[300],
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      child: Icon(Icons.add, size: 40, color: Colors.black54),
+                      child:
+                      Icon(Icons.add_a_photo, size: 40, color: Colors.black54),
                     ),
                   ),
               ],
             )),
             SizedBox(height: 16),
 
+            // ✏️ Tên lựa chọn / kích cỡ
+            _buildBottomSheetTextField(
+                isSize ? "Tên kích cỡ" : "Tên lựa chọn", nameController),
+
+            // 💰 Giá
+            _buildBottomSheetTextField("Giá", priceController, isNumber: true),
+
+            SizedBox(height: 16),
+
+            // ✅ Nút Lưu/Thêm
             ElevatedButton(
               onPressed: () {
                 String name = nameController.text.trim();
@@ -384,19 +430,21 @@ class ProductFormView extends GetView<ProductFormController> {
                   return;
                 }
 
-                onAdd(FoodOption(
-                  id: DateTime.now().millisecondsSinceEpoch,
+                onSubmit(FoodOption(
+                  id: existingOption?.id ?? DateTime.now().millisecondsSinceEpoch,
                   name: name,
                   price: price,
-                  image: selectedImage.value, // Lưu ảnh vào option
-                  typeId: 3, // Đây là option (hoặc có thể là size tùy vào nơi gọi hàm)
+                  image: selectedImage.value, // 📷 Lưu ảnh nếu có
+                  typeId: isSize ? 2 : 3, // 🏷 Loại (2: kích cỡ, 3: lựa chọn)
                 ));
 
                 Future.delayed(Duration.zero, () {
                   Get.back();
                 });
               },
-              child: Text("Thêm"),
+              child: Text(existingOption == null
+                  ? (isSize ? "Thêm Kích Cỡ" : "Thêm Lựa Chọn")
+                  : "Lưu Chỉnh Sửa"),
             ),
           ],
         ),
@@ -405,7 +453,7 @@ class ProductFormView extends GetView<ProductFormController> {
     );
   }
 
-  Widget buildFoodOptionItem(FoodOption option, Function(int) onRemove) {
+  Widget buildFoodOptionItem(FoodOption option, Function(int) onRemove, Function(FoodOption) onEdit) {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 4),
       child: Row(
@@ -431,14 +479,27 @@ class ProductFormView extends GetView<ProductFormController> {
               ],
             ),
           ),
+          // Nút sửa
           IconButton(
-            icon: Icon(Icons.delete, color: Colors.grey),
+            icon: Icon(Icons.edit, color: Colors.blue),
+            onPressed: () {
+              showFoodOptionBottomSheet(
+                onSubmit: onEdit,
+                existingOption: option, // 🆕 Truyền dữ liệu để sửa
+                isSize: option.typeId == 2, // Xác định đây là kích cỡ hay lựa chọn
+              );
+            },
+          ),
+          // Nút xoá
+          IconButton(
+            icon: Icon(Icons.delete, color: Colors.red),
             onPressed: () => onRemove(option.id),
           ),
         ],
       ),
     );
   }
+
 
 
   Widget _buildSupplierManufacturerFields() {

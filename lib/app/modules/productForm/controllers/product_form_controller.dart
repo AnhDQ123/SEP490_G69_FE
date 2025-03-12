@@ -2,13 +2,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import '../../../models/foodOption.dart';
+import '../../../models/food_option.dart';
 import '../../../models/category.dart';
 import '../../../models/product.dart';
 import '../../../service/category_service.dart';
 import '../../../service/product_service.dart';
-
-
 
 class ProductFormController extends GetxController {
   // Trường dữ liệu sản phẩm
@@ -126,6 +124,14 @@ class ProductFormController extends GetxController {
     sizes.add(size);
   }
 
+  void editSizeOption(FoodOption updatedSize) {
+    int index = sizes.indexWhere((size) => size.id == updatedSize.id);
+    if (index != -1) {
+      sizes[index] = updatedSize;
+      sizes.refresh(); // 🔄 Cập nhật UI
+    }
+  }
+
   void removeSizeOption(int id) {
     sizes.value = sizes.where((size) => size.id != id).toList();
   }
@@ -134,10 +140,17 @@ class ProductFormController extends GetxController {
     options.add(option);
   }
 
+  void editFoodOption(FoodOption updatedOption) {
+    int index = options.indexWhere((option) => option.id == updatedOption.id);
+    if (index != -1) {
+      options[index] = updatedOption;
+      options.refresh(); // 🔄 Cập nhật UI
+    }
+  }
+
   void removeFoodOption(int id) {
     options.value = options.where((option) => option.id != id).toList();
   }
-
 
   Future<void> saveProduct() async {
     if (productName.value.isEmpty) {

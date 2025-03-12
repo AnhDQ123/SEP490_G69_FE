@@ -1,4 +1,4 @@
-import 'foodOption.dart';
+import 'food_option.dart';
 
 class Product {
   final int? id;
