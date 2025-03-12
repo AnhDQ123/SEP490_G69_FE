@@ -2,10 +2,11 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import '../models/product.dart';
+import 'package:http_parser/http_parser.dart';
 
 
 class ProductService {
-  static const String BASE_URL = "http://10.0.2.2:8080/api";
+  static const String BASE_URL = "http://10.0.2.2:8080/api/product";
 
   // Lấy danh sách sản phẩm
     Future<List<Product>> fetchProducts() async {
@@ -45,11 +46,8 @@ class ProductService {
     }
   }
 
-
-  // Hàm gửi API tạo sản phẩm
-  // Hàm gửi API tạo sản phẩm
-  static Future<bool> createProduct(Product product, File? avatar, List<File> options) async {
-    final String baseUrl = "http://10.0.2.2:8080/api/add"; // Thay thế bằng API thật của bạn
+  static Future<bool> createProduct(Product product, File? avatar) async {
+    final String baseUrl = "http://10.0.2.2:8080/api/product/add"; // Thay thế bằng API thật của bạn
 
     try {
       var request = http.MultipartRequest("POST", Uri.parse(baseUrl));
@@ -57,27 +55,46 @@ class ProductService {
       // 🟢 Thêm dữ liệu dạng `form-data`
       request.fields["name"] = product.name;
       request.fields["description"] = product.description ?? "";
-      request.fields["category_id"] = product.category.toString();
+      request.fields["category_id"] = product.category ?? "";
       request.fields["quantity"] = product.quantity.toString();
-      request.fields["expiryDate"] = product.expiryDate ?? ""; // Nếu null, gửi chuỗi rỗng
+      request.fields["expiryDate"] = product.expiryDate ?? "";
       request.fields["shop_id"] = "1"; // Shop ID có thể cần lấy từ `user session`
       request.fields["supplier"] = product.supplier ?? "";
 
       // 🟢 Gửi danh sách `foodOptions` theo dạng `form-data`
+      // 🖼 Gửi ảnh của từng `FoodOption`
       for (int i = 0; i < product.foodOptions!.length; i++) {
         var option = product.foodOptions![i];
-        request.fields["foodOption[$i].name"] = option.name ?? ""; // Nếu null, gửi chuỗi rỗng
+
+        // Thêm dữ liệu văn bản của từng FoodOption
+        request.fields["foodOption[$i].name"] = option.name;
         request.fields["foodOption[$i].price"] = option.price.toString();
+        request.fields["foodOption[$i].type_id"] = option.typeId.toString();
+
+        // Nếu có ảnh, gửi lên với key "option"
+        if (option.image != null) {
+          var optionFile = await http.MultipartFile.fromPath(
+            "option", // ✅ Đúng với key trong API
+            option.image!.path,
+            contentType: MediaType("image", "jpeg"),
+          );
+          request.files.add(optionFile);
+          print("🖼 Gửi ảnh cho option [$i]: ${option.image!.path}");
+        } else {
+          print("⚠️ Không có ảnh cho option [$i]");
+        }
       }
 
-      // 🟢 Gửi ảnh đại diện (avatar) nếu có
+      // 🖼 Gửi ảnh đại diện (avatar)
       if (avatar != null) {
-        request.files.add(await http.MultipartFile.fromPath("avatar", avatar.path));
-      }
-
-      // 🟢 Gửi danh sách ảnh `option`
-      for (var optionFile in options) {
-        request.files.add(await http.MultipartFile.fromPath("option", optionFile.path));
+        request.files.add(await http.MultipartFile.fromPath(
+          "avatar",
+          avatar.path,
+          contentType: MediaType("image", "jpeg"), // 🆕 Chỉ định loại ảnh
+        ));
+        print("🖼 Avatar được gửi: ${avatar.path}");
+      } else {
+        print("⚠️ Không có avatar được gửi!");
       }
 
       // 🟢 Debug dữ liệu gửi lên server
@@ -96,4 +113,5 @@ class ProductService {
       return false;
     }
   }
+
 }

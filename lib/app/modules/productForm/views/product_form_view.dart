@@ -82,7 +82,7 @@ class ProductFormView extends GetView<ProductFormController> {
   }
 
   Widget _buildImagePicker() {
-    final ImagePickerController imageController = Get.put( ImagePickerController());
+    final ProductFormController controller = Get.find<ProductFormController>();
 
     return Container(
       padding: EdgeInsets.all(10),
@@ -90,59 +90,83 @@ class ProductFormView extends GetView<ProductFormController> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Hình ảnh sản phẩm',
+            'Ảnh sản phẩm',
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
-          SizedBox(height: 5),
-          Text(
-            'Hình ảnh không được phép vượt quá 10Mb. Tối đa 1 hình ảnh.',
-            style: TextStyle(fontSize: 12, color: Colors.grey),
-          ),
           SizedBox(height: 10),
-          Obx(() => Row(
-            children: [
-              if (imageController.selectedMedia.value != null)
-                Stack(
-                  alignment: Alignment.topRight,
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.all(5),
-                      child: Image.file(
-                        imageController.selectedMedia.value!,
-                        width: 80,
-                        height: 80,
-                        fit: BoxFit.cover,
-                      ),
+          Obx(() => Align(
+            alignment: Alignment.centerLeft,
+            child: GestureDetector(
+              onTap: () => _showImagePickerOptions(controller),
+              child: controller.avatar.value != null
+                  ? Stack(
+                alignment: Alignment.topRight,
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Image.file(
+                      controller.avatar.value!,
+                      width: 120,
+                      height: 120,
+                      fit: BoxFit.cover,
                     ),
-                    GestureDetector(
-                      onTap: imageController.removeMedia,
-                      child: Container(
-                        margin: EdgeInsets.all(4),
-                        decoration: BoxDecoration(
-                          color: Colors.red,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(Icons.close, color: Colors.white, size: 20),
-                      ),
-                    ),
-                  ],
-                ),
-              if (imageController.selectedMedia.value == null)
-                GestureDetector(
-                  onTap: imageController.pickMedia,
-                  child: Container(
-                    width: 80,
-                    height: 80,
-                    decoration: BoxDecoration(
-                      color: Colors.grey[300],
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Icon(Icons.add, size: 40, color: Colors.black54),
                   ),
+                  GestureDetector(
+                    onTap: () => controller.avatar.value = null, // Xóa ảnh
+                    child: Container(
+                      margin: EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        color: Colors.red,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(Icons.close, color: Colors.white, size: 20),
+                    ),
+                  ),
+                ],
+              )
+                  : Container(
+                width: 120,
+                height: 120,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(10),
                 ),
-            ],
+                child: Icon(Icons.add, size: 40, color: Colors.black54),
+              ),
+            ),
           )),
         ],
+      ),
+    );
+  }
+  void _showImagePickerOptions(ProductFormController controller) {
+    Get.bottomSheet(
+      Container(
+        padding: EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+        ),
+        child: Wrap(
+          children: [
+            ListTile(
+              leading: Icon(Icons.photo_library),
+              title: Text("Chọn từ thư viện"),
+              onTap: () {
+                controller.pickImageFromGallery(controller.avatar);
+                Get.back(); // Đóng bottom sheet
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.camera_alt),
+              title: Text("Chụp ảnh"),
+              onTap: () {
+                controller.pickImageFromCamera(controller.avatar);
+                Get.back(); // Đóng bottom sheet
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

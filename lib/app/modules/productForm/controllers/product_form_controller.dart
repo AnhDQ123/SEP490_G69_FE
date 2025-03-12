@@ -5,11 +5,37 @@ import 'package:image_picker/image_picker.dart';
 import '../../../models/food_option.dart';
 import '../../../models/category.dart';
 import '../../../models/product.dart';
+import '../../../routes/app_pages.dart';
 import '../../../service/category_service.dart';
 import '../../../service/product_service.dart';
 
 class ProductFormController extends GetxController {
   // Trường dữ liệu sản phẩm
+  var avatar = Rxn<File>();
+
+  // Chọn ảnh đơn từ thư viện
+  final ImagePicker picker = ImagePicker();
+  Future<void> pickImageFromGallery(Rxn<File> imageController) async {
+    final XFile? pickedFile =
+    await picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      imageController.value = File(pickedFile.path);
+    }
+  }
+
+  // Chọn ảnh đơn từ camera
+  Future<void> pickImageFromCamera(Rxn<File> imageController) async {
+    final XFile? pickedFile =
+    await picker.pickImage(source: ImageSource.camera);
+    if (pickedFile != null) {
+      imageController.value = File(pickedFile.path);
+    }
+  }
+
+  // Xóa ảnh đơn
+  void removeImage(Rxn<File> imageController) {
+    imageController.value = null;
+  }
   var productName = "".obs;
   var productDescription = "".obs;
   var manufacturer = "".obs;
@@ -58,9 +84,6 @@ class ProductFormController extends GetxController {
   var sizes = <FoodOption>[].obs;
   var options = <FoodOption>[].obs;
 
-  // Hình ảnh sản phẩm
-  var selectedMedia = Rxn<File>();
-
   @override
   void onInit() {
     super.onInit();
@@ -101,7 +124,6 @@ class ProductFormController extends GetxController {
       print("📆 Ngày hết hạn đã chọn: ${expirationValue.value}");
     }
   }
-
 
   //Update số lượng
   void updateQuantity(String value) {
@@ -152,23 +174,10 @@ class ProductFormController extends GetxController {
     options.value = options.where((option) => option.id != id).toList();
   }
 
+  /// Hàm Save Product
   Future<void> saveProduct() async {
     if (productName.value.isEmpty) {
       Get.snackbar("Lỗi", "Tên sản phẩm không được để trống!");
-      return;
-    }
-
-    // 🟢 Lấy ID của danh mục từ danh sách `categories`
-    int? selectedCategoryId;
-    for (var category in categories) {
-      if (category.name == selectedCategory.value) {
-        selectedCategoryId = category.id;
-        break;
-      }
-    }
-
-    if (selectedCategoryId == null) {
-      Get.snackbar("Lỗi", "Vui lòng chọn danh mục hợp lệ!");
       return;
     }
 
@@ -185,22 +194,29 @@ class ProductFormController extends GetxController {
     // 🟢 Gộp Size (`typeId = 2`) và Option (`typeId = 3`)
     List<FoodOption> allOptions = [
       ...sizes.map((size) => FoodOption(
-        id: 0, // ID sẽ được tạo tự động bởi Backend
+        id: size.id, // Giữ nguyên ID
         name: size.name,
         price: size.price,
-        typeId: 2, // 🟢 Định rõ đây là SIZE
+        image: size.image, // 🖼 Giữ nguyên ảnh của size
+        typeId: 2, // 🏷 Loại SIZE
       )),
       ...options.map((option) => FoodOption(
-        id: 0,
+        id: option.id,
         name: option.name,
         price: option.price,
-        typeId: 3, // 🟢 Định rõ đây là OPTION
+        image: option.image, // 🖼 Giữ nguyên ảnh của option
+        typeId: 3, // 🏷 Loại OPTION
       )),
     ];
 
+    print("🖼 Ảnh Avatar trước khi gửi API: ${avatar.value?.path}");
+    for (var option in options) {
+      print("🖼 Ảnh của Option ${option.name}: ${option.image?.path}");
+    }
+
     // 🟢 Tạo Product object để gửi API
     Product newProduct = Product(
-      id: product?.id ?? 0,
+      id: 0,
       name: productName.value,
       description: productDescription.value.isNotEmpty ? productDescription.value : null,
       manufacturer: manufacturer.value.isNotEmpty ? manufacturer.value : null,
@@ -208,41 +224,21 @@ class ProductFormController extends GetxController {
       quantity: quantity.value,
       category: selectedCategory.value,
       discount: null,
-      avatar: null, // Nếu cần hình ảnh, bạn có thể thêm xử lý
       expiryDate: formattedExpiryDate,
       foodOptions: allOptions,
     );
 
     bool success = await ProductService.createProduct(
       newProduct,
-      selectedMedia.value,
-      [],
+      avatar.value,
     );
 
     if (success) {
-      Get.snackbar("Thành công", "Sản phẩm đã được ${isEditing.value ? 'cập nhật' : 'thêm'}!");
-      Get.back();
+      Get.snackbar("Thành công", "Sản phẩm đã được thêm!");
+      // 🔹 Chuyển về trang danh sách sản phẩm
+      Get.offNamed(Routes.PRODUCT_LIST_SHOP);  // ✅ Điều hướng về trang danh sách sản phẩm
     } else {
       Get.snackbar("Lỗi", "Không thể lưu sản phẩm.");
     }
-  }
-}
-
-class ImagePickerController extends GetxController {
-  final ImagePicker _picker = ImagePicker();
-  var selectedMedia = Rxn<File>(); // Chỉ được phép chọn 1 ảnh
-
-  // Chọn ảnh từ thư viện
-  Future<void> pickMedia() async {
-    final XFile? pickedFile = await _picker.pickImage(source: ImageSource.gallery);
-
-    if (pickedFile != null) {
-      selectedMedia.value = File(pickedFile.path);
-    }
-  }
-
-  // Xóa ảnh đã chọn
-  void removeMedia() {
-    selectedMedia.value = null;
   }
 }
