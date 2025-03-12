@@ -1,16 +1,18 @@
+import 'dart:io';
+
 class FoodOption {
   final int id;
-  final String? name;
-  final double? price;
+  final String name;
+  final double price;
   final String? description;
-  final String? image;
-  final int? typeId; // Phân loại (2 = Size, 3 = Option)
+  File? image; // Cho phép cập nhật ảnh
+  final int? typeId;
   final String? status;
 
   FoodOption({
     required this.id,
-    this.name,
-    this.price,
+    required this.name,
+    required this.price,
     this.description,
     this.image,
     this.typeId,
@@ -20,24 +22,13 @@ class FoodOption {
   factory FoodOption.fromJson(Map<String, dynamic> json) {
     return FoodOption(
       id: json['id'] ?? 0,
-      name: json['name'],
-      price: json['price']?.toDouble(),
+      name: json['name'] ?? '',
+      price: (json['price'] ?? 0).toDouble(),
       description: json['description'],
-      image: json['image'],
-      typeId: json['type_id'], // Giữ nguyên typeId để phân biệt Size / Option
+      image: json['image'] != null ? File(json['image']) : null,
+      typeId: json['type_id'],
       status: json['status'],
     );
   }
 
-  Map<String, dynamic> toJson() {
-    return {
-      "id": id,
-      "name": name,
-      "price": price,
-      "description": description,
-      "image": image,
-      "type_id": typeId, // Đảm bảo gửi đúng type_id khi gọi API
-      "status": status,
-    };
-  }
 }

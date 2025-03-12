@@ -7,15 +7,15 @@ import '../../../models/category.dart';
 import '../../../models/product.dart';
 import '../../../service/category_service.dart';
 import '../../../service/product_service.dart';
-import 'package:intl/intl.dart';
+
 
 
 class ProductFormController extends GetxController {
   // Trường dữ liệu sản phẩm
-  var productNameController = TextEditingController();
-  var productDescriptionController = TextEditingController();
-  var manufacturerController = TextEditingController();
-  var supplierController = TextEditingController();
+  var productName = "".obs;
+  var productDescription = "".obs;
+  var manufacturer = "".obs;
+  var supplier = "".obs;
   var isEditing = false.obs;
   Product? product;
 
@@ -40,38 +40,28 @@ class ProductFormController extends GetxController {
   Future<void> fetchProductDetail(int productId) async {
     product = await ProductService.fetchProductDetail(productId);
     if (product != null) {
-      productNameController.text = product!.name;
-      productDescriptionController.text = product!.description ?? "";
-      manufacturerController.text = product!.manufacturer ?? "";
-      supplierController.text = product!.supplier ?? "";
-      quantity.value = product!.quantity!;
-      quantityController.text = product!.quantity.toString();
+      productName.value = product!.name;
+      productDescription.value = product!.description ?? "";
+      manufacturer.value = product!.manufacturer ?? "";
+      supplier.value = product!.supplier ?? "";
+      quantity.value = product!.quantity ?? 0;
       selectedCategory.value = product!.category ?? "";
-
       sizes.assignAll(product!.foodOptions?.where((o) => o.typeId == 2).toList() ?? []);
-      foodOptions.assignAll(product!.foodOptions?.where((o) => o.typeId == 3).toList() ?? []);
+      options.assignAll(product!.foodOptions?.where((o) => o.typeId == 3).toList() ?? []);
     } else {
       Get.snackbar("Lỗi", "Không thể tải chi tiết sản phẩm!");
     }
   }
 
   // Hạn sử dụng (expiration)
-  var expirationType = 'date'.obs; // "date", "hours", "days"
   var expirationValue = ''.obs; // Giá trị (ngày cụ thể hoặc số lượng)
-  var durationController = TextEditingController(); // Khi chọn "hours" hoặc "days"
-  var durationType = 'Giờ'.obs; // Dropdown chọn "Giờ" hoặc "Ngày"
 
   // Kích cỡ sản phẩm
   var sizes = <FoodOption>[].obs;
-  var foodOptions = <FoodOption>[].obs;
-  var sizeController = TextEditingController();
-  var priceController = TextEditingController();
+  var options = <FoodOption>[].obs;
 
   // Hình ảnh sản phẩm
-  final ImagePicker _picker = ImagePicker();
   var selectedMedia = Rxn<File>();
-  get removeMedia => null;
-  get pickMedia => null;
 
   @override
   void onInit() {
@@ -136,23 +126,21 @@ class ProductFormController extends GetxController {
     sizes.add(size);
   }
 
-// Xóa kích cỡ theo index
-  void removeSizeOption(int index) {
-    sizes.removeAt(index);
+  void removeSizeOption(int id) {
+    sizes.value = sizes.where((size) => size.id != id).toList();
   }
 
-// Thêm lựa chọn sản phẩm mới
   void addFoodOption(FoodOption option) {
-    foodOptions.add(option);
+    options.add(option);
   }
 
-// Xóa lựa chọn sản phẩm theo index
-  void removeFoodOption(int index) {
-    foodOptions.removeAt(index);
+  void removeFoodOption(int id) {
+    options.value = options.where((option) => option.id != id).toList();
   }
+
 
   Future<void> saveProduct() async {
-    if (productNameController.text.isEmpty) {
+    if (productName.value.isEmpty) {
       Get.snackbar("Lỗi", "Tên sản phẩm không được để trống!");
       return;
     }
@@ -189,7 +177,7 @@ class ProductFormController extends GetxController {
         price: size.price,
         typeId: 2, // 🟢 Định rõ đây là SIZE
       )),
-      ...foodOptions.map((option) => FoodOption(
+      ...options.map((option) => FoodOption(
         id: 0,
         name: option.name,
         price: option.price,
@@ -199,17 +187,17 @@ class ProductFormController extends GetxController {
 
     // 🟢 Tạo Product object để gửi API
     Product newProduct = Product(
-      id: isEditing.value ? product!.id : 0, // 🟢 ID sản phẩm sẽ do Backend tạo
-      name: productNameController.text,
-      description: productDescriptionController.text.isNotEmpty ? productDescriptionController.text : null,
-      manufacturer: manufacturerController.text.isNotEmpty ? manufacturerController.text : null,
-      supplier: supplierController.text.isNotEmpty ? supplierController.text : null,
+      id: product?.id ?? 0,
+      name: productName.value,
+      description: productDescription.value.isNotEmpty ? productDescription.value : null,
+      manufacturer: manufacturer.value.isNotEmpty ? manufacturer.value : null,
+      supplier: supplier.value.isNotEmpty ? supplier.value : null,
       quantity: quantity.value,
-      category: selectedCategoryId.toString(),
+      category: selectedCategory.value,
       discount: null,
-      avatar: selectedMedia.value?.path,
-      expiryDate: formattedExpiryDate, // 🟢 Định dạng `yyyy-MM-dd`
-      foodOptions: allOptions, // 🟢 Gửi đầy đủ danh sách `foodOption` với `typeId`
+      avatar: null, // Nếu cần hình ảnh, bạn có thể thêm xử lý
+      expiryDate: formattedExpiryDate,
+      foodOptions: allOptions,
     );
 
     bool success = await ProductService.createProduct(
