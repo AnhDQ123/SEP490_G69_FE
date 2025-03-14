@@ -37,5 +37,36 @@ class HomeApiService extends GetConnect {
     }
   }
 
+  Future<List<Product>> fetchPopularProducts() async {
+    final response = await get('/api/product/getPopular');
+    if (response.status.hasError) {
+      return Future.error('Error fetching popular products: ${response.statusText}');
+    } else {
+      final List<dynamic> rawData = response.body;
+      return rawData.map((json) => Product.fromJson(json)).toList();
+    }
+  }
+
+  Future<List<Product>> fetchFreshProducts() async {
+    final response = await get('/api/product/getFresh');
+    if (response.status.hasError) {
+      return Future.error('Error fetching fresh products: ${response.statusText}');
+    } else {
+      final List<dynamic> rawData = response.body;
+      return rawData.map((json) => Product.fromJson(json)).toList();
+    }
+  }
+
+  Future<List<Product>> fetchCookedProducts() async {
+    final response = await get('/api/product/getCooked');
+    if (response.status.hasError) {
+      return Future.error('Error fetching cooked products: ${response.statusText}');
+    } else {
+      final List<dynamic> rawData = response.body;
+      return rawData.map((json) => Product.fromJson(json)).toList();
+    }
+  }
+
+
 
 }

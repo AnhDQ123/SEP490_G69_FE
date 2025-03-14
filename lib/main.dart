@@ -15,8 +15,7 @@ class MyApp extends StatelessWidget {
       title: 'Demo HomePage',
       initialRoute: AppPages.INITIAL,
       getPages: AppPages.routes,
-      // Bạn có thể bỏ initialBinding nếu đã khai báo binding cho từng route
-      // Nếu cần binding chung cho app, hãy khai báo tại đây
+
     );
   }
 }
