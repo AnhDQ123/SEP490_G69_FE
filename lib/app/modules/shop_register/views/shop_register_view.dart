@@ -333,8 +333,8 @@ class ShopRegisterView extends GetView<ShopRegisterController> {
           SizedBox(height: 12),
 
           // Logo cửa hàng
-          buildImageUploader(
-            label: "Logo cửa hàng *",
+          // Logo cửa hàng
+          buildLogoUploader(
             imageController: controller.logo,
             onGalleryPick: () => controller.pickImageFromGallery(controller.logo),
             onCameraPick: () => controller.pickImageFromCamera(controller.logo),
@@ -343,25 +343,25 @@ class ShopRegisterView extends GetView<ShopRegisterController> {
           SizedBox(height: 12),
 
           // Tên cửa hàng
-          _buildTextField("Tên cửa hàng*", controller.shopName),
+          _buildTextField( controller.shopName, label: "Tên cửa hàng*", isRequired: true),
 
           // Giờ mở cửa & Giờ đóng cửa
           Row(
             children: [
-              Expanded(child: _buildTimePicker("Giờ mở cửa*", controller.openTime)),
+              Expanded(child: _buildTimePicker("Giờ mở cửa", controller.openTime)),
               SizedBox(width: 12),
-              Expanded(child: _buildTimePicker("Giờ đóng cửa*", controller.closeTime)),
+              Expanded(child: _buildTimePicker("Giờ đóng cửa", controller.closeTime)),
             ],
           ),
 
           // Địa chỉ
-          _buildTextField("Địa chỉ*", controller.address),
+          _buildTextField(controller.address, label: "Địa chỉ", isRequired: true),
 
           // Số điện thoại
-          _buildTextField("Số điện thoại*", controller.phoneNumber),
+          _buildTextField(controller.phoneNumber, label: "Số điện thoại", isRequired: true),
 
           // Miêu tả (không bắt buộc)
-          _buildTextField("Miêu tả:", controller.description, isOptional: true),
+          _buildTextField(controller.description, label: "Miêu tả", isRequired: false),
         ],
       ),
     );
@@ -371,7 +371,18 @@ class ShopRegisterView extends GetView<ShopRegisterController> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+        RichText(
+          text: TextSpan(
+            text: label,
+            style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.black),
+            children: [
+              TextSpan(
+                text: " *",
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.red),
+              ),
+            ],
+          ),
+        ),
         SizedBox(height: 4),
         GestureDetector(
           onTap: () async {
@@ -409,11 +420,25 @@ class ShopRegisterView extends GetView<ShopRegisterController> {
   }
 
   // Widget input
-  Widget _buildTextField(String label, RxString controllerValue, {bool isOptional = false}) {
+  Widget _buildTextField(RxString controllerValue, {String label = "", bool isRequired = false}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+        RichText(
+          text: TextSpan(
+            text: label,
+            style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.black),
+            children: isRequired
+                ? [
+              TextSpan(
+                text: " *",
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.red),
+              ),
+            ]
+                : [],
+          ),
+        ),
+        SizedBox(height: 4),
         TextField(
           onChanged: (value) => controllerValue.value = value,
           decoration: InputDecoration(
@@ -425,6 +450,7 @@ class ShopRegisterView extends GetView<ShopRegisterController> {
       ],
     );
   }
+
 
   Widget _buildStep4() {
     return SingleChildScrollView(
@@ -438,18 +464,18 @@ class ShopRegisterView extends GetView<ShopRegisterController> {
               "Vui lòng chuẩn bị các giấy tờ liên quan",
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Text(
               "Vui lòng xem và điền các giấy tờ liên quan để xác thực cho việc đăng ký cửa hàng",
               style: TextStyle(fontSize: 14, color: Colors.grey[700]),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 12),
             Text("Thông tin, giấy tờ cần chuẩn bị",
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-            SizedBox(height: 12),
+            const SizedBox(height: 12),
 
             // Số CCCD/CMND/Hộ chiếu
-            _buildTextField("Số CCCD/CMND/Hộ chiếu*", controller.idCard),
+            _buildTextField(controller.idCard, label: "Số CCCD/CMND/Hộ chiếu", isRequired: true),
 
             // Ảnh mặt trước CCCD
             buildImageUploader(
@@ -458,7 +484,10 @@ class ShopRegisterView extends GetView<ShopRegisterController> {
               onGalleryPick: () => controller.pickImageFromGallery(controller.idCardFrontImage),
               onCameraPick: () => controller.pickImageFromCamera(controller.idCardFrontImage),
               onRemove: () => controller.removeImage(controller.idCardFrontImage),
+              isCCCD: true
             ),
+
+            const SizedBox(height: 12),
 
             // Ảnh mặt sau CCCD
             buildImageUploader(
@@ -467,28 +496,46 @@ class ShopRegisterView extends GetView<ShopRegisterController> {
               onGalleryPick: () => controller.pickImageFromGallery(controller.idCardBackImage),
               onCameraPick: () => controller.pickImageFromCamera(controller.idCardBackImage),
               onRemove: () => controller.removeImage(controller.idCardBackImage),
+              isCCCD: true
             ),
+
+            const SizedBox(height: 12),
 
             // Ngày hết hạn CCCD
-            _buildDatePicker("Ngày hết hạn*", controller.issuedDate),
+            _buildDatePicker("Ngày hết hạn", controller.issuedDate),
+
+            const SizedBox(height: 12),
 
             // Ảnh giấy phép kinh doanh
-            buildImageUploader(
-              label: "Giấy phép đăng ký kinh doanh",
-              imageController: controller.registrationCertificateImage,
-              onGalleryPick: () => controller.pickImageFromGallery(controller.registrationCertificateImage),
-              onCameraPick: () => controller.pickImageFromCamera(controller.registrationCertificateImage),
-              onRemove: () => controller.removeImage(controller.registrationCertificateImage),
+            // Hai ảnh "Giấy phép đăng ký kinh doanh" và "Giấy phép an toàn thực phẩm" cùng một hàng
+            Row(
+              children: [
+                Expanded(
+                  child: buildImageUploader(
+                    label: "Giấy phép đăng ký kinh doanh",
+                    imageController: controller.registrationCertificateImage,
+                    onGalleryPick: () => controller.pickImageFromGallery(controller.registrationCertificateImage),
+                    onCameraPick: () => controller.pickImageFromCamera(controller.registrationCertificateImage),
+                    onRemove: () => controller.removeImage(controller.registrationCertificateImage),
+                    isLicense: true, // ✅ Hiển thị ảnh dọc nhưng nhỏ lại
+                  ),
+                ),
+                SizedBox(width: 12), // Khoảng cách giữa hai ảnh
+                Expanded(
+                  child: buildImageUploader(
+                    label: "Giấy phép an toàn thực phẩm",
+                    imageController: controller.safetyPolicyImage,
+                    onGalleryPick: () => controller.pickImageFromGallery(controller.safetyPolicyImage),
+                    onCameraPick: () => controller.pickImageFromCamera(controller.safetyPolicyImage),
+                    onRemove: () => controller.removeImage(controller.safetyPolicyImage),
+                    isLicense: true, // ✅ Hiển thị ảnh dọc nhưng nhỏ lại
+                  ),
+                ),
+              ],
             ),
 
-            // Ảnh giấy phép an toàn thực phẩm
-            buildImageUploader(
-              label: "Giấy phép an toàn thực phẩm",
-              imageController: controller.safetyPolicyImage,
-              onGalleryPick: () => controller.pickImageFromGallery(controller.safetyPolicyImage),
-              onCameraPick: () => controller.pickImageFromCamera(controller.safetyPolicyImage),
-              onRemove: () => controller.removeImage(controller.safetyPolicyImage),
-            ),
+
+            const SizedBox(height: 12),
 
             // Ảnh sản phẩm (cho phép nhiều ảnh)
             buildImageUploader(
@@ -499,12 +546,14 @@ class ShopRegisterView extends GetView<ShopRegisterController> {
               onRemove: () => controller.removeImage(controller.productImage),
             ),
 
-            _buildTextField("Mã số thuế*", controller.taxCode),
+            const SizedBox(height: 12),
 
-            SizedBox(height: 16),
-            Text("Chọn ngân hàng*", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-            SizedBox(height: 8),
+            _buildTextField(controller.taxCode, label: "Má số thuế", isRequired: true),
 
+
+
+            Text("Chọn ngân hàng*", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 4,),
             Obx(() => controller.isLoadingBanks.value
                 ? Center(child: CircularProgressIndicator())
                 : DropdownButtonFormField<Bank>(
@@ -526,8 +575,9 @@ class ShopRegisterView extends GetView<ShopRegisterController> {
               ),
             )),
 
+            const SizedBox(height: 12),
 
-            _buildTextField("Thông tin tài khoản ngân hàng để thao tác thanh toán", controller.bankInfo, isOptional: true),
+            _buildTextField(controller.bankInfo, label: "Số tài khoản ngân hàng", isRequired: true),
 
             SizedBox(height: 20),
           ],
@@ -543,87 +593,207 @@ class ShopRegisterView extends GetView<ShopRegisterController> {
     required Function() onGalleryPick,
     required Function() onCameraPick,
     required Function() onRemove,
+    bool isCCCD = false,
+    bool isLicense = false,
+  }) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        double screenWidth = MediaQuery.of(context).size.width; // ✅ Chiều rộng màn hình
+        double width = isCCCD ? screenWidth : (isLicense ? screenWidth * 0.45 : 120);
+        double height = isCCCD ? width * 0.6 : (isLicense ? width * 1.5 : 120);
+        double borderRadius = 12;
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              label,
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 4),
+
+            GestureDetector(
+              onTap: () {
+                Get.bottomSheet(
+                  Container(
+                    padding: EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        ListTile(
+                          leading: Icon(Icons.camera_alt),
+                          title: Text("Chụp ảnh"),
+                          onTap: () {
+                            onCameraPick();
+                            Get.back();
+                          },
+                        ),
+                        ListTile(
+                          leading: Icon(Icons.photo_library),
+                          title: Text("Chọn từ thư viện"),
+                          onTap: () {
+                            onGalleryPick();
+                            Get.back();
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Container(
+                    width: width,
+                    height: height,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(borderRadius),
+                      border: Border.all(color: Colors.grey),
+                    ),
+                    child: imageController.value == null
+                        ? Icon(Icons.add_a_photo, size: 40, color: Colors.grey)
+                        : ClipRRect(
+                      borderRadius: BorderRadius.circular(borderRadius),
+                      child: Image.file(
+                        imageController.value!,
+                        width: width,
+                        height: height,
+                        fit: BoxFit.cover, // ✅ Ảnh giữ đúng tỷ lệ, không méo
+                      ),
+                    ),
+                  ),
+                  if (imageController.value != null)
+                    Positioned(
+                      top: 2,
+                      right: 2,
+                      child: GestureDetector(
+                        onTap: onRemove,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.red,
+                            shape: BoxShape.circle,
+                          ),
+                          padding: EdgeInsets.all(4),
+                          child: Icon(Icons.close, size: 16, color: Colors.white),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+
+
+
+  Widget buildLogoUploader({
+    required Rxn<File> imageController,
+    required Function() onGalleryPick,
+    required Function() onCameraPick,
+    required Function() onRemove,
   }) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center, // Căn giữa nội dung
       children: [
-        Text(label, style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
-        SizedBox(height: 8),
-
-        Obx(() => GestureDetector(
-          onTap: () {
-            Get.bottomSheet(
-              Container(
-                padding: EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius:
-                  BorderRadius.vertical(top: Radius.circular(16)),
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    ListTile(
-                      leading: Icon(Icons.camera_alt),
-                      title: Text("Chụp ảnh"),
-                      onTap: () {
-                        onCameraPick();
-                        Get.back();
-                      },
-                    ),
-                    ListTile(
-                      leading: Icon(Icons.photo_library),
-                      title: Text("Chọn từ thư viện"),
-                      onTap: () {
-                        onGalleryPick();
-                        Get.back();
-                      },
-                    ),
-                  ],
-                ),
-              ),
-            );
-          },
-          child: Stack(
+        RichText(
+          text: TextSpan(
+            text: "Logo cửa hàng ",
+            style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.black),
             children: [
-              Container(
-                width: 120,
-                height: 120,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.grey),
-                ),
-                child: imageController.value == null
-                    ? Icon(Icons.add_a_photo, size: 40, color: Colors.grey)
-                    : ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: Image.file(
-                    imageController.value!,
-                    width: 120,
-                    height: 120,
-                    fit: BoxFit.cover,
-                  ),
-                ),
+              TextSpan(
+                text: "*",
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.red),
               ),
-              if (imageController.value != null)
-                Positioned(
-                  top: 2,
-                  right: 2,
-                  child: GestureDetector(
-                    onTap: onRemove,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.red,
-                        shape: BoxShape.circle,
-                      ),
-                      padding: EdgeInsets.all(4),
-                      child: Icon(Icons.close, size: 16, color: Colors.white),
-                    ),
-                  ),
-                ),
             ],
           ),
-        )),
+        ),
+        SizedBox(height: 8),
+
+        Center( // Căn giữa toàn bộ khung logo
+          child: Obx(() => GestureDetector(
+            onTap: () {
+              Get.bottomSheet(
+                Container(
+                  padding: EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      ListTile(
+                        leading: Icon(Icons.camera_alt),
+                        title: Text("Chụp ảnh"),
+                        onTap: () {
+                          onCameraPick();
+                          Get.back();
+                        },
+                      ),
+                      ListTile(
+                        leading: Icon(Icons.photo_library),
+                        title: Text("Chọn từ thư viện"),
+                        onTap: () {
+                          onGalleryPick();
+                          Get.back();
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+            child: Stack(
+              alignment: Alignment.center, // Căn giữa icon xoá
+              children: [
+                Container(
+                  width: 120,
+                  height: 120,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.grey),
+                  ),
+                  child: imageController.value == null
+                      ? Icon(Icons.add_a_photo, size: 40, color: Colors.grey)
+                      : ClipOval(
+                    child: Image.file(
+                      imageController.value!,
+                      width: 120,
+                      height: 120,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+                if (imageController.value != null)
+                  Positioned(
+                    top: 2,
+                    right: 2,
+                    child: GestureDetector(
+                      onTap: onRemove,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.red,
+                          shape: BoxShape.circle,
+                        ),
+                        padding: EdgeInsets.all(4),
+                        child: Icon(Icons.close, size: 16, color: Colors.white),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          )),
+        ),
       ],
     );
   }

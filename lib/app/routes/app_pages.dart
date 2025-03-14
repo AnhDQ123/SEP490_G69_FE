@@ -6,8 +6,8 @@ import '../modules/addDiscount/bindings/add_discount_binding.dart';
 import '../modules/addDiscount/views/add_discount_view.dart';
 import '../modules/shop/bindings/shop_binding.dart';
 import '../modules/shop/views/shop_view.dart';
-import '../modules/shopRegister/bindings/shop_register_binding.dart';
-import '../modules/shopRegister/views/shop_register_view.dart';
+import '../modules/shop_register/bindings/shop_register_binding.dart';
+import '../modules/shop_register/views/shop_register_view.dart';
 
 part 'app_routes.dart';
 
