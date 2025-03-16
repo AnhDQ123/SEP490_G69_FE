@@ -1,51 +1,58 @@
-class Product {
-  final int? id;
-  final String? name;
-  final String? manufacturer;
-  final String? supplier; // tên cửa hàng
-  final int? quantity;
-  final String? category;
-  final String? status;
-  final double? discount;
-  final String? image;
-  final dynamic foodOption;
-  final double? rate; // thêm trường rate
-  final String? shop;
+import 'package:ffb_fe_flutter/app/models/food_option_model.dart';
 
+class Product {
+  final int id;
+  final String name;
+  final String manufacturer;
+  final String supplier;
+  int quantity;
+  final String category;
+  final double discount;
+  final String image;
+  final String description;
+  final double rate;
+  final String shop;
+  final double price;              // Thêm trường price
+  final List<String> sizes;        // Thêm trường sizes
+  final List<FoodOptionModel> foodOptions; // Nếu cần
 
   Product({
-    this.id,
-    this.name,
-    this.manufacturer,
-    this.supplier,
-    this.quantity,
-    this.category,
-    this.status,
-    this.discount,
-    this.image,
-    this.foodOption,
-    this.rate,
-    this.shop,
+    required this.id,
+    required this.name,
+    required this.manufacturer,
+    required this.supplier,
+    required this.quantity,
+    required this.category,
+    required this.discount,
+    required this.image,
+    required this.description,
+    required this.rate,
+    required this.shop,
+    required this.price,
+    required this.sizes,
+    required this.foodOptions,
   });
 
   factory Product.fromJson(Map<String, dynamic> json) {
     return Product(
-      id: json['id'] as int?,
-      name: json['name'] as String?,
-      manufacturer: json['manufacturer'] as String?,
-      supplier: json['supplier'] as String?, // tên cửa hàng
-      quantity: json['quantity'] as int?,
-      category: json['category'] as String?,
-      status: json['status'] as String?,
-      discount: (json['discount'] != null)
-          ? double.tryParse(json['discount'].toString()) ?? 0.0
-          : 0.0,
-      image: json['image'] as String?,
-      foodOption: json['foodOption'],
-      rate: (json['rate'] != null)
-          ? double.tryParse(json['rate'].toString()) ?? 0.0
-          : 0.0,
-      shop: json['shop'] as String?,
+      id: json['id'] ?? 0,
+      name: json['name'] ?? '',
+      manufacturer: json['manufacturer'] ?? '',
+      supplier: json['supplier'] ?? '',
+      quantity: json['quantity'] ?? 0,
+      category: json['category'] ?? '',
+      discount: (json['discount'] as num?)?.toDouble() ?? 0.0,
+      image: json['image'] ?? '',
+      description: json['description'] ?? '',
+      rate: (json['rate'] as num?)?.toDouble() ?? 0.0,
+      shop: json['shop'] ?? '',
+      price: (json['price'] as num?)?.toDouble() ?? 0.0,
+      sizes: json['sizes'] != null ? List<String>.from(json['sizes']) : [],
+      foodOptions: json['foodOption'] != null
+          ? (json['foodOption'] as List)
+          .map((item) => FoodOptionModel.fromJson(item))
+          .toList()
+          : [],
     );
   }
 
@@ -57,12 +64,16 @@ class Product {
       'supplier': supplier,
       'quantity': quantity,
       'category': category,
-      'status': status,
       'discount': discount,
       'image': image,
-      'foodOption': foodOption,
+      'description': description,
       'rate': rate,
-      'shop': shop
+      'shop': shop,
+      'price': price,
+      'sizes': sizes,
+      'foodOption': foodOptions.map((item) => item.toJson()).toList(),
     };
   }
 }
+
+

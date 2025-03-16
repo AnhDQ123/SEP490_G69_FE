@@ -21,11 +21,24 @@ class FoodOptionModel {
     return FoodOptionModel(
       id: json['id'] ?? 0,
       name: json['name'] ?? '',
-      price: (json['price'] is num) ? (json['price'] as num).toDouble() : 0.0,
+      price: (json['price'] as num?)?.toDouble() ?? 0.0,
       image: json['image'] ?? '',
       typeId: json['type_id'] ?? 0,
       status: json['status'] ?? '',
       productId: json['product_id'] ?? 0,
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'price': price,
+      'image': image,
+      'type_id': typeId,
+      'status': status,
+      'product_id': productId,
+    };
+  }
 }
+

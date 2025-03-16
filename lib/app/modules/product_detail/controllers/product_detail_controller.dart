@@ -1,16 +1,15 @@
+import 'package:ffb_fe_flutter/app/models/product.dart';
 import 'package:get/get.dart';
 import '../../../models/extra_option.dart';
-import '../../../models/product_detail_model.dart';
-import '../../../models/similar_product.dart';
 import '../../../service/product_detail_service.dart';
 
 class ProductDetailController extends GetxController {
 
-  var _product = Rxn<ProductDetailModel>();
-  var similarProducts = <SimilarProduct>[].obs;
+  var _product = Rxn<Product>();
+  var similarProducts = <Product>[].obs;
   var extraOptions = <ExtraOption>[].obs;
-  var menuProducts = <SimilarProduct>[].obs;
-  var drinkProducts = <SimilarProduct>[].obs;
+  var menuProducts = <Product>[].obs;
+  var drinkProducts = <Product>[].obs;
   var quantity = 1.obs;
   var selectedSizeIndex = 0.obs;
   var isDescriptionExpanded = false.obs;
@@ -19,19 +18,24 @@ class ProductDetailController extends GetxController {
   final ProductDetailApiService apiService = ProductDetailApiService();
 
   // Getter để UI truy cập dữ liệu sản phẩm. Nếu _product chưa có dữ liệu, trả về đối tượng mẫu.
-  ProductDetailModel get currentProduct =>
-      _product.value ??
-          ProductDetailModel(
-            id: '',
-            name: '',
-            description: '',
-            imageUrl: '',
-            price: 0,
-            quantity: 0,
-            rating: 0,
-            sizes: [],
-            foodOptions: [],
-          );
+  Product get currentProduct => _product.value ??
+      Product(
+        id: 0,
+        name: '',
+        manufacturer: '',  // Thêm manufacturer với giá trị mặc định (ví dụ: chuỗi rỗng)
+        supplier: '',      // Thêm supplier
+        quantity: 0,
+        category: '',      // Thêm category
+        discount: 0.0,     // Thêm discount
+        image: '',
+        description: '',
+        rate: 0.0,
+        shop: '',          // Thêm shop
+        price: 0.0,
+        sizes: [],
+        foodOptions: [],
+      );
+
 
   @override
   void onInit() {
@@ -39,40 +43,73 @@ class ProductDetailController extends GetxController {
     fetchProductData();
 
     menuProducts.assignAll([
-      SimilarProduct(
-        imageUrl: 'https://via.placeholder.com/80',
+      Product(
+        id: 0,
         name: 'Thực đơn 1',
-        shopName: 'Shop A',
+        manufacturer: '',     // Giá trị mặc định
+        supplier: '',         // Giá trị mặc định
+        quantity: 1,
+        category: '',         // Giá trị mặc định
+        discount: 0.0,        // Giá trị mặc định
+        image: 'https://via.placeholder.com/80',
+        description: '',      // Giá trị mặc định
+        rate: 5,
+        shop: 'Shop A',
         price: 50000,
-        rating: 5,
-        quantity: 1,
+        sizes: [],            // Giá trị mặc định
+        foodOptions: [],      // Giá trị mặc định
       ),
-      SimilarProduct(
-        imageUrl: 'https://via.placeholder.com/80',
+      Product(
+        id: 0,
         name: 'Thực đơn 2',
-        shopName: 'Shop B',
-        price: 60000,
-        rating: 5,
+        manufacturer: '',
+        supplier: '',
         quantity: 1,
+        category: '',
+        discount: 0.0,
+        image: 'https://via.placeholder.com/80',
+        description: '',
+        rate: 5,
+        shop: 'Shop B',
+        price: 60000,
+        sizes: [],
+        foodOptions: [],
       ),
     ]);
 
+
     drinkProducts.assignAll([
-      SimilarProduct(
-        imageUrl: 'https://via.placeholder.com/80',
+      Product(
+        id: 0,
         name: 'Đồ uống 1',
-        shopName: 'Shop C',
+        manufacturer: '',
+        supplier: '',
+        quantity: 1,
+        category: '',
+        discount: 0.0,
+        image: 'https://via.placeholder.com/80',
+        description: '',
+        rate: 5,
+        shop: 'Shop C',
         price: 30000,
-        rating: 5,
-        quantity: 1,
+        sizes: [],
+        foodOptions: [],
       ),
-      SimilarProduct(
-        imageUrl: 'https://via.placeholder.com/80',
+      Product(
+        id: 0,
         name: 'Đồ uống 2',
-        shopName: 'Shop D',
-        price: 35000,
-        rating: 5,
+        manufacturer: '',
+        supplier: '',
         quantity: 1,
+        category: '',
+        discount: 0.0,
+        image: 'https://via.placeholder.com/80',
+        description: '',
+        rate: 5,
+        shop: 'Shop D',
+        price: 35000,
+        sizes: [],
+        foodOptions: [],
       ),
     ]);
 
@@ -110,7 +147,7 @@ class ProductDetailController extends GetxController {
     final String productId = productIdArg.toString();
 
     try {
-      ProductDetailModel detail = await apiService.getProductDetail(productId);
+      Product detail = await apiService.getProductDetail(productId);
       _product.value = detail;
 
       extraOptions.assignAll(
@@ -128,7 +165,7 @@ class ProductDetailController extends GetxController {
             .toList(),
       );
 
-      List<SimilarProduct> similar =
+      List<Product> similar =
       await apiService.getSimilarProducts(detail.name);
       similarProducts.assignAll(similar);
     } catch (e) {
@@ -189,19 +226,19 @@ class ProductDetailController extends GetxController {
     return selected.isEmpty ? 'Không có' : selected.join(', ');
   }
 
-  void decrementSimilarQuantity(RxList<SimilarProduct> list, int index) {
+  void decrementSimilarQuantity(RxList<Product> list, int index) {
     if (list[index].quantity > 1) {
       list[index].quantity--;
       list.refresh();
     }
   }
 
-  void incrementSimilarQuantity(RxList<SimilarProduct> list, int index) {
+  void incrementSimilarQuantity(RxList<Product> list, int index) {
     list[index].quantity++;
     list.refresh();
   }
 
-  void addProductToCart(SimilarProduct product) {
+  void addProductToCart(Product product) {
     print("Thêm sản phẩm tương tự vào giỏ: ${product.name} với số lượng ${product.quantity}");
   }
 

@@ -26,7 +26,7 @@ class ProductHeader extends StatelessWidget {
         AspectRatio(
           aspectRatio: 4 / 3,
           child: Obx(() {
-            final imgUrl = buildImageUrl(controller.currentProduct.imageUrl);
+            final imgUrl = buildImageUrl(controller.currentProduct.image);
             return imgUrl.startsWith('assets/')
                 ? Image.asset(imgUrl, fit: BoxFit.cover)
                 : Image.network(imgUrl, fit: BoxFit.cover);
@@ -82,7 +82,7 @@ class ProductHeader extends StatelessWidget {
                   child: Row(
                     children: [
                       ...List.generate(5, (index) {
-                        double rating = controller.currentProduct.rating;
+                        double rating = controller.currentProduct.rate;
                         if (rating >= index + 1) {
                           return const Icon(Icons.star, color: Colors.amber, size: 14);
                         } else if (rating > index && rating < index + 1) {
@@ -93,7 +93,7 @@ class ProductHeader extends StatelessWidget {
                       }),
                       const SizedBox(width: 4),
                       Text(
-                        '${controller.currentProduct.rating}',
+                        '${controller.currentProduct.rate}',
                         style: const TextStyle(fontSize: 12), // Giảm số của rating
                       ),
                     ],
@@ -320,3 +320,4 @@ class ProductHeader extends StatelessWidget {
     );
   }
 }
+

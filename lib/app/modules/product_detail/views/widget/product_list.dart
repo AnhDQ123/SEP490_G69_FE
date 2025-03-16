@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../../models/similar_product.dart';
+import '../../../../models/product.dart';
 import '../../controllers/product_detail_controller.dart';
-import 'package:intl/intl.dart';
 
 class ProductListWidget extends StatelessWidget {
-  final RxList<SimilarProduct> products;
+  final RxList<Product> products;
   const ProductListWidget({Key? key, required this.products}) : super(key: key);
 
   @override
@@ -44,7 +43,7 @@ class ProductListWidget extends StatelessWidget {
                     ClipRRect(
                       borderRadius: BorderRadius.circular(6),
                       child: Image.network(
-                        item.imageUrl,
+                        item.image,
                         width: 70,
                         height: 70,
                         fit: BoxFit.cover,
@@ -96,9 +95,9 @@ class ProductListWidget extends StatelessWidget {
                       Row(
                         children: [
                           ...List.generate(5, (starIndex) {
-                            if (item.rating >= starIndex + 1) {
+                            if (item.rate >= starIndex + 1) {
                               return const Icon(Icons.star, color: Colors.amber, size: 12);
-                            } else if (item.rating > starIndex && item.rating < starIndex + 1) {
+                            } else if (item.rate > starIndex && item.rate < starIndex + 1) {
                               return const Icon(Icons.star_half, color: Colors.amber, size: 12);
                             } else {
                               return const Icon(Icons.star_border, color: Colors.amber, size: 12);
@@ -106,7 +105,7 @@ class ProductListWidget extends StatelessWidget {
                           }),
                           const SizedBox(width: 3),
                           Text(
-                            '${item.rating.toStringAsFixed(1)}',
+                            '${item.rate.toStringAsFixed(1)}',
                             style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w400),
                           ),
                         ],
