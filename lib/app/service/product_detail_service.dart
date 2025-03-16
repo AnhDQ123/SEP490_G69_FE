@@ -23,7 +23,23 @@ class ProductDetailApiService {
     }
   }
 
+  // Future<List<SimilarProduct>> getSimilarProducts(String keyword) async {
+  //   final uri = Uri.parse("$baseUrl/similar").replace(queryParameters: {"search": keyword});
+  //   final response = await http.get(uri);
+  //
+  //   if (response.statusCode == 200 && response.body.isNotEmpty) {
+  //     final List<dynamic> data = jsonDecode(response.body);
+  //     return data.map((json) => SimilarProduct.fromJson(json)).toList();
+  //   } else {
+  //     throw Exception("Failed to load similar products: ${response.statusCode}");
+  //   }
+  // }
+
   Future<List<SimilarProduct>> getSimilarProducts(String keyword) async {
+    if (keyword.trim().length < 2) {
+      return [];
+    }
+
     final uri = Uri.parse("$baseUrl/similar").replace(queryParameters: {"search": keyword});
     final response = await http.get(uri);
 
@@ -34,6 +50,7 @@ class ProductDetailApiService {
       throw Exception("Failed to load similar products: ${response.statusCode}");
     }
   }
+
 
   Future<List<SimilarProduct>> getProductsByShop(String shopId, {int page = 1, int size = 20}) async {
     final uri = Uri.parse("$baseUrl/shop/$shopId").replace(queryParameters: {
@@ -46,6 +63,22 @@ class ProductDetailApiService {
       return data.map((json) => SimilarProduct.fromJson(json)).toList();
     } else {
       throw Exception("Failed to load products by shop: ${response.statusCode}");
+    }
+  }
+
+  Future<List<SimilarProduct>> getMenuByShopId(String shopId, {int page = 1, int size = 20}) async {
+    final uri = Uri.parse("$baseUrl/shop/$shopId").replace(queryParameters: {
+      "page": page.toString(),
+      "size": size.toString(),
+    });
+
+    final response = await http.get(uri);
+
+    if (response.statusCode == 200 && response.body.isNotEmpty) {
+      final List<dynamic> data = jsonDecode(response.body);
+      return data.map((json) => SimilarProduct.fromJson(json)).toList();
+    } else {
+      throw Exception("Failed to load menu by shop: ${response.statusCode}");
     }
   }
 

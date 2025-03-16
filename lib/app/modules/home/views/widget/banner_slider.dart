@@ -15,7 +15,9 @@ class BannerSlider extends StatelessWidget {
       'assets/images/banner2.avif',
       'assets/images/banner3.avif',
     ];
-    return Column(
+
+    return Stack(
+      alignment: Alignment.bottomCenter, // ✅ Căn giữa chấm bên trong ảnh
       children: [
         CarouselSlider(
           options: CarouselOptions(
@@ -32,38 +34,53 @@ class BannerSlider extends StatelessWidget {
           items: bannerImages.map((imagePath) {
             return Builder(
               builder: (BuildContext context) {
-                return Container(
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade300,
-                  ),
-                  child: Image.asset(
-                    imagePath,
-                    fit: BoxFit.cover,
-                    width: double.infinity,
+                return ClipRRect( // ✅ Bo góc ảnh
+                  borderRadius: BorderRadius.circular(12),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade300,
+                    ),
+                    child: Image.asset(
+                      imagePath,
+                      fit: BoxFit.cover,
+                      width: double.infinity,
+                    ),
                   ),
                 );
               },
             );
           }).toList(),
         ),
-        Obx(() {
-          return Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: List.generate(bannerImages.length, (index) {
-              return Container(
-                width: 8,
-                height: 8,
-                margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 3),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: controller.currentBannerIndex.value == index
-                      ? Colors.orange
-                      : Colors.grey,
-                ),
-              );
-            }),
-          );
-        }),
+
+        // ✅ Chấm chuyển banner bên trong ảnh
+        Positioned(
+          bottom: 8, // ✅ Căn khoảng cách so với đáy ảnh
+          child: Obx(() {
+            return Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4), // ✅ Tạo padding xung quanh
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.1), // ✅ Nền trong suốt nhẹ
+                borderRadius: BorderRadius.circular(12), // ✅ Bo góc chấm
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(bannerImages.length, (index) {
+                  return Container(
+                    width: 8,
+                    height: 8,
+                    margin: const EdgeInsets.symmetric(horizontal: 3),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: controller.currentBannerIndex.value == index
+                          ? Colors.orange
+                          : Colors.grey.shade400,
+                    ),
+                  );
+                }),
+              ),
+            );
+          }),
+        ),
       ],
     );
   }

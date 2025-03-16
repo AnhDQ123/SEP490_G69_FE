@@ -19,25 +19,22 @@ class BestSellerFoods extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6),
             child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Expanded(
-                  child: Text(
-                    'Món ăn bán chạy theo ngày',
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                    softWrap: true,
-                  ),
+                Text(
+                  '🔥 Bán chạy theo ngày',
+                  style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.black87),
                 ),
-                const SizedBox(width: 8),
                 GestureDetector(
                   onTap: () {},
                   child: const Text(
-                    'xem thêm',
+                    'Xem thêm',
                     style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.blue,
+                      fontSize: 9,
+                      color: Colors.grey,
+                      fontWeight: FontWeight.bold,
                       decoration: TextDecoration.underline,
                     ),
                   ),
@@ -45,9 +42,10 @@ class BestSellerFoods extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 6),
+
           SizedBox(
-            height: 120,
+            height: 100, // 🔹 Tăng nhẹ để hiển thị cân đối hơn
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               itemCount: popularProducts.length,
@@ -57,6 +55,7 @@ class BestSellerFoods extends StatelessWidget {
                   product: product,
                   index: index,
                   total: popularProducts.length,
+                  isCompact: true,
                 );
               },
             ),
@@ -66,3 +65,4 @@ class BestSellerFoods extends StatelessWidget {
     });
   }
 }
+

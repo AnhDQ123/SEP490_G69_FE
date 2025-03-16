@@ -6,34 +6,35 @@ import '../../controllers/product_detail_controller.dart';
 class ExtraOptionsSheet extends StatelessWidget {
   const ExtraOptionsSheet({Key? key}) : super(key: key);
 
-  // Widget hiển thị header dựa trên option được chọn
+  // Widget hiển thị tiêu đề và ảnh của option đã chọn
   Widget _buildHeader(ProductDetailController controller) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
       child: Obx(() {
-        // Tìm option đầu tiên được chọn, nếu có
-        ExtraOption? selectedOption;
-        try {
-          selectedOption =
-              controller.extraOptions.firstWhere((o) => o.selected);
-        } catch (e) {
-          selectedOption = null;
-        }
+        ExtraOption? selectedOption = controller.extraOptions.firstWhereOrNull((o) => o.selected);
+
         return Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Hiển thị ảnh của option nếu có, hoặc hiển thị placeholder từ network
+            // Hiển thị ảnh của option hoặc placeholder
             Container(
               width: 50,
               height: 50,
-              clipBehavior: Clip.antiAlias,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
-                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(12),
+                color: Colors.grey[200],
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
-              child: selectedOption != null && selectedOption.imageUrl != null
+              clipBehavior: Clip.antiAlias,
+              child: selectedOption?.imageUrl != null
                   ? Image.network(
-                selectedOption.imageUrl!,
+                selectedOption!.imageUrl!,
                 fit: BoxFit.cover,
               )
                   : Image.network(
@@ -42,7 +43,8 @@ class ExtraOptionsSheet extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 8),
-            // Hiển thị tên và giá của option được chọn
+
+            // Hiển thị tên và giá của option
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -50,23 +52,28 @@ class ExtraOptionsSheet extends StatelessWidget {
                   Text(
                     selectedOption?.name ?? 'Chọn option',
                     style: const TextStyle(
-                        fontSize: 16, fontWeight: FontWeight.bold),
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 2),
                   Text(
                     selectedOption != null
                         ? '${(selectedOption.price * selectedOption.quantity).toStringAsFixed(0)}đ / ${selectedOption.quantity} ${selectedOption.unit}'
                         : 'Vui lòng chọn option',
                     style: const TextStyle(
-                        fontSize: 14, color: Colors.grey),
+                      fontSize: 12,
+                      color: Colors.grey,
+                    ),
                   ),
                 ],
               ),
             ),
+
             // Nút đóng bottom sheet
             InkWell(
               onTap: () => Navigator.pop(Get.context!),
-              child: const Icon(Icons.close, size: 24),
+              child: const Icon(Icons.close, size: 22, color: Colors.black54),
             ),
           ],
         );
@@ -74,31 +81,57 @@ class ExtraOptionsSheet extends StatelessWidget {
     );
   }
 
-  // Widget hiển thị danh sách option dưới dạng chip
+  // Widget hiển thị danh sách option dưới dạng ChoiceChip
   Widget _buildOptionsChips(ProductDetailController controller) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 6.0),
       child: Obx(() {
         return Wrap(
           spacing: 8,
-          runSpacing: 8,
+          runSpacing: 6,
           children: controller.extraOptions.map((option) {
-            return ChoiceChip(
-              label: Text(option.name),
-              selected: option.selected,
-              selectedColor: Colors.redAccent,
-              onSelected: (isSelected) {
-                // Reset tất cả option về unselected và đặt quantity = 1
-                for (var opt in controller.extraOptions) {
-                  opt.selected = false;
-                  opt.quantity = 1;
-                }
-                option.selected = isSelected;
-                if (isSelected) {
-                  option.quantity = 1;
-                }
-                controller.extraOptions.refresh();
-              },
+            final isSelected = option.selected;
+            return AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              curve: Curves.easeInOut,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: isSelected
+                    ? [
+                  BoxShadow(
+                    color: Colors.orange.withOpacity(0.3),
+                    blurRadius: 6,
+                    offset: const Offset(0, 2),
+                  ),
+                ]
+                    : [],
+              ),
+              child: ChoiceChip(
+                label: Text(
+                  option.name,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: isSelected ? Colors.white : Colors.black87,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                selected: isSelected,
+                selectedColor: const Color.fromRGBO(212, 163, 115, 1),
+                backgroundColor: Colors.grey[200],
+                labelPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+                onSelected: (isSelected) {
+                  // Đặt lại tất cả option về unselected
+                  for (var opt in controller.extraOptions) {
+                    opt.selected = false;
+                    opt.quantity = 1;
+                  }
+                  option.selected = isSelected;
+                  if (isSelected) {
+                    option.quantity = 1;
+                  }
+                  controller.extraOptions.refresh();
+                },
+              ),
             );
           }).toList(),
         );
@@ -106,27 +139,23 @@ class ExtraOptionsSheet extends StatelessWidget {
     );
   }
 
-  // Widget hiển thị điều khiển số lượng cho option được chọn
+  // Widget điều khiển số lượng cho option được chọn
   Widget _buildQuantityControl(ProductDetailController controller) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 6.0),
       child: Obx(() {
-        ExtraOption? selectedOption;
-        try {
-          selectedOption =
-              controller.extraOptions.firstWhere((o) => o.selected);
-        } catch (e) {
-          selectedOption = null;
-        }
+        ExtraOption? selectedOption = controller.extraOptions.firstWhereOrNull((o) => o.selected);
+
         if (selectedOption == null) {
           return const SizedBox();
         }
+
         return Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             const Text(
               'Số lượng',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
             ),
             Row(
               children: [
@@ -137,15 +166,26 @@ class ExtraOptionsSheet extends StatelessWidget {
                       controller.extraOptions.refresh();
                     }
                   },
-                  icon: const Icon(Icons.remove),
+                  icon: const Icon(Icons.remove, size: 20),
                 ),
-                Text('${selectedOption!.quantity}'),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey.shade300),
+                    borderRadius: BorderRadius.circular(6),
+                    color: Colors.white,
+                  ),
+                  child: Text(
+                    '${selectedOption!.quantity}',
+                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                  ),
+                ),
                 IconButton(
                   onPressed: () {
                     selectedOption!.quantity++;
                     controller.extraOptions.refresh();
                   },
-                  icon: const Icon(Icons.add),
+                  icon: const Icon(Icons.add, size: 20),
                 ),
               ],
             ),
@@ -159,41 +199,58 @@ class ExtraOptionsSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = Get.find<ProductDetailController>();
 
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        // 1) Header hiển thị option đã chọn
-        _buildHeader(controller),
-        const Divider(height: 1, color: Colors.grey),
-        // 2) Hiển thị danh sách option dạng chip
-        _buildOptionsChips(controller),
-        // 3) Hiển thị điều khiển số lượng cho option được chọn
-        _buildQuantityControl(controller),
-        // 4) Nút "Thêm vào giỏ hàng" cho option
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-          child: SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.redAccent,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 6,
+            offset: const Offset(0, -2),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _buildHeader(controller),
+          const Divider(height: 1, color: Colors.grey),
+          _buildOptionsChips(controller),
+          _buildQuantityControl(controller),
+          const SizedBox(height: 8),
+
+          // Nút "Thêm vào giỏ hàng"
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 6.0),
+            child: SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color.fromRGBO(212, 163, 115, 1),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
                 ),
-                padding: const EdgeInsets.symmetric(vertical: 16),
-              ),
-              onPressed: () {
-                Navigator.pop(context);
-                controller.addToCartWithOptions();
-              },
-              child: const Text(
-                'Thêm vào giỏ hàng',
-                style: TextStyle(fontSize: 16),
+                onPressed: () {
+                  Navigator.pop(context);
+                  controller.addToCartWithOptions();
+                },
+                icon: const Icon(Icons.shopping_cart, color: Colors.white, size: 18),
+                label: const Text(
+                  'Thêm vào giỏ hàng',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
               ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

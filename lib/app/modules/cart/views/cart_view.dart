@@ -5,37 +5,34 @@ import '../controllers/cart_controller.dart';
 class CartView extends GetView<CartController> {
   const CartView({Key? key}) : super(key: key);
 
+  final Color accentColor = const Color.fromRGBO(212, 163, 115, 1);
+
   @override
   Widget build(BuildContext context) {
-    // Dùng DraggableScrollableSheet để bottomSheet có thể kéo lên/xuống
     return DraggableScrollableSheet(
-      // Cho phép bottomSheet không full màn hình ngay
       expand: false,
-      // Kích thước khởi đầu (80% chiều cao màn hình)
       initialChildSize: 0.8,
-      // Kéo xuống ít nhất 40%
       minChildSize: 0.4,
-      // Kéo lên tối đa 95%
       maxChildSize: 0.95,
       builder: (context, scrollController) {
-        // Dùng Material để có nền trắng, theme, v.v.
         return Material(
           color: Colors.white,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Thanh "Giỏ hàng" giống AppBar đơn giản
+              // Header: sử dụng màu chủ đạo với chữ trắng
               Container(
                 height: 56,
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
+                  color: accentColor,
                   border: Border(
                     bottom: BorderSide(color: Colors.grey.shade300),
                   ),
                 ),
                 child: const Text(
                   "Giỏ hàng",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
                 ),
               ),
 
@@ -45,25 +42,34 @@ class CartView extends GetView<CartController> {
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   child: Row(
                     children: [
-                      Checkbox(
-                        value: controller.isSelectAll.value,
-                        onChanged: (value) {
-                          if (value != null) {
-                            controller.toggleSelectAll(value);
-                          }
-                        },
+                      Theme(
+                        data: Theme.of(context).copyWith(
+                          unselectedWidgetColor: accentColor,
+                        ),
+                        child: Checkbox(
+                          activeColor: accentColor,
+                          value: controller.isSelectAll.value,
+                          onChanged: (value) {
+                            if (value != null) {
+                              controller.toggleSelectAll(value);
+                            }
+                          },
+                        ),
                       ),
-                      const Text("Chọn tất cả"),
+                      const Text(
+                        "Chọn tất cả",
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
                     ],
                   ),
                 );
               }),
 
-              // Danh sách quán + món
+              // Danh sách giỏ hàng
               Expanded(
                 child: Obx(
                       () => ListView.builder(
-                    controller: scrollController, // Kết nối với DraggableScrollableSheet
+                    controller: scrollController,
                     itemCount: controller.cartList.length,
                     itemBuilder: (context, index) {
                       final vendor = controller.cartList[index];
@@ -73,7 +79,7 @@ class CartView extends GetView<CartController> {
                 ),
               ),
 
-              // Ghi chú phí
+              // Ghi chú về giá (bao gồm thuế nhưng chưa bao gồm phí giao hàng)
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                 child: Text(
@@ -85,7 +91,7 @@ class CartView extends GetView<CartController> {
                 ),
               ),
 
-              // Tổng tiền + nút Thanh toán
+              // Tổng tiền và nút Thanh toán
               SafeArea(
                 top: false,
                 child: Container(
@@ -102,11 +108,18 @@ class CartView extends GetView<CartController> {
                       children: [
                         Text(
                           "Tổng tiền: ${_formatPrice(total)}",
-                          style: const TextStyle(fontWeight: FontWeight.bold),
+                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                         ),
                         ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: accentColor,
+                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                          ),
                           onPressed: controller.checkout,
-                          child: const Text("Thanh toán"),
+                          child: const Text(
+                            "Thanh toán",
+                            style: TextStyle(fontSize: 16),
+                          ),
                         ),
                       ],
                     );
@@ -120,13 +133,14 @@ class CartView extends GetView<CartController> {
     );
   }
 
-  /// Widget hiển thị 1 quán (vendor)
+  /// Widget hiển thị thông tin của 1 vendor (quán)
   Widget _buildVendorCard(vendor) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: Colors.white,
+        border: Border.all(color: Colors.grey.shade200),
         borderRadius: BorderRadius.circular(8),
         boxShadow: [
           BoxShadow(
@@ -142,10 +156,10 @@ class CartView extends GetView<CartController> {
           // Tên quán
           Text(
             vendor.vendorName,
-            style: const TextStyle(fontWeight: FontWeight.bold),
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.black87),
           ),
           const SizedBox(height: 8),
-          // Danh sách món
+          // Danh sách món của quán
           Column(
             children: vendor.items.map<Widget>((item) {
               return _buildCartItem(vendor, item);
@@ -156,7 +170,7 @@ class CartView extends GetView<CartController> {
     );
   }
 
-  /// Widget hiển thị 1 món trong giỏ hàng
+  /// Widget hiển thị thông tin của 1 món trong giỏ hàng
   Widget _buildCartItem(vendor, item) {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 4),
@@ -170,17 +184,20 @@ class CartView extends GetView<CartController> {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Checkbox chọn
-              Checkbox(
-                value: item.isSelected,
-                onChanged: (value) {
-                  if (value != null) {
-                    controller.toggleItemSelected(vendor, item, value);
-                  }
-                },
+              // Checkbox chọn món
+              Theme(
+                data: ThemeData(unselectedWidgetColor: accentColor),
+                child: Checkbox(
+                  activeColor: accentColor,
+                  value: item.isSelected,
+                  onChanged: (value) {
+                    if (value != null) {
+                      controller.toggleItemSelected(vendor, item, value);
+                    }
+                  },
+                ),
               ),
-
-              // Ảnh placeholder
+              // Ảnh đại diện món (placeholder)
               Container(
                 width: 40,
                 height: 40,
@@ -191,8 +208,7 @@ class CartView extends GetView<CartController> {
                 ),
                 child: const Icon(Icons.image, size: 20),
               ),
-
-              // Phần text (Tên + giá) co giãn
+              // Thông tin món: tên và giá
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -200,13 +216,12 @@ class CartView extends GetView<CartController> {
                     // Tên món
                     Text(
                       item.itemName,
-                      style: const TextStyle(fontWeight: FontWeight.w600),
+                      style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 4),
-
-                    // Giá (có discount thì hiển thị Wrap để tránh overflow)
+                    // Giá món, hiển thị discount nếu có
                     if (item.discount > 0)
                       Wrap(
                         spacing: 4,
@@ -217,6 +232,7 @@ class CartView extends GetView<CartController> {
                             style: const TextStyle(
                               decoration: TextDecoration.lineThrough,
                               color: Colors.grey,
+                              fontSize: 12,
                             ),
                           ),
                           Text(
@@ -224,6 +240,7 @@ class CartView extends GetView<CartController> {
                             style: const TextStyle(
                               color: Colors.red,
                               fontWeight: FontWeight.bold,
+                              fontSize: 14,
                             ),
                           ),
                         ],
@@ -234,13 +251,13 @@ class CartView extends GetView<CartController> {
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Colors.black,
+                          fontSize: 14,
                         ),
                       ),
                   ],
                 ),
               ),
-
-              // Nút +/- số lượng
+              // Nút tăng/giảm số lượng: sử dụng màu chủ đạo cho hiệu ứng
               Column(
                 children: [
                   InkWell(
@@ -250,13 +267,16 @@ class CartView extends GetView<CartController> {
                       height: 24,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: Colors.grey.shade200,
+                        color: accentColor.withOpacity(0.2),
                       ),
-                      child: const Icon(Icons.remove, size: 16),
+                      child: const Icon(Icons.remove, size: 16, color: Colors.black87),
                     ),
                   ),
                   const SizedBox(height: 4),
-                  Text("${item.quantity}"),
+                  Text(
+                    "${item.quantity}",
+                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                  ),
                   const SizedBox(height: 4),
                   InkWell(
                     onTap: () => controller.changeItemQuantity(vendor, item, true),
@@ -265,17 +285,16 @@ class CartView extends GetView<CartController> {
                       height: 24,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: Colors.grey.shade200,
+                        color: accentColor.withOpacity(0.2),
                       ),
-                      child: const Icon(Icons.add, size: 16),
+                      child: const Icon(Icons.add, size: 16, color: Colors.black87),
                     ),
                   ),
                 ],
               ),
             ],
           ),
-
-          // SubItems (topping)
+          // Hiển thị các subItems (như topping)
           if (item.subItems.isNotEmpty) ...[
             const SizedBox(height: 8),
             Column(
@@ -285,18 +304,19 @@ class CartView extends GetView<CartController> {
                   child: Row(
                     children: [
                       Expanded(
-                        child: Text("- ${sub.name}"),
+                        child: Text("- ${sub.name}", style: const TextStyle(fontSize: 12)),
                       ),
-                      Text(_formatPrice(sub.price)),
-                      // Nếu muốn +/- topping thì thêm ở đây
+                      Text(
+                        _formatPrice(sub.price),
+                        style: const TextStyle(fontSize: 12),
+                      ),
                     ],
                   ),
                 );
               }).toList(),
             ),
           ],
-
-          // Ghi chú
+          // Ghi chú cho món
           Container(
             margin: const EdgeInsets.only(left: 48, top: 4),
             child: Row(
@@ -321,7 +341,7 @@ class CartView extends GetView<CartController> {
     );
   }
 
-  /// Định dạng giá, đơn giản: chuyển sang chuỗi kèm "đ"
+  /// Hàm định dạng giá đơn giản: chuyển sang chuỗi và thêm "đ"
   String _formatPrice(int price) {
     return "${price}đ";
   }

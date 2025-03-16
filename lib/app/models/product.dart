@@ -10,6 +10,8 @@ class Product {
   final String? image;
   final dynamic foodOption;
   final double? rate; // thêm trường rate
+  final String? shop;
+
 
   Product({
     this.id,
@@ -23,6 +25,7 @@ class Product {
     this.image,
     this.foodOption,
     this.rate,
+    this.shop,
   });
 
   factory Product.fromJson(Map<String, dynamic> json) {
@@ -42,6 +45,7 @@ class Product {
       rate: (json['rate'] != null)
           ? double.tryParse(json['rate'].toString()) ?? 0.0
           : 0.0,
+      shop: json['shop'] as String?,
     );
   }
 
@@ -58,6 +62,7 @@ class Product {
       'image': image,
       'foodOption': foodOption,
       'rate': rate,
+      'shop': shop
     };
   }
 }

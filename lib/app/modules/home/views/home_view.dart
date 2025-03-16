@@ -1,7 +1,7 @@
 import 'package:ffb_fe_flutter/app/modules/home/views/widget/banner_slider.dart';
 import 'package:ffb_fe_flutter/app/modules/home/views/widget/best_seller_food.dart';
 import 'package:ffb_fe_flutter/app/modules/home/views/widget/category_section.dart';
-import 'package:ffb_fe_flutter/app/modules/home/views/widget/custom_header.dart';
+import 'package:ffb_fe_flutter/app/resources/widget/custom_header.dart';
 import 'package:ffb_fe_flutter/app/modules/home/views/widget/food_list.dart';
 import 'package:ffb_fe_flutter/app/modules/home/views/widget/food_tabs.dart';
 import 'package:flutter/material.dart';

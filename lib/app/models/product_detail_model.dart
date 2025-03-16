@@ -25,7 +25,7 @@ class ProductDetailModel {
 
   factory ProductDetailModel.fromJson(Map<String, dynamic> json) {
     return ProductDetailModel(
-      id: json['product_id']?.toString() ?? '',
+      id: json['id']?.toString() ?? '',
       name: json['name'] ?? '',
       description: json['description'] ?? '',
       imageUrl: json['image'] ?? '',

@@ -44,6 +44,7 @@ class ProductDetailController extends GetxController {
         name: 'Thực đơn 1',
         shopName: 'Shop A',
         price: 50000,
+        rating: 5,
         quantity: 1,
       ),
       SimilarProduct(
@@ -51,6 +52,7 @@ class ProductDetailController extends GetxController {
         name: 'Thực đơn 2',
         shopName: 'Shop B',
         price: 60000,
+        rating: 5,
         quantity: 1,
       ),
     ]);
@@ -61,6 +63,7 @@ class ProductDetailController extends GetxController {
         name: 'Đồ uống 1',
         shopName: 'Shop C',
         price: 30000,
+        rating: 5,
         quantity: 1,
       ),
       SimilarProduct(
@@ -68,6 +71,7 @@ class ProductDetailController extends GetxController {
         name: 'Đồ uống 2',
         shopName: 'Shop D',
         price: 35000,
+        rating: 5,
         quantity: 1,
       ),
     ]);
