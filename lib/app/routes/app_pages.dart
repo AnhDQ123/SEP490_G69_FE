@@ -27,9 +27,6 @@ class AppPages {
       name: _Paths.HOME,
       page: () => const HomeView(),
       binding: HomeBinding(),
-      name: _Paths.PRODUCT_LIST_SHOP,
-      page: () => ProductListShopView(),
-      binding: ProductListShopBinding(),
     ),
     GetPage(
       name: _Paths.CART,
@@ -40,9 +37,6 @@ class AppPages {
       name: _Paths.FILTER,
       page: () => const FilterView(),
       binding: FilterBinding(),
-      name: _Paths.PRODUCT_FORM,
-      page: () => ProductFormView(),
-      binding: ProductFormBinding(),
     ),
     GetPage(
       name: _Paths.PRODUCT_DETAIL,
