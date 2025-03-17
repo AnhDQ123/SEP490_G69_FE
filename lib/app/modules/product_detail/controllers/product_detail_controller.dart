@@ -17,7 +17,6 @@ class ProductDetailController extends GetxController {
 
   final ProductDetailApiService apiService = ProductDetailApiService();
 
-  // Getter để UI truy cập dữ liệu sản phẩm. Nếu _product chưa có dữ liệu, trả về đối tượng mẫu.
   Product get currentProduct => _product.value ??
       Product(
         id: 0,
