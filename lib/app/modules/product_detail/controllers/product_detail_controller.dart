@@ -31,8 +31,7 @@ class ProductDetailController extends GetxController {
         description: '',
         rate: 0.0,
         shop: '',          // Thêm shop
-        price: 0.0,
-        sizes: [],
+        defaultPrice: 0.0,
         foodOptions: [],
       );
 
@@ -55,8 +54,7 @@ class ProductDetailController extends GetxController {
         description: '',      // Giá trị mặc định
         rate: 5,
         shop: 'Shop A',
-        price: 50000,
-        sizes: [],            // Giá trị mặc định
+        defaultPrice: 50000,
         foodOptions: [],      // Giá trị mặc định
       ),
       Product(
@@ -71,8 +69,7 @@ class ProductDetailController extends GetxController {
         description: '',
         rate: 5,
         shop: 'Shop B',
-        price: 60000,
-        sizes: [],
+        defaultPrice: 60000,
         foodOptions: [],
       ),
     ]);
@@ -91,8 +88,7 @@ class ProductDetailController extends GetxController {
         description: '',
         rate: 5,
         shop: 'Shop C',
-        price: 30000,
-        sizes: [],
+        defaultPrice: 30000,
         foodOptions: [],
       ),
       Product(
@@ -107,8 +103,7 @@ class ProductDetailController extends GetxController {
         description: '',
         rate: 5,
         shop: 'Shop D',
-        price: 35000,
-        sizes: [],
+        defaultPrice: 35000,
         foodOptions: [],
       ),
     ]);
@@ -187,7 +182,7 @@ class ProductDetailController extends GetxController {
 
   double get currentPrice {
     if (_product.value == null) return 0;
-    double basePrice = _product.value!.price;
+    double basePrice = _product.value!.defaultPrice;
     // Lọc danh sách các foodOption có typeId == 2 (đại diện cho size)
     List availableSizes = _product.value!.foodOptions
         .where((option) => option.typeId == 2)

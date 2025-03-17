@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:ffb_fe_flutter/app/models/product.dart';
 import 'package:http/http.dart' as http;
 import '../base/api_base_url.dart';
+import '../models/product_page.dart';
 
 
 class ProductDetailApiService {
@@ -51,20 +52,36 @@ class ProductDetailApiService {
     }
   }
 
+  // Future<Product> getProductsByShop(String shopId, {int page = 1, int size = 20}) async {
+  //   final uri = Uri.parse("$baseUrl/shop/$shopId").replace(queryParameters: {
+  //     "page": page.toString(),
+  //     "size": size.toString(),
+  //   });
+  //   final response = await http.get(uri);
+  //
+  //   if (response.statusCode == 200 && response.body.isNotEmpty) {
+  //     return Product.fromJson(jsonDecode(response.body));
+  //   } else {
+  //     throw Exception("Failed to load products by shop: ${response.statusCode}");
+  //   }
+  // }
 
-  Future<List<Product>> getProductsByShop(String shopId, {int page = 1, int size = 20}) async {
-    final uri = Uri.parse("$baseUrl/shop/$shopId").replace(queryParameters: {
-      "page": page.toString(),
-      "size": size.toString(),
+  Future<ProductPage> getProductsByShop(String shopId, {int page = 1, int size = 20}) async {
+    final uri = Uri.parse('$baseUrl/shop/$shopId').replace(queryParameters: {
+      'page': page.toString(),
+      'size': size.toString(),
     });
+
     final response = await http.get(uri);
+
     if (response.statusCode == 200 && response.body.isNotEmpty) {
-      final List<dynamic> data = jsonDecode(response.body);
-      return data.map((json) => Product.fromJson(json)).toList();
+      return ProductPage.fromJson(jsonDecode(response.body));
     } else {
-      throw Exception("Failed to load products by shop: ${response.statusCode}");
+      throw Exception('Failed to load products by shop: ${response.statusCode}');
     }
   }
+
+
 
   Future<List<Product>> getMenuByShopId(String shopId, {int page = 1, int size = 20}) async {
     final uri = Uri.parse("$baseUrl/shop/$shopId").replace(queryParameters: {
@@ -81,6 +98,7 @@ class ProductDetailApiService {
       throw Exception("Failed to load menu by shop: ${response.statusCode}");
     }
   }
+
 
 
 

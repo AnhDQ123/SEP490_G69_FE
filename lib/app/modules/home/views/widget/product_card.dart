@@ -27,9 +27,9 @@ class ProductCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double cardWidth = isCompact ? 160 : 210; // ✅ Tăng chiều rộng thêm 20px
+    double cardWidth = isCompact ? 180 : 210; // ✅ Tăng chiều rộng thêm 20px
     double cardHeight = isCompact ? 85 : 110;
-    double imageSize = isCompact ? 55 : 70; // ✅ Tăng nhẹ kích thước ảnh
+    double imageSize = isCompact ? 70 : 80; // ✅ Tăng nhẹ kích thước ảnh
     double fontSize = isCompact ? 10 : 12;
 
     return InkWell(
