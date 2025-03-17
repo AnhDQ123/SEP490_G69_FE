@@ -1,5 +1,6 @@
 // Controller quản lý giỏ hàng
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 import '../../../models/cart_item.dart';
 import '../../../models/food_option.dart';
@@ -8,9 +9,8 @@ import '../../../models/shop.dart';
 
 class CartController extends GetxController {
   var cartItems = <int, RxList<CartItem>>{}.obs;
-
-
   var selectedShops = <int>[].obs; // Danh sách shop được chọn
+  var selectedItems = <int, RxList<int>>{}.obs; // Lưu danh sách sản phẩm được
 
   List<Shop> shops = []; // Danh sách tất cả shop
 
@@ -97,23 +97,68 @@ class CartController extends GetxController {
     }
   }
 
-  double getTotalAmount() {
-    double total = 0;
-    cartItems.forEach((shopId, items) {
-      for (var item in items) {
-        double itemTotal = item.getTotalPrice();
-        total += itemTotal;
-
-        // In ra log để theo dõi từng sản phẩm
-        print("🛒 [CART ITEM] ${item.product.productName} - Total: $itemTotal");
-      }
+  bool isAllSelected() {
+    if (cartItems.isEmpty) return false;
+    return cartItems.entries.every((entry) {
+      int shopId = entry.key;
+      return selectedItems[shopId]?.length == cartItems[shopId]?.length;
     });
+  }
 
-    // In ra log để theo dõi tổng tiền giỏ hàng
-    print("💵 [TOTAL CART] Tổng tiền giỏ hàng: $total");
+  void toggleSelectAll(bool isSelected) {
+    if (isSelected) {
+      selectedShops.assignAll(cartItems.keys); // Chọn tất cả các shop
+      cartItems.forEach((shopId, items) {
+        selectedItems[shopId] = items.map((item) => item.product.productId).toList().obs;
+      });
+    } else {
+      selectedShops.clear(); // Bỏ chọn tất cả shop
+      selectedItems.clear();
+    }
+    cartItems.refresh();
+  }
 
-    return total;
+  void toggleShopSelection(int shopId, bool isSelected) {
+    if (isSelected) {
+      selectedShops.add(shopId);
+      selectedItems[shopId] = cartItems[shopId]!.map((item) => item.product.productId).toList().obs;
+    } else {
+      selectedShops.remove(shopId);
+      selectedItems[shopId]?.clear();
+    }
+    cartItems.refresh();
+  }
+
+  void toggleItemSelection(int shopId, int productId, bool isSelected) {
+    if (isSelected) {
+      selectedItems[shopId]?.add(productId);
+      // Kiểm tra nếu tất cả sản phẩm trong shop đều được chọn -> Chọn shop
+      if (selectedItems[shopId]?.length == cartItems[shopId]?.length) {
+        selectedShops.add(shopId);
+      }
+    } else {
+      selectedItems[shopId]?.remove(productId);
+      selectedShops.remove(shopId); // Uncheck shop nếu có ít nhất một sản phẩm bị bỏ chọn
+    }
+    cartItems.refresh();
   }
 
 
+  String formatCurrency(double amount) {
+    final formatter = NumberFormat("#,###", "vi_VN");
+    return "${formatter.format(amount)}đ";
+  }
+
+  double getTotalAmount() {
+    double total = 0;
+    selectedItems.forEach((shopId, productList) {
+      for (var productId in productList) {
+        var item = cartItems[shopId]?.firstWhere((item) => item.product.productId == productId);
+        if (item != null) {
+          total += item.getTotalPrice();
+        }
+      }
+    });
+    return total;
+  }
 }

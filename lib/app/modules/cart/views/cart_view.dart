@@ -26,15 +26,11 @@ class CartView extends StatelessWidget {
             child: Row(
               children: [
                 Obx(() {
-                  bool allSelected = cartController.selectedShops.length == cartController.cartItems.length;
+                  bool allSelected = cartController.isAllSelected();
                   return Checkbox(
                     value: allSelected,
-                    onChanged: (value) {
-                      if (value == true) {
-                        cartController.selectedShops.assignAll(cartController.cartItems.keys);
-                      } else {
-                        cartController.selectedShops.clear();
-                      }
+                    onChanged: (bool? value) {
+                      cartController.toggleSelectAll(value ?? false);
                     },
                   );
                 }),
@@ -76,15 +72,11 @@ class CartView extends StatelessWidget {
           // Header của Shop
           ListTile(
             leading: Obx(() {
-              bool isSelected = cartController.selectedShops.contains(shopId);
+              bool isShopSelected = cartController.selectedItems[shopId]?.length == cartController.cartItems[shopId]?.length;
               return Checkbox(
-                value: isSelected,
+                value: isShopSelected,
                 onChanged: (bool? value) {
-                  if (value == true) {
-                    cartController.selectedShops.add(shopId);
-                  } else {
-                    cartController.selectedShops.remove(shopId);
-                  }
+                  cartController.toggleShopSelection(shopId, value ?? false);
                 },
               );
             }),
@@ -117,19 +109,14 @@ class CartView extends StatelessWidget {
               children: [
                 // Checkbox bên trái
                 Obx(() {
-                  bool isSelected = cartController.selectedShops.contains(shopId);
+                  bool isSelected = cartController.selectedItems[shopId]?.contains(item.product.productId) ?? false;
                   return Checkbox(
                     value: isSelected,
                     onChanged: (bool? value) {
-                      if (value == true) {
-                        cartController.selectedShops.add(shopId);
-                      } else {
-                        cartController.selectedShops.remove(shopId);
-                      }
+                      cartController.toggleItemSelection(shopId, item.product.productId, value ?? false);
                     },
                   );
                 }),
-
                 // Hình ảnh lớn hơn
                 ClipRRect(
                   borderRadius: BorderRadius.circular(12),
@@ -196,7 +183,7 @@ class CartView extends StatelessWidget {
                             child: Align(
                               alignment: Alignment.bottomLeft,
                               child: Text(
-                                "${item.product.getBasePrice().toStringAsFixed(0)}đ",
+                                cartController.formatCurrency(item.product.getBasePrice()),
                                 style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                               ),
                             ),
@@ -240,7 +227,7 @@ class CartView extends StatelessWidget {
                           children: [
                             Text(option.name),
                             Text(
-                              "${option.price.toStringAsFixed(0)}đ",
+                              cartController.formatCurrency(option.price),
                               style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                             ),
                             _buildQuantityControl(
@@ -347,7 +334,7 @@ class CartView extends StatelessWidget {
           Obx(() {
             double totalAmount = cartController.getTotalAmount();
             return Text(
-              "Tổng tiền: ${totalAmount.toStringAsFixed(0)}đ",
+              "Tổng tiền: ${cartController.formatCurrency(totalAmount)}",
               style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             );
           }),
