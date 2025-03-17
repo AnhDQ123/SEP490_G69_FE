@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(useMaterial3: true),
       debugShowCheckedModeBanner: false,
       title: 'Shopkeeper App',
-      initialRoute: Routes.PRODUCT_LIST_SHOP, // Điều hướng tới trang SHOP
+      initialRoute: Routes.PRODUCT_SELECTION, // Điều hướng tới trang SHOP
       getPages: AppPages.routes, // Định tuyến sử dụng GetX
     );
   }
