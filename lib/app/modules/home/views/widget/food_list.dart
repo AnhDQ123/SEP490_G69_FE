@@ -229,7 +229,7 @@ class FoodList extends StatelessWidget {
   Widget _buildProductCard(Product product) {
     final double discount = product.discount;
     final double newPrice =
-        product.defaultPrice * (1 - (discount / 100)); // Giá mới sau giảm
+        product.defaultPrice * (1 - (discount / 100));
 
     return InkWell(
       onTap: () {
