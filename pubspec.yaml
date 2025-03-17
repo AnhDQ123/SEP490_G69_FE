@@ -1,6 +1,7 @@
 name: ffb_fe_flutter
 description: "A new Flutter project."
-# The following line prevents the package from being accidentally published to
+# The following line prevents the pac
+#  kage from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
@@ -56,19 +57,63 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
+  flutter_launcher_icons: ^0.14.3
   flutter_lints: ^5.0.0
 
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/logo.png"
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
 # The following section is specific to Flutter packages.
 flutter:
+  assets:
+    - assets/images/banner1.avif
+    - assets/images/banner2.avif
+    - assets/images/banner3.avif
+    - assets/images/banh_my_chao.jpg
+    - assets/images/bun_bo_hue.jpg
+    - assets/images/pho_bo.jpg
+    - assets/images/mi_quang.jpg
+    - assets/images/banh_xeo.jpg
+    - assets/images/banh_cuon.jpg
+    - assets/images/goi_cuon.jpg
+    - assets/images/com_tam.jpg
+    - assets/images/banh_canh.jpg
+    - assets/images/chao_ga.jpg
+    - assets/images/mi_vit_tiem.jpg
+    - assets/images/lau_bo.jpg
+    - assets/images/banh_beo.jpg
+    - assets/images/banh_hoi.jpg
+    - assets/images/thit_heo.jpg
+    - assets/images/thit_ga.jpg
+    - assets/images/ca_hoi.jpg
+    - assets/images/rau_muong.jpg
+    - assets/images/ca_rot.jpg
+    - assets/images/hanh_tay.jpg
+    - assets/images/nam_kim_cham.jpg
+    - assets/images/giam_gia.jpg
+    - assets/images/tra_sua.jpg
+    - assets/images/do_an_nhanh.jpg
+    - assets/images/my_bun_pho.jpg
+    - assets/images/voucher.jpg
+    - assets/images/quan_an.jpg
+    - assets/images/do_chay.jpg
+    - assets/images/rau.jpg
+    - assets/images/ca.jpg
+    - assets/images/thit_trung.jpg
+    - assets/images/khac.png
+    - assets/images/logo.png
+    - assets/images/sale_badge.png
+
+
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
