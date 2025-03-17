@@ -104,76 +104,67 @@ class CartView extends StatelessWidget {
     );
   }
 
-  /// Widget hiển thị từng sản phẩm trong giỏ hàng
   Widget _buildCartItem(int shopId, CartItem item) {
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(12),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Tên sản phẩm + Checkbox + Nút Xóa
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  children: [
-                    Obx(() {
-                      bool isSelected = cartController.selectedShops.contains(shopId);
-                      return Checkbox(
-                        value: isSelected,
-                        onChanged: (bool? value) {
-                          if (value == true) {
-                            cartController.selectedShops.add(shopId);
-                          } else {
-                            cartController.selectedShops.remove(shopId);
-                          }
-                        },
-                      );
-                    }),
-                    Text(
-                      item.product.productName,
-                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                  ],
-                ),
-                IconButton(
-                  icon: const Icon(Icons.close, size: 22),
-                  onPressed: () => cartController.removeItem(shopId, item.product.productId),
-                ),
-              ],
-            ),
+                // Checkbox bên trái
+                Obx(() {
+                  bool isSelected = cartController.selectedShops.contains(shopId);
+                  return Checkbox(
+                    value: isSelected,
+                    onChanged: (bool? value) {
+                      if (value == true) {
+                        cartController.selectedShops.add(shopId);
+                      } else {
+                        cartController.selectedShops.remove(shopId);
+                      }
+                    },
+                  );
+                }),
 
-            // Hình ảnh sản phẩm + Chọn size + Giá + Số lượng
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                // Hình ảnh sản phẩm (bo tròn)
-                ClipOval(
+                // Hình ảnh lớn hơn
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
                   child: Image.asset(
                     item.product.options.first.image,
-                    width: 65,
-                    height: 65,
+                    width: 100, // Tăng kích thước ảnh
+                    height: 100,
                     fit: BoxFit.cover,
                   ),
                 ),
                 const SizedBox(width: 12),
 
-                // Dropdown chọn size + Giá
+                // Thông tin sản phẩm (Tên, Size, Giá & Số lượng)
                 Expanded(
                   child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      // Tên sản phẩm
+                      Text(
+                        item.product.productName,
+                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 4),
+
+                      // Dropdown chọn size
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 0),
                         decoration: BoxDecoration(
-                          border: Border.all(color: Colors.black, width: 1.5),
-                          borderRadius: BorderRadius.circular(8),
+                          color: Colors.grey[300],
+                          borderRadius: BorderRadius.circular(4),
                         ),
                         child: DropdownButtonHideUnderline(
                           child: DropdownButton<FoodOption>(
+                            isDense: true,
                             value: item.selectedOptions.firstWhereOrNull((option) => option.isSize) ??
                                 item.product.options.firstWhere((opt) => opt.isSize),
                             items: item.product.options.where((option) => option.isSize).map((FoodOption sizeOption) {
@@ -181,7 +172,7 @@ class CartView extends StatelessWidget {
                                 value: sizeOption,
                                 child: Text(
                                   sizeOption.name,
-                                  style: const TextStyle(fontWeight: FontWeight.bold),
+                                  style: const TextStyle(fontSize: 12),
                                 ),
                               );
                             }).toList(),
@@ -190,28 +181,51 @@ class CartView extends StatelessWidget {
                                 cartController.updateSize(shopId, item.product.productId, newSize);
                               }
                             },
+                            icon: const Icon(Icons.arrow_drop_down, size: 12),
                           ),
                         ),
                       ),
-                      const SizedBox(height: 5),
-                      Text(
-                        "${item.product.getBasePrice().toStringAsFixed(0)}đ",
-                        style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      const SizedBox(height: 4),
+
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.end, // Để căn giá xuống dưới cùng
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          // Giá sản phẩm, căn xuống dưới cùng
+                          Expanded(
+                            child: Align(
+                              alignment: Alignment.bottomLeft,
+                              child: Text(
+                                "${item.product.getBasePrice().toStringAsFixed(0)}đ",
+                                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
+
                     ],
                   ),
                 ),
 
-                // Nút tăng giảm số lượng
-                _buildQuantityControl(
-                  shopId: shopId,
-                  productId: item.product.productId,
-                  quantity: item.selectedOptions.firstWhere((opt) => opt.isSize).quantity,
-                )
+                // Nút xóa
+                Column(
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.close, size: 22),
+                      onPressed: () => cartController.removeItem(shopId, item.product.productId),
+                    ),
+                    SizedBox(height: 30),
+                    // Nút tăng giảm số lượng (giữ nguyên vị trí hiện tại)
+                    _buildQuantityControl(
+                      shopId: shopId,
+                      productId: item.product.productId,
+                      quantity: item.selectedOptions.firstWhere((opt) => opt.isSize).quantity,
+                    ),
+                  ],
+                ),
               ],
             ),
-
-            // Thêm lựa chọn
             if (item.selectedOptions.where((opt) => !opt.isSize).isNotEmpty)
               Padding(
                 padding: const EdgeInsets.only(top: 12),
@@ -250,11 +264,10 @@ class CartView extends StatelessWidget {
               ),
           ],
         ),
+
       ),
     );
   }
-
-
 
   /// Widget thay đổi số lượng
   Widget _buildQuantityControl({
@@ -264,37 +277,61 @@ class CartView extends StatelessWidget {
     required int quantity,
   }) {
     return Container(
+      height: 24, // Điều chỉnh chiều cao hợp lý
+      width: 70,  // Tăng chiều rộng để không bị vỡ bố cục
       decoration: BoxDecoration(
         border: Border.all(color: Colors.grey),
         borderRadius: BorderRadius.circular(6),
       ),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          IconButton(
-            icon: const Icon(Icons.remove, size: 18),
-            onPressed: () {
-              if (optionId == null) {
-                cartController.updateProductQuantity(shopId, productId, quantity - 1);
-              } else {
-                cartController.updateOptionQuantity(shopId, productId, optionId, quantity - 1);
-              }
-            },
+          // Nút giảm
+          Flexible(
+            child: IconButton(
+              padding: EdgeInsets.zero, // Xóa padding mặc định
+              constraints: const BoxConstraints(), // Xóa ràng buộc kích thước thừa
+              icon: const Icon(Icons.remove, size: 12), // Nhỏ hơn
+              onPressed: () {
+                if (quantity > 1) {
+                  if (optionId == null) {
+                    cartController.updateProductQuantity(shopId, productId, quantity - 1);
+                  } else {
+                    cartController.updateOptionQuantity(shopId, productId, optionId, quantity - 1);
+                  }
+                }
+              },
+            ),
           ),
-          Text("$quantity", style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-          IconButton(
-            icon: const Icon(Icons.add, size: 18),
-            onPressed: () {
-              if (optionId == null) {
-                cartController.updateProductQuantity(shopId, productId, quantity + 1);
-              } else {
-                cartController.updateOptionQuantity(shopId, productId, optionId, quantity + 1);
-              }
-            },
+
+          // Số lượng sản phẩm
+          Text(
+            "$quantity",
+            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+            textAlign: TextAlign.center, // Căn giữa số lượng
+          ),
+
+          // Nút tăng
+          Flexible(
+            child: IconButton(
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(),
+              icon: const Icon(Icons.add, size: 16), // Nhỏ hơn
+              onPressed: () {
+                if (optionId == null) {
+                  cartController.updateProductQuantity(shopId, productId, quantity + 1);
+                } else {
+                  cartController.updateOptionQuantity(shopId, productId, optionId, quantity + 1);
+                }
+              },
+            ),
           ),
         ],
       ),
     );
   }
+
+
 
   /// Widget hiển thị tổng tiền và nút thanh toán
   Widget _buildTotalSection() {
