@@ -2,10 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../models/product.dart';
 import '../../controllers/product_detail_controller.dart';
+import 'package:intl/intl.dart';
 
 class ProductListWidget extends StatelessWidget {
   final RxList<Product> products;
   const ProductListWidget({Key? key, required this.products}) : super(key: key);
+
+  String formatPrice(double price) {
+    // Tạo định dạng không có ký hiệu tiền tệ (symbol: '') và không có số thập phân (decimalDigits: 0)
+    final formatter = NumberFormat.currency(locale: 'vi_VN', symbol: '', decimalDigits: 0);
+    return formatter.format(price) + "đ";
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -19,9 +26,10 @@ class ProductListWidget extends StatelessWidget {
         itemBuilder: (context, index) {
           final item = products[index];
 
-          const double originalPrice = 100000;
+          double originalPrice = item.defaultPrice; // Sử dụng defaultPrice thay vì giá cứng
           double discountPercentage = (item.discount ?? 0).toDouble();
           double discountedPrice = originalPrice * (1 - (discountPercentage / 100));
+
 
           return Container(
             padding: const EdgeInsets.all(8),

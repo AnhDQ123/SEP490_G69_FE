@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../resources/widget/bottom_nav.dart';
 import '../../../resources/widget/custom_header.dart'; // ✅ Thêm import
+import '../../../routes/app_pages.dart';
 import '../controllers/filter_controller.dart';
 
 class FilterView extends GetView<FilterController> {
@@ -28,10 +29,14 @@ class FilterView extends GetView<FilterController> {
                 // Nút "Bộ lọc"
                 OutlinedButton.icon(
                   icon: const Icon(Icons.filter_list),
-                  label: const Text("Bộ lọc"),
+                  label: const Text(
+                      "Bộ lọc",
+                  style: TextStyle(
+                    fontSize: 13,
+                  ),),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: Colors.black,
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                   ),
                   onPressed: () {},
                 ),
@@ -136,16 +141,22 @@ class FilterView extends GetView<FilterController> {
     );
   }
 
+
   Widget _buildProductItem(Map<String, dynamic> item) {
-    // Giá cố định: 100000
-    const double originalPrice = 100000;
-    // Lấy discount từ item, nếu không có gán mặc định bằng 0
+    // Lấy defaultPrice từ item, nếu không có thì mặc định là 0
+    final double originalPrice = double.tryParse(item['defaultPrice']?.toString() ?? '0') ?? 0;
+    // Lấy discount từ item, nếu không có thì mặc định là 0
     final discount = (item['discount'] ?? 0);
     final hasDiscount = discount > 0;
     // Tính giá mới nếu có discount
     final finalPrice = hasDiscount ? originalPrice * (1 - discount / 100) : originalPrice;
 
-    return Container(
+    return InkWell(
+
+      onTap: () {
+        Get.toNamed('/product-detail', arguments: item['id']);
+      },
+      child:Container(
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
@@ -198,12 +209,12 @@ class FilterView extends GetView<FilterController> {
             ),
           ),
           const SizedBox(width: 10),
-          // Thông tin sản phẩm (text giữ nguyên kích thước ban đầu)
+          // Thông tin sản phẩm
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Tên sản phẩm (font nhỏ)
+                // Tên sản phẩm
                 Text(
                   item['name'] ?? '',
                   style: const TextStyle(fontSize: 10, fontWeight: FontWeight.normal),
@@ -271,8 +282,11 @@ class FilterView extends GetView<FilterController> {
           ),
         ],
       ),
+    ),
     );
+
   }
+
 
 
 }

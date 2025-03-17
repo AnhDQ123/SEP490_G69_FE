@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../controllers/product_detail_controller.dart';
-import 'size_option.dart';
 import 'review_item.dart';
+import 'package:intl/intl.dart';
+
 
 // Helper function: Xây dựng URL ảnh đầy đủ
 String buildImageUrl(String imageUrl) {
@@ -16,6 +17,12 @@ String buildImageUrl(String imageUrl) {
 class ProductHeader extends StatelessWidget {
   final ProductDetailController controller;
   const ProductHeader({Key? key, required this.controller}) : super(key: key);
+
+  String formatPrice(double price) {
+    // Tạo định dạng không có ký hiệu tiền tệ (symbol: '') và không có số thập phân (decimalDigits: 0)
+    final formatter = NumberFormat.currency(locale: 'vi_VN', symbol: '', decimalDigits: 0);
+    return formatter.format(price) + "đ";
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -201,16 +208,18 @@ class ProductHeader extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
           child: Obx(() {
+            // Tính giá tổng = currentPrice * số lượng
+            final totalPrice = controller.currentPrice * controller.quantity.value;
             return Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 // Giá sản phẩm (to và nổi bật hơn)
                 Text(
-                  'Giá: ${(controller.currentPrice * controller.quantity.value).toStringAsFixed(0)}đ',
+                  'Giá: ${formatPrice(totalPrice)}',
                   style: const TextStyle(
                     fontSize: 18, // Tăng kích thước chữ
                     fontWeight: FontWeight.bold,
-                    color: Colors.redAccent,
+                    color: Colors.red,
                   ),
                 ),
                 // Bộ đếm số lượng sản phẩm
@@ -243,6 +252,7 @@ class ProductHeader extends StatelessWidget {
             );
           }),
         ),
+
 
         const SizedBox(height: 8),
 

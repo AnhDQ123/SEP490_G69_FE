@@ -45,7 +45,7 @@ class BestSellerFoods extends StatelessWidget {
           const SizedBox(height: 6),
 
           SizedBox(
-            height: 100, // 🔹 Tăng nhẹ để hiển thị cân đối hơn
+            height: 110, // 🔹 Tăng nhẹ để hiển thị cân đối hơn
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               itemCount: popularProducts.length,

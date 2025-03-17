@@ -12,8 +12,7 @@ class Product {
   final String description;
   final double rate;
   final String shop;
-  final double price;              // Thêm trường price
-  final List<String> sizes;        // Thêm trường sizes
+  final double defaultPrice;              // Thêm trường price
   final List<FoodOptionModel> foodOptions; // Nếu cần
 
   Product({
@@ -28,8 +27,7 @@ class Product {
     required this.description,
     required this.rate,
     required this.shop,
-    required this.price,
-    required this.sizes,
+    required this.defaultPrice,
     required this.foodOptions,
   });
 
@@ -46,8 +44,7 @@ class Product {
       description: json['description'] ?? '',
       rate: (json['rate'] as num?)?.toDouble() ?? 0.0,
       shop: json['shop'] ?? '',
-      price: (json['price'] as num?)?.toDouble() ?? 0.0,
-      sizes: json['sizes'] != null ? List<String>.from(json['sizes']) : [],
+      defaultPrice: (json['defaultPrice'] as num?)?.toDouble() ?? 0.0,
       foodOptions: json['foodOption'] != null
           ? (json['foodOption'] as List)
           .map((item) => FoodOptionModel.fromJson(item))
@@ -69,8 +66,7 @@ class Product {
       'description': description,
       'rate': rate,
       'shop': shop,
-      'price': price,
-      'sizes': sizes,
+      'defaultPrice': defaultPrice,
       'foodOption': foodOptions.map((item) => item.toJson()).toList(),
     };
   }

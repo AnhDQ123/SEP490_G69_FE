@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../models/product.dart';
 import '../../controllers/home_controller.dart';
+import 'package:intl/intl.dart';
+
 
 class FoodList extends StatelessWidget {
   final HomeController controller;
@@ -15,11 +17,16 @@ class FoodList extends StatelessWidget {
       return "https://your-server-domain.com" + imagePath;
     }
   }
+  String formatPrice(double price) {
+    // Tạo định dạng không có ký hiệu tiền tệ (symbol: '') và không có số thập phân (decimalDigits: 0)
+    final formatter = NumberFormat.currency(locale: 'vi_VN', symbol: '', decimalDigits: 0);
+    return formatter.format(price) + "đ";
+  }
+
 
   Widget _buildProductCard(Product product) {
-    final double originalPrice = 100000; // Giá cũ cố định: 100.000đ
-    final double discount = product.discount ?? 0; // Discount (nếu có)
-    final double newPrice = originalPrice * (1 - (discount / 100)); // Tính giá mới sau giảm
+    final double discount = product.discount; // Discount (nếu có)
+    final double newPrice = product.defaultPrice * (1 - (discount / 100)); // Tính giá mới sau giảm
 
     return InkWell(
       onTap: () {
@@ -43,15 +50,15 @@ class FoodList extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // ✅ Hình ảnh sản phẩm + Giảm giá
+            //Hình ảnh sản phẩm + Giảm giá
             Stack(
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(8),
                   child: Image.network(
                     getFullImageUrl(product.image),
-                    width: 75,
-                    height: 75,
+                    width: 100,
+                    height: 95,
                     fit: BoxFit.cover,
                     errorBuilder: (context, error, stackTrace) => Container(
                       width: 75,
@@ -86,27 +93,25 @@ class FoodList extends StatelessWidget {
                   ),
               ],
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: 25),
 
-            // ✅ Thông tin sản phẩm + Giá cố định
+            // ✅ Thông tin sản phẩm + Giá
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // 🔹 Tên sản phẩm
                   Text(
-                    product.name ?? '',
-                    style: const TextStyle(fontSize: 11, fontWeight: FontWeight.normal),
+                    product.name,
+                    style: const TextStyle(fontSize: 13, fontWeight: FontWeight.normal),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 2),
 
-                  // 🔹 Hiển thị tên shop + Icon xác minh
                   Row(
                     children: [
                       Text(
-                        "${product.shop ?? 'Không xác định'}",
+                        product.shop,
                         style: const TextStyle(
                           fontSize: 9,
                           color: Color.fromRGBO(212, 163, 115, 1),
@@ -122,35 +127,33 @@ class FoodList extends StatelessWidget {
                   ),
                   const SizedBox(height: 2),
 
-                  // 🔹 Hiển thị đánh giá sản phẩm
                   if (product.rate != null)
                     Row(
                       children: [
                         const Icon(Icons.star, color: Colors.orange, size: 11),
                         const SizedBox(width: 2),
                         Text(
-                          product.rate!.toStringAsFixed(1),
+                          product.rate.toStringAsFixed(1),
                           style: const TextStyle(fontSize: 9),
                         ),
                       ],
                     ),
 
-                  // 🔹 Hiển thị Giá (Gồm giá cũ và giá mới nếu có giảm giá)
                   Row(
                     children: [
                       if (discount > 0)
                         Text(
-                          "${originalPrice.toStringAsFixed(0)}đ",
+                          "${product.defaultPrice.toStringAsFixed(0)}đ",
                           style: const TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.normal,
                             color: Colors.grey,
-                            decoration: TextDecoration.lineThrough, // 🔹 Gạch ngang giá cũ
+                            decoration: TextDecoration.lineThrough,
                           ),
                         ),
                       const SizedBox(width: 4),
                       Text(
-                        "${newPrice.toStringAsFixed(0)}đ",
+                        formatPrice(newPrice), // Giá mới đã giảm, hiển thị với dấu chấm
                         style: const TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.bold,
@@ -167,6 +170,7 @@ class FoodList extends StatelessWidget {
       ),
     );
   }
+
 
 
   @override

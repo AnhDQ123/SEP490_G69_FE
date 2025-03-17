@@ -1,20 +1,85 @@
+// // import 'package:get/get.dart';
+// // import '../../../service/filter_api_service.dart';
+// //
+// // class FilterController extends GetxController {
+// //   final String categoryName = Get.arguments['categoryName'] as String;
+// //   final products = <Map<String, dynamic>>[].obs;
+// //   var selectedTabIndex = 0.obs;
+// //   var bottomNavIndex = 2.obs;
+// //
+// //   final FilterApiService _filterApiService = FilterApiService();
+// //
+// //   @override
+// //   void onInit() {
+// //     super.onInit();
+// //     fetchProductsByCategory(categoryName);
+// //   }
+// //
+// //   void fetchProductsByCategory(String category) async {
+// //     try {
+// //       final result = await _filterApiService.fetchProductsByCategory(category);
+// //       products.assignAll(result);
+// //     } catch (e) {
+// //       Get.snackbar('Lỗi', 'Không thể tải dữ liệu sản phẩm: $e');
+// //     }
+// //   }
+// //
+// //   void switchTopTab(int index) {
+// //     selectedTabIndex.value = index;
+// //   }
+// //
+// //   void switchBottomNav(int index) {
+// //     bottomNavIndex.value = index;
+// //     switch (index) {
+// //       case 0:
+// //       // Xử lý điều hướng Blog
+// //         break;
+// //       case 1:
+// //       // Xử lý điều hướng Danh mục
+// //         break;
+// //       case 2:
+// //         Get.back();
+// //         break;
+// //       case 3:
+// //       // Xử lý điều hướng Giỏ hàng
+// //         break;
+// //       case 4:
+// //       // Xử lý điều hướng Cá nhân
+// //         break;
+// //     }
+// //   }
+// // }
+// //
+//
 // import 'package:get/get.dart';
 // import '../../../service/filter_api_service.dart';
+// import '../../../service/home_api_service.dart';
 //
 // class FilterController extends GetxController {
-//   final String categoryName = Get.arguments['categoryName'] as String;
+//   // Sử dụng RxString để có thể cập nhật giá trị filter động
+//   final RxString filterCategory = (Get.arguments['categoryName'] as String).obs;
+//
+//   // Danh sách sản phẩm hiện ra, kiểu Map<String, dynamic> (có thể điều chỉnh nếu dùng model khác)
 //   final products = <Map<String, dynamic>>[].obs;
 //   var selectedTabIndex = 0.obs;
 //   var bottomNavIndex = 2.obs;
 //
+//   // Service để gọi API lọc theo danh mục
 //   final FilterApiService _filterApiService = FilterApiService();
+//   // Service dùng để lấy toàn bộ sản phẩm (API từ HomeApiService)
+//   final HomeApiService _homeApiService = HomeApiService();
 //
 //   @override
 //   void onInit() {
 //     super.onInit();
-//     fetchProductsByCategory(categoryName);
+//     if (filterCategory.value.isNotEmpty) {
+//       fetchProductsByCategory(filterCategory.value);
+//     } else {
+//       fetchAllProducts();
+//     }
 //   }
 //
+//   // Gọi API lọc theo danh mục
 //   void fetchProductsByCategory(String category) async {
 //     try {
 //       final result = await _filterApiService.fetchProductsByCategory(category);
@@ -24,49 +89,65 @@
 //     }
 //   }
 //
+//   // Gọi API lấy toàn bộ sản phẩm
+//   void fetchAllProducts() async {
+//     try {
+//       final result = await _homeApiService.fetchAllProducts();
+//       // Giả sử model Product có phương thức toJson(), chuyển đổi sang Map nếu cần
+//       products.assignAll(result.map((p) => p.toJson()).toList());
+//     } catch (e) {
+//       Get.snackbar('Lỗi', 'Không thể tải dữ liệu sản phẩm: $e');
+//     }
+//   }
+//
+//   // Phương thức xoá filter: đặt filterCategory rỗng và lấy toàn bộ sản phẩm
+//   void removeCategoryFilter() async {
+//     try {
+//       filterCategory.value = '';
+//       fetchAllProducts();
+//     } catch (e) {
+//       Get.snackbar('Lỗi', 'Không thể tải dữ liệu sản phẩm: $e');
+//     }
+//   }
+//
 //   void switchTopTab(int index) {
 //     selectedTabIndex.value = index;
+//     // Nếu cần xử lý lọc/sắp xếp theo tab, xử lý tại đây
 //   }
 //
 //   void switchBottomNav(int index) {
 //     bottomNavIndex.value = index;
 //     switch (index) {
-//       case 0:
-//       // Xử lý điều hướng Blog
+//       case 0: // Blog
 //         break;
-//       case 1:
-//       // Xử lý điều hướng Danh mục
+//       case 1: // Danh mục
 //         break;
-//       case 2:
+//       case 2: // Trang chủ
 //         Get.back();
 //         break;
-//       case 3:
-//       // Xử lý điều hướng Giỏ hàng
+//       case 3: // Giỏ hàng
 //         break;
-//       case 4:
-//       // Xử lý điều hướng Cá nhân
+//       case 4: // Cá nhân
 //         break;
 //     }
 //   }
 // }
-//
 
 import 'package:get/get.dart';
 import '../../../service/filter_api_service.dart';
 import '../../../service/home_api_service.dart';
 
 class FilterController extends GetxController {
-  // Sử dụng RxString để có thể cập nhật giá trị filter động
+  // Sử dụng RxString để cập nhật giá trị filter động
   final RxString filterCategory = (Get.arguments['categoryName'] as String).obs;
 
-  // Danh sách sản phẩm hiện ra, kiểu Map<String, dynamic> (có thể điều chỉnh nếu dùng model khác)
+  // Danh sách sản phẩm hiện ra, kiểu Map<String, dynamic>
   final products = <Map<String, dynamic>>[].obs;
   var selectedTabIndex = 0.obs;
   var bottomNavIndex = 2.obs;
 
-  // Service để gọi API lọc theo danh mục
+  // Service gọi API
   final FilterApiService _filterApiService = FilterApiService();
-  // Service dùng để lấy toàn bộ sản phẩm (API từ HomeApiService)
   final HomeApiService _homeApiService = HomeApiService();
 
   @override
@@ -100,6 +181,16 @@ class FilterController extends GetxController {
     }
   }
 
+  // Gọi API lấy sản phẩm bán chạy (Popular)
+  void fetchPopularProducts() async {
+    try {
+      final result = await _homeApiService.fetchPopularProducts();
+      products.assignAll(result.map((p) => p.toJson()).toList());
+    } catch (e) {
+      Get.snackbar('Lỗi', 'Không thể tải sản phẩm bán chạy: $e');
+    }
+  }
+
   // Phương thức xoá filter: đặt filterCategory rỗng và lấy toàn bộ sản phẩm
   void removeCategoryFilter() async {
     try {
@@ -110,9 +201,23 @@ class FilterController extends GetxController {
     }
   }
 
+  // Chuyển tab: 0 - Các sản phẩm, 1 - Bán chạy, 2 - Đánh giá, 3 - Giá
   void switchTopTab(int index) {
     selectedTabIndex.value = index;
-    // Nếu cần xử lý lọc/sắp xếp theo tab, xử lý tại đây
+    if (index == 0) {
+      if (filterCategory.value.isNotEmpty) {
+        fetchProductsByCategory(filterCategory.value);
+      } else {
+        fetchAllProducts();
+      }
+    } else if (index == 1) {
+      // Khi chuyển sang tab "Bán chạy", gọi API lấy sản phẩm bán chạy
+      fetchPopularProducts();
+    } else if (index == 2) {
+      // Xử lý nếu cần: ví dụ, sắp xếp hoặc lọc theo đánh giá
+    } else if (index == 3) {
+      // Xử lý nếu cần: ví dụ, sắp xếp theo giá (defaultPrice)
+    }
   }
 
   void switchBottomNav(int index) {

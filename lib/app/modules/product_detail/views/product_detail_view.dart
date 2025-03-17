@@ -116,7 +116,7 @@ class ProductDetailView extends GetView<ProductDetailController> {
                   ),
                   child: const Text(
                     'Thêm vào giỏ hàng',
-                    style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600),
+                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
                   ),
                 ),
               ),

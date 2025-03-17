@@ -88,8 +88,8 @@ class _CategorySectionState extends State<CategorySection> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Container(
-                        width: 40,
-                        height: 40,
+                        width: 50,
+                        height: 50,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           border: Border.all(color: Colors.grey.shade300, width: 1),
@@ -112,7 +112,7 @@ class _CategorySectionState extends State<CategorySection> {
                       Text(
                         category.name ?? 'No Name',
                         style: const TextStyle(
-                          fontSize: 10,
+                          fontSize: 12,
                           fontWeight: FontWeight.w500,
                           color: Colors.black87,
                         ),
