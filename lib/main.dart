@@ -1,21 +1,21 @@
+import 'package:ffb_fe_flutter/app/routes/app_pages.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'app/routes/app_pages.dart';
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized(); // Đảm bảo Flutter đã khởi tạo trước khi chạy
-  runApp(MyApp());
+void main() {
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      theme: ThemeData(useMaterial3: true),
-      debugShowCheckedModeBanner: false,
-      title: 'Shopkeeper App',
-      initialRoute: Routes.PRODUCT_SELECTION, // Điều hướng tới trang SHOP
-      getPages: AppPages.routes, // Định tuyến sử dụng GetX
+      title: 'Demo HomePage',
+      initialRoute: AppPages.INITIAL,
+      getPages: AppPages.routes,
+
     );
   }
 }

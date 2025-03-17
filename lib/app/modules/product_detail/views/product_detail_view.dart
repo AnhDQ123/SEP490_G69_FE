@@ -1,247 +1,97 @@
-// import 'package:flutter/material.dart';
-// import 'package:get/get.dart';
-// import '../controllers/product_detail_controller.dart';
-// import 'widgets/product_header.dart';
-// import 'widgets/product_list.dart';
-// import 'widgets/extra_options_sheet.dart';
-//
-// class ProductDetailView extends GetView<ProductDetailController> {
-//   const ProductDetailView({Key? key}) : super(key: key);
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     final c = Get.find<ProductDetailController>();
-//
-//     return DefaultTabController(
-//       length: 3,
-//       child: Scaffold(
-//         appBar: AppBar(
-//           backgroundColor: Colors.white,
-//           elevation: 0,
-//           // Thanh tìm kiếm
-//           title: Container(
-//             height: 40,
-//             padding: const EdgeInsets.symmetric(horizontal: 8),
-//             decoration: BoxDecoration(
-//               color: Colors.grey[200],
-//               borderRadius: BorderRadius.circular(8),
-//             ),
-//             child: const TextField(
-//               decoration: InputDecoration(
-//                 hintText: 'Tìm kiếm...',
-//                 border: InputBorder.none,
-//                 icon: Icon(Icons.search),
-//               ),
-//             ),
-//           ),
-//           actions: [
-//             IconButton(
-//               icon: const Icon(Icons.message, color: Colors.black87),
-//               onPressed: () => print('Icon message được nhấn'),
-//             ),
-//             IconButton(
-//               icon: const Icon(Icons.notifications, color: Colors.black87),
-//               onPressed: () => print('Icon thông báo được nhấn'),
-//             ),
-//           ],
-//         ),
-//         body: NestedScrollView(
-//           headerSliverBuilder: (context, innerBoxIsScrolled) {
-//             return [
-//               SliverToBoxAdapter(
-//                 child: ProductHeader(controller: c),
-//               ),
-//               SliverAppBar(
-//                 pinned: true,
-//                 backgroundColor: Colors.white,
-//                 automaticallyImplyLeading: false,
-//                 bottom: const TabBar(
-//                   indicatorColor: Colors.redAccent,
-//                   labelColor: Colors.redAccent,
-//                   unselectedLabelColor: Colors.black54,
-//                   tabs: [
-//                     Tab(text: 'Món ăn tương tự'),
-//                     Tab(text: 'Thực đơn'),
-//                     Tab(text: 'Đồ uống'),
-//                   ],
-//                 ),
-//               ),
-//             ];
-//           },
-//           body: TabBarView(
-//             children: [
-//               ProductListWidget(products: c.similarProducts),
-//               ProductListWidget(products: c.menuProducts),
-//               ProductListWidget(products: c.drinkProducts),
-//             ],
-//           ),
-//         ),
-//         bottomNavigationBar: Container(
-//           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-//           child: Row(
-//             children: [
-//               OutlinedButton(
-//                 onPressed: () => print('Xem giỏ hàng'),
-//                 style: OutlinedButton.styleFrom(
-//                   foregroundColor: Colors.black,
-//                   side: const BorderSide(color: Colors.black),
-//                   shape: const CircleBorder(),
-//                   backgroundColor: Colors.grey,
-//                   padding: const EdgeInsets.all(16),
-//                   minimumSize: const Size(56, 56),
-//                 ),
-//                 child: const Icon(Icons.shopping_cart_outlined),
-//               ),
-//               const SizedBox(width: 8),
-//               Expanded(
-//                 child: OutlinedButton(
-//                   onPressed: () {
-//                     // Hiển thị bottom sheet khi nhấn nút "Thêm vào giỏ hàng"
-//                     showModalBottomSheet(
-//                       context: context,
-//                       isScrollControlled: true, // Cho phép bottom sheet chiếm toàn màn hình nếu muốn
-//                       shape: const RoundedRectangleBorder(
-//                         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-//                       ),
-//                       builder: (context) {
-//                         return FractionallySizedBox(
-//                           heightFactor: 0.66, // Chiếm 2/3 màn hình
-//                           child: ExtraOptionsSheet(), // Widget của bạn
-//                         );
-//                       },
-//                     );
-//
-//                   },
-//                   style: OutlinedButton.styleFrom(
-//                     foregroundColor: Colors.black,
-//                     backgroundColor: Colors.grey,
-//                     side: const BorderSide(color: Colors.black),
-//                     shape: RoundedRectangleBorder(
-//                       borderRadius: BorderRadius.circular(24),
-//                     ),
-//                     padding: const EdgeInsets.symmetric(vertical: 16),
-//                   ),
-//                   child: const Text('Thêm vào giỏ hàng'),
-//                 ),
-//               ),
-//             ],
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }
-//
-//
-//
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:ffb_fe_flutter/app/modules/product_detail/views/widget/extra_options_sheet.dart';
+import 'package:ffb_fe_flutter/app/modules/product_detail/views/widget/product_header.dart';
+import 'package:ffb_fe_flutter/app/modules/product_detail/views/widget/product_list.dart';
+import '../../../resources/widget/custom_header.dart';
 import '../controllers/product_detail_controller.dart';
-import 'widgets/product_header.dart';
-import 'widgets/product_list.dart';
-import 'widgets/extra_options_sheet.dart';
 
 class ProductDetailView extends GetView<ProductDetailController> {
   const ProductDetailView({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    // Lấy controller đã được khởi tạo bởi GetX
     final controller = Get.find<ProductDetailController>();
 
     return DefaultTabController(
-      length: 3, // Giả sử có 3 tab: Món ăn tương tự, Thực đơn, Đồ uống
+      length: 3,
       child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.white,
-          elevation: 0,
-          // Thanh tìm kiếm
-          title: Container(
-            height: 40,
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            decoration: BoxDecoration(
-              color: Colors.grey[200],
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: const TextField(
-              decoration: InputDecoration(
-                hintText: 'Tìm kiếm...',
-                border: InputBorder.none,
-                icon: Icon(Icons.search),
-              ),
-            ),
-          ),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.message, color: Colors.black87),
-              onPressed: () => print('Icon message được nhấn'),
-            ),
-            IconButton(
-              icon: const Icon(Icons.notifications, color: Colors.black87),
-              onPressed: () => print('Icon thông báo được nhấn'),
-            ),
-          ],
+        appBar: PreferredSize(
+          preferredSize: const Size.fromHeight(60),
+          child: const CustomHeader(),
         ),
-        // Sử dụng NestedScrollView để hiển thị header (ProductHeader) và tab content (ProductListWidget)
+
         body: NestedScrollView(
           headerSliverBuilder: (context, innerBoxIsScrolled) {
             return [
-              // Widget hiển thị thông tin chi tiết sản phẩm (header)
               SliverToBoxAdapter(
                 child: ProductHeader(controller: controller),
               ),
-              // Tab bar hiển thị các danh mục sản phẩm liên quan
               SliverAppBar(
-                pinned: true,
+                pinned: true, // Giữ TabBar cố định khi cuộn
+                floating: true, // Cho phép TabBar hiển thị ngay khi cuộn đến
+                snap: true, // Giúp TabBar bật lên ngay khi cuộn đến
                 backgroundColor: Colors.white,
                 automaticallyImplyLeading: false,
-                bottom: const TabBar(
-                  indicatorColor: Colors.redAccent,
-                  labelColor: Colors.redAccent,
-                  unselectedLabelColor: Colors.black54,
-                  tabs: [
-                    Tab(text: 'Món ăn tương tự'),
-                    Tab(text: 'Thực đơn'),
-                    Tab(text: 'Đồ uống'),
-                  ],
+                expandedHeight: kToolbarHeight, // Tránh lỗi overflow do chiều cao quá nhỏ
+                flexibleSpace: const FlexibleSpaceBar(), // Cho phép SliverAppBar co giãn mượt mà
+                bottom: PreferredSize(
+                  preferredSize: const Size.fromHeight(48),
+                  child: SizedBox(
+                    height: 48, // 🔥 Đảm bảo TabBar có kích thước chính xác
+                    child: const TabBar(
+                      isScrollable: true,
+                      indicatorColor: Color.fromRGBO(212, 163, 115, 1),
+                      labelColor: Color.fromRGBO(212, 163, 115, 1),
+                      unselectedLabelColor: Colors.black54,
+                      labelPadding: EdgeInsets.symmetric(horizontal: 12),
+                      tabs: [
+                        Tab(text: 'Món ăn tương tự'),
+                        Tab(text: 'Thực đơn'),
+                        Tab(text: 'Đồ uống'),
+                      ],
+                    ),
+                  ),
                 ),
+
               ),
             ];
           },
-          // Nội dung hiển thị theo từng tab
           body: TabBarView(
             children: [
-              // Tab "Món ăn tương tự": dữ liệu fetch từ API
               ProductListWidget(products: controller.similarProducts),
-              // Các tab khác có thể dùng dữ liệu mẫu hoặc tĩnh
               ProductListWidget(products: controller.menuProducts),
               ProductListWidget(products: controller.drinkProducts),
+
             ],
           ),
         ),
-        // Phần bottom navigation với nút giỏ hàng và "Thêm vào giỏ hàng"
+
+
+
         bottomNavigationBar: Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           child: Row(
             children: [
-              OutlinedButton(
+              // Nút xem giỏ hàng
+              ElevatedButton(
                 onPressed: () => print('Xem giỏ hàng'),
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: Colors.black,
-                  side: const BorderSide(color: Colors.black),
-                  shape: const CircleBorder(),
-                  backgroundColor: Colors.grey,
-                  padding: const EdgeInsets.all(16),
-                  minimumSize: const Size(56, 56),
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: const Color.fromRGBO(212, 163, 115, 1), backgroundColor: Colors.white, shape: const CircleBorder(),
+                  padding: const EdgeInsets.all(16), // Màu icon phù hợp
+                  shadowColor: Colors.grey.withOpacity(0.5),
+                  elevation: 4,
                 ),
-                child: const Icon(Icons.shopping_cart_outlined),
+                child: const Icon(
+                  Icons.shopping_cart_outlined,
+                  color: Color.fromRGBO(212, 163, 115, 1),
+                ),
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: 16),
+              // Nút thêm vào giỏ hàng
               Expanded(
-                child: OutlinedButton(
+                child: ElevatedButton(
                   onPressed: () {
-                    // Hiển thị bottom sheet khi nhấn nút "Thêm vào giỏ hàng"
                     showModalBottomSheet(
                       context: context,
                       isScrollControlled: true,
@@ -256,22 +106,27 @@ class ProductDetailView extends GetView<ProductDetailController> {
                       },
                     );
                   },
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: Colors.black,
-                    backgroundColor: Colors.grey,
-                    side: const BorderSide(color: Colors.black),
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: Colors.white, backgroundColor: const Color.fromRGBO(212, 163, 115, 1), // Màu chữ
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(24),
                     ),
                     padding: const EdgeInsets.symmetric(vertical: 16),
+                    elevation: 4,
                   ),
-                  child: const Text('Thêm vào giỏ hàng'),
+                  child: const Text(
+                    'Thêm vào giỏ hàng',
+                    style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600),
+                  ),
                 ),
               ),
             ],
           ),
         ),
+
       ),
     );
   }
 }
+
+
