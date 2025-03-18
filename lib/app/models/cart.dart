@@ -1,25 +1,35 @@
 import 'cart_item.dart';
 
-class CartModel {
-  final int cartId;
-  final DateTime createdAt;
-  final DateTime updatedAt;
-  final String status;
-  final double total;
+class Cart {
+  final int id;
   final int userId;
-  final List<CartItem> items; // Danh sách sản phẩm trong giỏ hàng
+  final int shopId;
+  final String shopName;
+  final double price;
+  final String? status;
+  final List<CartItem> cartItemDTOList;
 
-  CartModel({
-    required this.cartId,
-    required this.createdAt,
-    required this.updatedAt,
-    required this.status,
-    required this.total,
+  Cart({
+    required this.id,
     required this.userId,
-    required this.items,
+    required this.shopId,
+    required this.shopName,
+    required this.price,
+    this.status,
+    required this.cartItemDTOList,
   });
 
-  double calculateTotal() {
-    return items.fold(0, (sum, item) => sum + item.getTotalPrice());
+  factory Cart.fromJson(Map<String, dynamic> json) {
+    return Cart(
+      id: json['id'],
+      userId: json['userId'],
+      shopId: json['shopId'],
+      shopName: json['shopName'],
+      price: (json['price'] as num).toDouble(),
+      status: json['status'],
+      cartItemDTOList: (json['cartItemDTOList'] as List)
+          .map((item) => CartItem.fromJson(item))
+          .toList(),
+    );
   }
 }
