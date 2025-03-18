@@ -61,7 +61,7 @@ class ShopService {
     request.fields['citizenIDExpiredDate'] =
     "${citizenIDExpiredDate.year}-${citizenIDExpiredDate.month.toString().padLeft(2, '0')}-${citizenIDExpiredDate.day.toString().padLeft(2, '0')}";
 
-    request.fields['userId'] = "1";
+    request.fields['userId'] = "2";
     request.fields['openTime'] = openTime; // Gửi giờ mở cửa
     request.fields['closeTime'] = closeTime; // Gửi giờ đóng cửa
     request.fields['bankBin'] = selectedBankBin;
