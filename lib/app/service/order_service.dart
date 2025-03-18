@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import '../models/order.dart';
 
 class OrderService {
-  final String baseUrl = 'http://10.0.2.2:8080/api/order';
+  final String baseUrl = 'http://10.33.48.42:8080/api/order';
 
   Future<List<Order>> fetchOrders(List<int> ids) async {
     try {
