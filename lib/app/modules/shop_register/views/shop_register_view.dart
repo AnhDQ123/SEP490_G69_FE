@@ -586,7 +586,6 @@ class ShopRegisterView extends GetView<ShopRegisterController> {
     );
   }
 
-  // Widget tải lên logo
   Widget buildImageUploader({
     required String label,
     required Rxn<File> imageController,
@@ -598,7 +597,7 @@ class ShopRegisterView extends GetView<ShopRegisterController> {
   }) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        double screenWidth = MediaQuery.of(context).size.width; // ✅ Chiều rộng màn hình
+        double screenWidth = MediaQuery.of(context).size.width;
         double width = isCCCD ? screenWidth : (isLicense ? screenWidth * 0.45 : 120);
         double height = isCCCD ? width * 0.6 : (isLicense ? width * 1.5 : 120);
         double borderRadius = 12;
@@ -646,7 +645,7 @@ class ShopRegisterView extends GetView<ShopRegisterController> {
                   ),
                 );
               },
-              child: Stack(
+              child: Obx(() => Stack(
                 alignment: Alignment.center,
                 children: [
                   Container(
@@ -664,7 +663,7 @@ class ShopRegisterView extends GetView<ShopRegisterController> {
                         imageController.value!,
                         width: width,
                         height: height,
-                        fit: BoxFit.cover, // ✅ Ảnh giữ đúng tỷ lệ, không méo
+                        fit: BoxFit.cover,
                       ),
                     ),
                   ),
@@ -685,14 +684,13 @@ class ShopRegisterView extends GetView<ShopRegisterController> {
                       ),
                     ),
                 ],
-              ),
+              )),
             ),
           ],
         );
       },
     );
   }
-
 
 
 
