@@ -1,7 +1,8 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
+import '../../../../resources/assets_manager.dart';
+import '../../../../resources/responsive_utils.dart';
 import '../../controllers/home_controller.dart';
 
 class BannerSlider extends StatelessWidget {
@@ -11,17 +12,17 @@ class BannerSlider extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final List<String> bannerImages = [
-      'assets/images/banner1.avif',
-      'assets/images/banner2.avif',
-      'assets/images/banner3.avif',
+      ImageAssets.banner1,
+      ImageAssets.banner2,
+      ImageAssets.banner3,
     ];
 
     return Stack(
-      alignment: Alignment.bottomCenter, // ✅ Căn giữa chấm bên trong ảnh
+      alignment: Alignment.bottomCenter,
       children: [
         CarouselSlider(
           options: CarouselOptions(
-            height: 120.0,
+            height: UtilsReponsive.height(120, context),
             autoPlay: true,
             autoPlayInterval: const Duration(seconds: 3),
             enlargeCenterPage: false,
@@ -34,8 +35,8 @@ class BannerSlider extends StatelessWidget {
           items: bannerImages.map((imagePath) {
             return Builder(
               builder: (BuildContext context) {
-                return ClipRRect( // ✅ Bo góc ảnh
-                  borderRadius: BorderRadius.circular(12),
+                return ClipRRect(
+                  borderRadius: BorderRadius.circular(UtilsReponsive.width(12, context)), // ✅ Responsive corner
                   child: Container(
                     decoration: BoxDecoration(
                       color: Colors.grey.shade300,
@@ -52,23 +53,23 @@ class BannerSlider extends StatelessWidget {
           }).toList(),
         ),
 
-        // ✅ Chấm chuyển banner bên trong ảnh
+
         Positioned(
-          bottom: 8, // ✅ Căn khoảng cách so với đáy ảnh
+          bottom: UtilsReponsive.height(8, context),
           child: Obx(() {
             return Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4), // ✅ Tạo padding xung quanh
+              padding: UtilsReponsive.paddingOnly(context, left: 10, right: 10, top: 4, bottom: 4),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.1), // ✅ Nền trong suốt nhẹ
-                borderRadius: BorderRadius.circular(12), // ✅ Bo góc chấm
+                color: Colors.white.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(UtilsReponsive.width(12, context)), // ✅ Responsive bo góc
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: List.generate(bannerImages.length, (index) {
                   return Container(
-                    width: 8,
-                    height: 8,
-                    margin: const EdgeInsets.symmetric(horizontal: 3),
+                    width: UtilsReponsive.width(8, context),
+                    height: UtilsReponsive.height(8, context),
+                    margin: UtilsReponsive.paddingOnly(context, left: 3, right: 3),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: controller.currentBannerIndex.value == index

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../../resources/responsive_utils.dart';
+import '../../../../resources/text_style.dart';
 import '../../controllers/home_controller.dart';
 import 'product_card.dart';
 
@@ -19,33 +21,39 @@ class BestSellerFoods extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6),
+            padding: UtilsReponsive.padding(context, horizontal: 12, vertical: 6),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  '🔥 Bán chạy theo ngày',
-                  style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.black87),
+                // Bọc tiêu đề trong Expanded để tránh tràn
+                Expanded(
+                  child: Text(
+                    '🔥 Bán chạy theo ngày',
+                    style: TextStyle(
+                      fontSize: UtilsReponsive.formatFontSize(14, context),
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
                 GestureDetector(
                   onTap: () {},
-                  child: const Text(
-                    'Xem thêm',
-                    style: TextStyle(
-                      fontSize: 9,
-                      color: Colors.grey,
-                      fontWeight: FontWeight.bold,
-                      decoration: TextDecoration.underline,
-                    ),
+                  child: TextConstant.subTile3(
+                    context,
+                    text: 'Xem thêm',
+                    size: UtilsReponsive.formatFontSize(9, context),
+                    fontWeight: FontWeight.bold,
+                    color: Colors.grey,
                   ),
                 ),
               ],
             ),
           ),
-          const SizedBox(height: 6),
-
+          SizedBox(height: UtilsReponsive.height(6, context)),
           SizedBox(
-            height: 110, // 🔹 Tăng nhẹ để hiển thị cân đối hơn
+            height: UtilsReponsive.height(110, context),
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               itemCount: popularProducts.length,
@@ -65,4 +73,3 @@ class BestSellerFoods extends StatelessWidget {
     });
   }
 }
-

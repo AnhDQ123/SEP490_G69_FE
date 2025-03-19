@@ -24,18 +24,6 @@ class ProductDetailApiService {
     }
   }
 
-  // Future<List<SimilarProduct>> getSimilarProducts(String keyword) async {
-  //   final uri = Uri.parse("$baseUrl/similar").replace(queryParameters: {"search": keyword});
-  //   final response = await http.get(uri);
-  //
-  //   if (response.statusCode == 200 && response.body.isNotEmpty) {
-  //     final List<dynamic> data = jsonDecode(response.body);
-  //     return data.map((json) => SimilarProduct.fromJson(json)).toList();
-  //   } else {
-  //     throw Exception("Failed to load similar products: ${response.statusCode}");
-  //   }
-  // }
-
   Future<List<Product>> getSimilarProducts(String keyword) async {
     if (keyword.trim().length < 2) {
       return [];
