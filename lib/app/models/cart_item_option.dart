@@ -7,7 +7,7 @@ class CartItemOption {
   final int cartItemId;
   final double? price;
   final double? totalPrice;
-  final int quantity;
+  late final int quantity;
 
   CartItemOption({
     this.id,

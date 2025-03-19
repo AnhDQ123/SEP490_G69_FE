@@ -4,11 +4,9 @@ import '../../../models/cart_item_option.dart';
 import '../../../services/cart_service.dart';
 
 class CartController extends GetxController {
-  var carts = <Cart>[].obs; // Danh sách giỏ hàng
-  var isLoading = true.obs; // Trạng thái tải dữ liệu
-  final CartService cartService = CartService(); // Gọi service
-
-  // Map để theo dõi các mục đã chọn: {shopId: [productId1, productId2, ...]}
+  var carts = <Cart>[].obs;
+  var isLoading = true.obs;
+  final CartService cartService = CartService();
   var selectedItems = <int, List<int>>{}.obs;
 
   @override
@@ -17,22 +15,20 @@ class CartController extends GetxController {
     super.onInit();
   }
 
-  /// **Hàm lấy dữ liệu giỏ hàng**
   void fetchCart() async {
     try {
-      isLoading(true); // Hiển thị loading
-      var cartData = await cartService.fetchCartList(); // Gọi API từ service
+      isLoading(true);
+      var cartData = await cartService.fetchCartList();
       if (cartData != null) {
-        carts.assignAll(cartData); // Cập nhật danh sách giỏ hàng
+        carts.assignAll(cartData);
       }
     } catch (e) {
       print('❌ Lỗi trong CartController: $e');
     } finally {
-      isLoading(false); // Tắt loading
+      isLoading(false);
     }
   }
 
-  /// **Kiểm tra xem tất cả các mục trong giỏ hàng đã được chọn chưa**
   bool isAllSelected() {
     for (var shop in carts) {
       if (!isShopSelected(shop.shopId)) {
@@ -42,7 +38,6 @@ class CartController extends GetxController {
     return true;
   }
 
-  /// **Chọn hoặc bỏ chọn tất cả các mục trong giỏ hàng**
   void toggleSelectAll(bool isSelected) {
     for (var shop in carts) {
       selectedItems[shop.shopId] = isSelected
@@ -52,13 +47,11 @@ class CartController extends GetxController {
     selectedItems.refresh();
   }
 
-  /// **Kiểm tra xem tất cả các mục trong một shop đã được chọn chưa**
   bool isShopSelected(int shopId) {
     var shop = carts.firstWhere((s) => s.shopId == shopId);
     return selectedItems[shopId]?.length == shop.cartItemDTOList.length;
   }
 
-  /// **Chọn hoặc bỏ chọn tất cả các mục trong một shop**
   void toggleShopSelection(int shopId, bool isSelected) {
     var shop = carts.firstWhere((s) => s.shopId == shopId);
     selectedItems[shopId] = isSelected
@@ -67,55 +60,54 @@ class CartController extends GetxController {
     selectedItems.refresh();
   }
 
-  /// **Chọn hoặc bỏ chọn một mục cụ thể**
   void toggleItemSelection(int shopId, int productId, bool isSelected) {
-    if (isSelected) {
-      selectedItems[shopId]?.add(productId);
-    } else {
-      selectedItems[shopId]?.remove(productId);
+    if (!selectedItems.containsKey(shopId)) {
+      selectedItems[shopId] = []; // Khởi tạo danh sách nếu chưa có
     }
-    selectedItems.refresh();
+
+    if (isSelected) {
+      if (!selectedItems[shopId]!.contains(productId)) {
+        selectedItems[shopId]!.add(productId);
+      }
+    } else {
+      selectedItems[shopId]!.remove(productId);
+    }
+
+    selectedItems.refresh(); // Cập nhật UI
   }
 
-  /// **Kiểm tra xem một mục cụ thể đã được chọn chưa**
+
   bool isItemSelected(int shopId, int productId) {
     return selectedItems[shopId]?.contains(productId) ?? false;
   }
 
-  // /// **Cập nhật số lượng sản phẩm**
-  // void updateQuantity(int shopId, int productId, int quantity, {int? optionId}) async {
-  //   try {
-  //     // Gọi API để cập nhật số lượng
-  //     await cartService.updateCartItemQuantity(shopId, productId, quantity, optionId: optionId);
-  //
-  //     // Cập nhật số lượng trong danh sách giỏ hàng
-  //     var shop = carts.firstWhere((s) => s.shopId == shopId);
-  //     var item = shop.cartItemDTOList.firstWhere((item) => item.productId == productId);
-  //
-  //     if (optionId != null) {
-  //       // Cập nhật số lượng cho tùy chọn (topping)
-  //       var option = item.cartItemOptionDTOList.firstWhere((opt) => opt.optionId == optionId);
-  //       option.quantity = quantity;
-  //     } else {
-  //       // Cập nhật số lượng cho sản phẩm chính
-  //       item.quantity = quantity;
-  //       item.totalPrice = item.price * quantity;
-  //     }
-  //
-  //     carts.refresh();
-  //   } catch (e) {
-  //     print('❌ Lỗi khi cập nhật số lượng: $e');
-  //   }
-  // }
+  void updateProductQuantity(int shopId, int productId, int quantity) {
+    var shop = carts.firstWhere((s) => s.shopId == shopId);
+    var item = shop.cartItemDTOList.firstWhere((item) => item.productId == productId);
+    item.quantity = quantity;
+    item.totalPrice = (item.price! * quantity)!;
+    carts.refresh();
+  }
 
-  /// **Xóa một sản phẩm khỏi giỏ hàng**
-  void removeItem(int shopId, int productId) async {
-    try {
-      // Gọi API để xóa sản phẩm
-      ///  await cartService.removeCartItem(shopId, productId);
+  void updateOptionQuantity(int shopId, int productId, int optionId, int quantity) {
+    var shop = carts.firstWhere((s) => s.shopId == shopId);
+    var item = shop.cartItemDTOList.firstWhere((item) => item.productId == productId);
+    var option = item.cartItemOptionDTOList.firstWhere((opt) => opt.optionId == optionId);
+    option.quantity = quantity;
+    carts.refresh();
+  }
 
-      // Cập nhật danh sách giỏ hàng
-      var shop = carts.firstWhere((s) => s.shopId == shopId);
+  void updateSize(int shopId, int productId, CartItemOption newSize) {
+    var shop = carts.firstWhere((s) => s.shopId == shopId);
+    var item = shop.cartItemDTOList.firstWhere((item) => item.productId == productId);
+    item.cartItemOptionDTOList.removeWhere((opt) => opt.typeId == 2);
+    item.cartItemOptionDTOList.add(newSize);
+    carts.refresh();
+  }
+
+  void removeItem(int shopId, int productId) {
+    var shop = carts.firstWhere((s) => s.shopId == shopId);
+    if (shop != null) {
       shop.cartItemDTOList.removeWhere((item) => item.productId == productId);
 
       // Nếu shop không còn sản phẩm nào, xóa shop khỏi giỏ hàng
@@ -124,40 +116,33 @@ class CartController extends GetxController {
       }
 
       carts.refresh();
-    } catch (e) {
-      print('❌ Lỗi khi xóa sản phẩm: $e');
     }
   }
 
-  /// **Xóa toàn bộ shop khỏi giỏ hàng**
-  void removeShop(int shopId) async {
-    try {
-      // Gọi API để xóa toàn bộ shop
-      /// await cartService.removeShop(shopId);
-
-      // Cập nhật danh sách giỏ hàng
-      carts.removeWhere((s) => s.shopId == shopId);
-      carts.refresh();
-    } catch (e) {
-      print('❌ Lỗi khi xóa shop: $e');
-    }
+  void removeShop(int shopId) {
+    carts.removeWhere((s) => s.shopId == shopId);
+    carts.refresh();
   }
 
-  /// **Tính tổng tiền của các mục đã chọn**
   double getTotalAmount() {
     double total = 0;
     for (var shop in carts) {
       for (var item in shop.cartItemDTOList) {
         if (selectedItems[shop.shopId]?.contains(item.productId) ?? false) {
           total += item.totalPrice;
+          for (var option in item.cartItemOptionDTOList) {
+            total += (option.price ?? 0) * option.quantity;
+          }
         }
       }
     }
     return total;
   }
 
-  /// **Định dạng tiền tệ**
+
+
   String formatCurrency(double amount) {
-    return '${amount.toStringAsFixed(0)}đ';
+    return '${amount.toStringAsFixed(0).replaceAllMapped(RegExp(r'\B(?=(\d{3})+(?!\d))'), (match) => '.')}đ';
   }
+
 }

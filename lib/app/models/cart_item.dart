@@ -7,8 +7,8 @@ class CartItem {
   final String productName;
   final String? image;
   final double? price;
-  final double totalPrice;
-  final int quantity;
+  late final double totalPrice;
+  late final int quantity;
   final List<CartItemOption> cartItemOptionDTOList;
 
   CartItem({

@@ -95,37 +95,31 @@ class CartView extends StatelessWidget {
   /// Widget to display a single cart item
   Widget _buildCartItem(int shopId, CartItem item) {
     return Card(
-      margin: EdgeInsets.zero, // Loại bỏ margin để dịch sang trái
+      margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
-        padding: const EdgeInsets.all(8), // Giảm padding
+        padding: const EdgeInsets.all(12),
         child: Column(
           children: [
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start, // Dịch sang trái
               children: [
-                // Checkbox to select the item
-                Expanded(
-                  flex: 0, // Tránh đẩy nội dung khác
-                  child: Obx(() {
-                    bool isSelected = controller.isItemSelected(shopId, item.productId);
-                    return Checkbox(
-                      value: isSelected,
-                      onChanged: (bool? value) {
-                        controller.toggleItemSelection(shopId, item.productId, value ?? false);
-                      },
-                    );
-                  }),
-                ),
+                // Checkbox chọn sản phẩm
+                Obx(() {
+                  bool isSelected = controller.selectedItems[shopId]?.contains(item.productId) ?? false;
+                  return Checkbox(
+                    value: isSelected,
+                    onChanged: (bool? value) {
+                      controller.toggleItemSelection(shopId, item.productId, value ?? false);
+                    },
+                  );
+                }),
 
-                // Product image
+                // Hình ảnh sản phẩm
                 ClipRRect(
                   borderRadius: BorderRadius.circular(12),
                   child: Image.network(
-                    (item.image != null && item.image!.isNotEmpty)
-                        ? item.image!
-                        : 'https://via.placeholder.com/100',
+                    item.image ?? 'https://via.placeholder.com/100',
                     width: 100,
                     height: 100,
                     fit: BoxFit.cover,
@@ -140,23 +134,24 @@ class CartView extends StatelessWidget {
                   ),
                 ),
 
-                const SizedBox(width: 8), // Giảm khoảng trống giữa hình ảnh và thông tin
+                const SizedBox(width: 12),
 
-                // Product details (name, size, price, quantity)
+                // Thông tin sản phẩm
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      // Tên sản phẩm
                       Text(
                         item.productName,
                         style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 4),
 
-                      // Size dropdown
+                      // Chọn Size
                       if (item.cartItemOptionDTOList.any((option) => option.typeId == 2))
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 0),
+                          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
                           decoration: BoxDecoration(
                             color: Colors.grey[300],
                             borderRadius: BorderRadius.circular(4),
@@ -174,7 +169,7 @@ class CartView extends StatelessWidget {
                                   .toList(),
                               onChanged: (newSize) {
                                 if (newSize != null) {
-                                  /// controller.updateSize(shopId, item.productId, newSize);
+                                  controller.updateSize(shopId, item.productId, newSize);
                                 }
                               },
                               icon: const Icon(Icons.arrow_drop_down, size: 12),
@@ -183,28 +178,36 @@ class CartView extends StatelessWidget {
                         ),
                       const SizedBox(height: 4),
 
-                      // Price and quantity control
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            "${item.price ?? item.totalPrice / item.quantity}đ",
-                            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                          ),
-                          _buildQuantityControl(
-                            shopId: shopId,
-                            productId: item.productId,
-                            quantity: item.quantity,
-                          ),
-                        ],
+                      // Giá sản phẩm
+                      Text(
+                        "${controller.formatCurrency(item.price ?? item.totalPrice / item.quantity)}",
+                        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
                 ),
+
+                // Nút xóa sản phẩm
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.close),
+                      onPressed: () => controller.removeItem(shopId, item.productId),
+                    ),
+                    const SizedBox(height: 14),
+                    _buildQuantityControl(
+                      shopId: shopId,
+                      productId: item.productId,
+                      quantity: item.quantity,
+                    ),
+                  ],
+                ),
+
               ],
             ),
 
-            // Toppings (if any)
+            // **Hiển thị danh sách Food Option**
             if (item.cartItemOptionDTOList.any((option) => option.typeId == 3))
               Padding(
                 padding: const EdgeInsets.only(top: 12),
@@ -219,7 +222,7 @@ class CartView extends StatelessWidget {
                       children: [
                         Text(option.optionName),
                         Text(
-                          "${option.price}đ",
+                          "${controller.formatCurrency(option.price ?? 0)}",
                           style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                         ),
                         _buildQuantityControl(
@@ -233,6 +236,11 @@ class CartView extends StatelessWidget {
                         .toList(),
                   ],
                 ),
+              )
+            else
+              const Padding(
+                padding: EdgeInsets.only(top: 12),
+                child: Text("Không có lựa chọn thêm nào", style: TextStyle(color: Colors.grey)),
               ),
           ],
         ),
@@ -242,47 +250,68 @@ class CartView extends StatelessWidget {
 
 
   /// Widget to handle quantity control (+ and - buttons)
+  /// Widget thay đổi số lượng
   Widget _buildQuantityControl({
     required int shopId,
     required int productId,
-    int? optionId,
+    int? optionId, // Nếu có optionId, nghĩa là điều chỉnh FoodOption
     required int quantity,
   }) {
     return Container(
       height: 24,
-      width: 50,
+      width: 70,
       decoration: BoxDecoration(
         border: Border.all(color: Colors.grey),
         borderRadius: BorderRadius.circular(6),
       ),
-      child: Expanded(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            IconButton(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          // Nút giảm
+          Flexible(
+            child: IconButton(
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(),
               icon: const Icon(Icons.remove, size: 12),
               onPressed: () {
                 if (quantity > 1) {
-                  // controller.updateQuantity(shopId, productId, quantity - 1);
+                  if (optionId == null) {
+                    controller.updateProductQuantity(shopId, productId, quantity - 1);
+                  } else {
+                    controller.updateOptionQuantity(shopId, productId, optionId, quantity - 1);
+                  }
                 }
               },
             ),
-            Text(
-              '$quantity',
-              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
-            ),
-            IconButton(
-              icon: const Icon(Icons.add, size: 12),
+          ),
+
+          // Hiển thị số lượng
+          Text(
+            "$quantity",
+            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+            textAlign: TextAlign.center,
+          ),
+
+          // Nút tăng
+          Flexible(
+            child: IconButton(
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(),
+              icon: const Icon(Icons.add, size: 16),
               onPressed: () {
-                // controller.updateQuantity(shopId, productId, quantity + 1);
+                if (optionId == null) {
+                  controller.updateProductQuantity(shopId, productId, quantity + 1);
+                } else {
+                  controller.updateOptionQuantity(shopId, productId, optionId, quantity + 1);
+                }
               },
             ),
-          ],
-        ),
-      )
-
+          ),
+        ],
+      ),
     );
   }
+
 
   /// Widget to display the total amount and checkout button
   Widget _buildTotalSection() {
