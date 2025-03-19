@@ -61,41 +61,58 @@ class CartView extends StatelessWidget {
   /// Widget to display a shop and its items
   Widget _buildShopSection(Cart shop) {
     return Card(
-      margin: const EdgeInsets.all(10),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Shop header with checkbox and name
-          ListTile(
-            leading: Obx(() {
-              bool isShopSelected = controller.isShopSelected(shop.shopId);
-              return Checkbox(
-                value: isShopSelected,
-                onChanged: (bool? value) {
-                  controller.toggleShopSelection(shop.shopId, value ?? false);
-                },
-              );
-            }),
-            title: Text(shop.shopName, style: const TextStyle(fontWeight: FontWeight.bold)),
-            trailing: IconButton(
-              icon: const Icon(Icons.close),
-              onPressed: () => controller.removeShop(shop.shopId),
-            ),
-          ),
+      margin: const EdgeInsets.all(8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center, // Đảm bảo các item nằm trên cùng 1 hàng
+              children: [
+                const SizedBox(width: 8),
+                // Checkbox chọn shop
+                Obx(() {
+                  bool isShopSelected = controller.isShopSelected(shop.shopId);
+                  return Checkbox(
+                    value: isShopSelected,
+                    onChanged: (bool? value) {
+                      controller.toggleShopSelection(shop.shopId, value ?? false);
+                    },
+                  );
+                }),
 
-          // List of items in the shop
-          Column(
-            children: shop.cartItemDTOList.map((item) => _buildCartItem(shop.shopId, item)).toList(),
-          ),
-        ],
-      ),
+                // Icon cửa hàng + tên cửa hàng
+                const Icon(Icons.store, size: 24, color: Colors.blue),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    shop.shopName,
+                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+
+                // Nút xóa shop
+                IconButton(
+                  icon: const Icon(Icons.close),
+                  onPressed: () => controller.removeShop(shop.shopId),
+                ),
+                const SizedBox(width: 8),
+              ],
+            ),
+
+            // Danh sách sản phẩm
+            Column(
+              children: shop.cartItemDTOList.map((item) => _buildCartItem(shop.shopId, item)).toList(),
+            ),
+          ],
+        ),
     );
   }
 
   /// Widget to display a single cart item
   Widget _buildCartItem(int shopId, CartItem item) {
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
+      margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(12),
@@ -248,8 +265,6 @@ class CartView extends StatelessWidget {
     );
   }
 
-
-  /// Widget to handle quantity control (+ and - buttons)
   /// Widget thay đổi số lượng
   Widget _buildQuantityControl({
     required int shopId,
@@ -312,7 +327,6 @@ class CartView extends StatelessWidget {
     );
   }
 
-
   /// Widget to display the total amount and checkout button
   Widget _buildTotalSection() {
     return Container(
@@ -321,26 +335,33 @@ class CartView extends StatelessWidget {
         color: Colors.white,
         border: Border(top: BorderSide(color: Colors.grey)),
       ),
-      child: Column(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Obx(() {
             double totalAmount = controller.getTotalAmount();
             return Text(
               "Tổng tiền: ${controller.formatCurrency(totalAmount)}",
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             );
           }),
-          const SizedBox(height: 10),
-          ElevatedButton(
-            onPressed: () {},
-            child: const Text("Thanh toán"),
-            style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
-              textStyle: const TextStyle(fontSize: 16),
+          OutlinedButton(
+            onPressed: () => controller.proceedToCheckout(), // Gọi hàm kiểm tra và chuyển trang
+            style: OutlinedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              side: const BorderSide(color: Colors.black, width: 1.5),
+            ),
+            child: const Text(
+              "Thanh toán",
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black),
             ),
           ),
         ],
       ),
     );
   }
+
 }

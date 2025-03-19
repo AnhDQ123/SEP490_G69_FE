@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import '../../../models/cart.dart';
 import '../../../models/cart_item_option.dart';
+import '../../../routes/app_pages.dart';
 import '../../../services/cart_service.dart';
 
 class CartController extends GetxController {
@@ -139,10 +140,47 @@ class CartController extends GetxController {
     return total;
   }
 
-
-
   String formatCurrency(double amount) {
     return '${amount.toStringAsFixed(0).replaceAllMapped(RegExp(r'\B(?=(\d{3})+(?!\d))'), (match) => '.')}đ';
+  }
+
+  void proceedToCheckout() {
+    // Kiểm tra nếu có ít nhất một sản phẩm được chọn
+    bool hasSelectedProduct = selectedItems.values.any((products) => products.isNotEmpty);
+
+    if (!hasSelectedProduct) {
+      Get.snackbar(
+        "Thông báo",
+        "Vui lòng chọn ít nhất một sản phẩm để thanh toán",
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      return;
+    }
+
+    // Lọc ra danh sách các shop chứa sản phẩm đã chọn
+    List<Cart> selectedCarts = carts
+        .map((shop) {
+      var selectedItemsInShop = shop.cartItemDTOList
+          .where((item) => selectedItems[shop.shopId]?.contains(item.productId) ?? false)
+          .toList();
+
+      if (selectedItemsInShop.isNotEmpty) {
+        return Cart(
+          id: shop.shopId, // Giả định sử dụng shopId làm id
+          userId: 1, // Thay bằng userId thực tế nếu có
+          shopId: shop.shopId,
+          shopName: shop.shopName,
+          price: selectedItemsInShop.fold(0.0, (sum, item) => sum + item.totalPrice),
+          cartItemDTOList: selectedItemsInShop,
+        );
+      }
+      return null;
+    })
+        .whereType<Cart>() // Loại bỏ giá trị null
+        .toList();
+
+    // Chuyển sang màn hình Checkout và truyền danh sách sản phẩm đã chọn
+    Get.toNamed(Routes.CHECKOUT, arguments: selectedCarts);
   }
 
 }

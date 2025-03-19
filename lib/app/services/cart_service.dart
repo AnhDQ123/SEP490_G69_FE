@@ -23,4 +23,19 @@ class CartService {
     }
     return null;
   }
+
+  Future<Product> fetchProductDetails(int productId) async {
+    try {
+      final response = await http.get(Uri.parse('http://localhost:8080/api/product/$productId'));
+      if (response.statusCode == 200) {
+        return Product.fromJson(jsonDecode(response.body));
+      } else {
+        throw Exception('Failed to load product details');
+      }
+    } catch (e) {
+      print('❌ Lỗi khi lấy chi tiết sản phẩm: $e');
+      rethrow;
+    }
+  }
+
 }

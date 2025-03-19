@@ -4,9 +4,11 @@ part of 'app_pages.dart';
 abstract class Routes {
   Routes._();
   static const CART = _Paths.CART;
+  static const CHECKOUT = _Paths.CHECKOUT;
 }
 
 abstract class _Paths {
   _Paths._();
   static const CART = '/cart';
+  static const CHECKOUT = '/checkout';
 }
