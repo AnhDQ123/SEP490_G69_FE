@@ -24,20 +24,17 @@ class MyOrderController extends GetxController {
   Future<void> loadOrders() async {
     try {
       isLoading.value = true;
+      int ownerId = 23; // Thay ownerId theo ý bạn
 
-      List<int> orderIds = [1, 2, 3, 4, 5]; // 🔹 Danh sách ID thực tế
-      List<Order> orders = await _orderService.fetchOrders(orderIds);
+      // Gọi API cho từng trạng thái và assign vào các danh sách tương ứng
+      pendingOrders.assignAll(await _orderService.fetchOrdersByOwnerAndStatus(id: ownerId, status: "PENDING"));
+      preparingOrders.assignAll(await _orderService.fetchOrdersByOwnerAndStatus(id: ownerId, status: "PROCESSING"));
+      shippingOrders.assignAll(await _orderService.fetchOrdersByOwnerAndStatus(id: ownerId, status: "SHIPPING"));
+      deliveredOrders.assignAll(await _orderService.fetchOrdersByOwnerAndStatus(id: ownerId, status: "DELIVERED"));
+      canceledOrders.assignAll(await _orderService.fetchOrdersByOwnerAndStatus(id: ownerId, status: "CANCELLED"));
+      returnedOrders.assignAll(await _orderService.fetchOrdersByOwnerAndStatus(id: ownerId, status: "RETURNED"));
 
-      print("📦 Đã nhận ${orders.length} đơn hàng từ API");
-
-      // 🔹 Phân loại đơn hàng theo trạng thái
-      pendingOrders.assignAll(orders.where((o) => o.shipMethodId == 1));
-      preparingOrders.assignAll(orders.where((o) => o.shipMethodId == 2));
-      shippingOrders.assignAll(orders.where((o) => o.shipMethodId == 3));
-      deliveredOrders.assignAll(orders.where((o) => o.shipMethodId == 4));
-      canceledOrders.assignAll(orders.where((o) => o.shipMethodId == 5));
-      returnedOrders.assignAll(orders.where((o) => o.shipMethodId == 6));
-
+      print("📦 Đã nhận các đơn hàng theo trạng thái từ API");
     } catch (e) {
       print("❌ Lỗi khi loadOrders: $e");
     } finally {
