@@ -48,8 +48,8 @@ class ProductDetailController extends GetxController {
         supplier: '',         // Giá trị mặc định
         quantity: 1,
         category: '',         // Giá trị mặc định
-        discount: 0.0,        // Giá trị mặc định
-        image: 'https://via.placeholder.com/80',
+        discount: 0.12,        // Giá trị mặc định
+        image: 'https://images.squarespace-cdn.com/content/v1/53883795e4b016c956b8d243/1551438228969-H0FPV1FO3W5B0QL328AS/chup-anh-thuc-an-1.jpg',
         description: '',      // Giá trị mặc định
         rate: 5,
         shop: 'Shop A',
@@ -63,8 +63,8 @@ class ProductDetailController extends GetxController {
         supplier: '',
         quantity: 1,
         category: '',
-        discount: 0.0,
-        image: 'https://via.placeholder.com/80',
+        discount: 0.12,
+        image: 'https://images.squarespace-cdn.com/content/v1/53883795e4b016c956b8d243/1551438228969-H0FPV1FO3W5B0QL328AS/chup-anh-thuc-an-1.jpg',
         description: '',
         rate: 5,
         shop: 'Shop B',
@@ -82,8 +82,8 @@ class ProductDetailController extends GetxController {
         supplier: '',
         quantity: 1,
         category: '',
-        discount: 0.0,
-        image: 'https://via.placeholder.com/80',
+        discount: 0.12,
+        image: 'https://images.squarespace-cdn.com/content/v1/53883795e4b016c956b8d243/1551438228969-H0FPV1FO3W5B0QL328AS/chup-anh-thuc-an-1.jpg',
         description: '',
         rate: 5,
         shop: 'Shop C',
@@ -97,8 +97,8 @@ class ProductDetailController extends GetxController {
         supplier: '',
         quantity: 1,
         category: '',
-        discount: 0.0,
-        image: 'https://via.placeholder.com/80',
+        discount: 0.12,
+        image: 'https://images.squarespace-cdn.com/content/v1/53883795e4b016c956b8d243/1551438228969-H0FPV1FO3W5B0QL328AS/chup-anh-thuc-an-1.jpg',
         description: '',
         rate: 5,
         shop: 'Shop D',

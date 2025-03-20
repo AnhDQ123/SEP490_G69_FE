@@ -11,10 +11,10 @@ class ProductItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final double originalPrice =
         double.tryParse(item['defaultPrice']?.toString() ?? '0') ?? 0;
-    final discount = (item['discount'] ?? 0);
+    final discount = (item['discount'] ?? 0); // discount là số thập phân, ví dụ 0.12 => 12%
     final bool hasDiscount = discount > 0;
     final double finalPrice =
-    hasDiscount ? originalPrice * (1 - discount / 100) : originalPrice;
+    hasDiscount ? originalPrice * (1 - discount) : originalPrice;
 
     return InkWell(
       onTap: () {
@@ -61,7 +61,8 @@ class ProductItem extends StatelessWidget {
                           height: 150,
                           width: double.infinity,
                           color: Colors.grey.shade200,
-                          child: const Icon(Icons.image, color: Colors.grey),
+                          child:
+                          const Icon(Icons.image, color: Colors.grey),
                         ),
                       ),
                       if (hasDiscount)
@@ -76,7 +77,7 @@ class ProductItem extends StatelessWidget {
                               borderRadius: BorderRadius.circular(4),
                             ),
                             child: Text(
-                              '-${discount.toStringAsFixed(0)}%',
+                              '-${(discount * 100).toStringAsFixed(0)}%',
                               style: const TextStyle(
                                 fontSize: 12,
                                 color: Colors.white,
@@ -94,8 +95,8 @@ class ProductItem extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 8),
                   child: Text(
                     item['name'] ?? '',
-                    style:
-                    const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+                    style: const TextStyle(
+                        fontSize: 12, fontWeight: FontWeight.w500),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),

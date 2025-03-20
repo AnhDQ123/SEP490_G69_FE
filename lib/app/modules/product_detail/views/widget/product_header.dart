@@ -4,7 +4,6 @@ import '../../controllers/product_detail_controller.dart';
 import 'review_item.dart';
 import 'package:intl/intl.dart';
 
-
 // Helper function: Xây dựng URL ảnh đầy đủ
 String buildImageUrl(String imageUrl) {
   if (imageUrl.isEmpty) return 'assets/images/placeholder.png';
@@ -19,7 +18,6 @@ class ProductHeader extends StatelessWidget {
   const ProductHeader({Key? key, required this.controller}) : super(key: key);
 
   String formatPrice(double price) {
-    // Tạo định dạng không có ký hiệu tiền tệ (symbol: '') và không có số thập phân (decimalDigits: 0)
     final formatter = NumberFormat.currency(locale: 'vi_VN', symbol: '', decimalDigits: 0);
     return formatter.format(price) + "đ";
   }
@@ -78,33 +76,31 @@ class ProductHeader extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.normal,
-                    height: 0.9,
+                    height: 1.2,
                   ),
                   textHeightBehavior: const TextHeightBehavior(
                     applyHeightToFirstAscent: false,
                   ),
                 ),
-                Transform.translate(
-                  offset: const Offset(0, -18),
-                  child: Row(
-                    children: [
-                      ...List.generate(5, (index) {
-                        double rating = controller.currentProduct.rate;
-                        if (rating >= index + 1) {
-                          return const Icon(Icons.star, color: Colors.amber, size: 14);
-                        } else if (rating > index && rating < index + 1) {
-                          return const Icon(Icons.star_half, color: Colors.amber, size: 14);
-                        } else {
-                          return const Icon(Icons.star_border, color: Colors.amber, size: 14);
-                        }
-                      }),
-                      const SizedBox(width: 4),
-                      Text(
-                        '${controller.currentProduct.rate}',
-                        style: const TextStyle(fontSize: 12), // Giảm số của rating
-                      ),
-                    ],
-                  ),
+                const SizedBox(height: 4),
+                Row(
+                  children: [
+                    ...List.generate(5, (index) {
+                      double rating = controller.currentProduct.rate;
+                      if (rating >= index + 1) {
+                        return const Icon(Icons.star, color: Colors.amber, size: 14);
+                      } else if (rating > index && rating < index + 1) {
+                        return const Icon(Icons.star_half, color: Colors.amber, size: 14);
+                      } else {
+                        return const Icon(Icons.star_border, color: Colors.amber, size: 14);
+                      }
+                    }),
+                    const SizedBox(width: 4),
+                    Text(
+                      '${controller.currentProduct.rate}',
+                      style: const TextStyle(fontSize: 12),
+                    ),
+                  ],
                 ),
               ],
             );
@@ -112,7 +108,7 @@ class ProductHeader extends StatelessWidget {
         ),
         const SizedBox(height: 8),
 
-        // 4) Tiêu đề "Mô tả sản phẩm" và nội dung (không có nền, bố cục đẹp hơn)
+        // 4) Tiêu đề "Mô tả sản phẩm" và nội dung
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: Obx(() {
@@ -122,21 +118,21 @@ class ProductHeader extends StatelessWidget {
               children: [
                 Row(
                   children: const [
-                    Icon(Icons.info_outline, size: 18, color: Color.fromRGBO(212, 163, 115, 1)), // Icon màu đồng
-                    SizedBox(width: 6), // Khoảng cách giữa icon và chữ
+                    Icon(Icons.info_outline, size: 18, color: Color.fromRGBO(212, 163, 115, 1)),
+                    SizedBox(width: 6),
                     Text(
                       'Mô tả sản phẩm',
                       style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                     ),
                   ],
                 ),
-                const SizedBox(height: 6), // Khoảng cách nhỏ giữa tiêu đề và nội dung
+                const SizedBox(height: 6),
                 Text(
                   controller.currentProduct.description,
                   style: TextStyle(
                     fontSize: 12,
-                    color: Colors.grey[700], // Màu chữ xám
-                    height: 1.4, // Khoảng cách giữa các dòng
+                    color: Colors.grey[700],
+                    height: 1.4,
                   ),
                   maxLines: isExpanded ? null : 3,
                   overflow: isExpanded ? TextOverflow.visible : TextOverflow.ellipsis,
@@ -149,7 +145,7 @@ class ProductHeader extends StatelessWidget {
                     child: Text(
                       isExpanded ? 'Thu gọn ▲' : 'Xem thêm ▼',
                       style: const TextStyle(
-                        color: Color.fromRGBO(212, 163, 115, 1), // Màu theo yêu cầu
+                        color: Color.fromRGBO(212, 163, 115, 1),
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
                       ),
@@ -160,8 +156,6 @@ class ProductHeader extends StatelessWidget {
             );
           }),
         ),
-
-
         const SizedBox(height: 8),
 
         // 7) Đánh giá sản phẩm
@@ -204,37 +198,34 @@ class ProductHeader extends StatelessWidget {
           ),
         ),
 
-        // 5) Hiển thị giá và số lượng mua (đẹp hơn)
+        // 5) Hiển thị giá và số lượng mua
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
           child: Obx(() {
-            // Tính giá tổng = currentPrice * số lượng
             final totalPrice = controller.currentPrice * controller.quantity.value;
             return Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                // Giá sản phẩm (to và nổi bật hơn)
                 Text(
                   'Giá: ${formatPrice(totalPrice)}',
                   style: const TextStyle(
-                    fontSize: 18, // Tăng kích thước chữ
+                    fontSize: 18,
                     fontWeight: FontWeight.bold,
                     color: Colors.red,
                   ),
                 ),
-                // Bộ đếm số lượng sản phẩm
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(30), // Bo tròn viền
-                    border: Border.all(color: Colors.grey.shade300), // Viền xám nhẹ
+                    borderRadius: BorderRadius.circular(30),
+                    border: Border.all(color: Colors.grey.shade300),
                   ),
                   child: Row(
                     children: [
                       IconButton(
                         onPressed: controller.decrementQuantity,
-                        icon: const Icon(Icons.remove, size: 18, color: Colors.black54), // Giảm màu icon
-                        splashRadius: 20, // Tạo hiệu ứng bấm đẹp hơn
+                        icon: const Icon(Icons.remove, size: 18, color: Colors.black54),
+                        splashRadius: 20,
                       ),
                       Text(
                         '${controller.quantity.value}',
@@ -242,8 +233,8 @@ class ProductHeader extends StatelessWidget {
                       ),
                       IconButton(
                         onPressed: controller.incrementQuantity,
-                        icon: const Icon(Icons.add, size: 18, color: Colors.black54), // Giảm màu icon
-                        splashRadius: 20, // Tạo hiệu ứng bấm đẹp hơn
+                        icon: const Icon(Icons.add, size: 18, color: Colors.black54),
+                        splashRadius: 20,
                       ),
                     ],
                   ),
@@ -253,14 +244,11 @@ class ProductHeader extends StatelessWidget {
           }),
         ),
 
-
         const SizedBox(height: 8),
 
-
-
-        // 6) Hiển thị lựa chọn Size (tối ưu giao diện, giảm khoảng trắng)
+        // 6) Hiển thị lựa chọn Size
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0), // Giảm padding dọc
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
           child: Obx(() {
             final availableSizes = controller.currentProduct.foodOptions
                 .where((option) => option.typeId == 2)
@@ -269,10 +257,9 @@ class ProductHeader extends StatelessWidget {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Tiêu đề có icon
                 Row(
                   children: const [
-                    Icon(Icons.format_size, size: 18, color: Color.fromRGBO(212, 163, 115, 1)), // Icon size
+                    Icon(Icons.format_size, size: 18, color: Color.fromRGBO(212, 163, 115, 1)),
                     SizedBox(width: 6),
                     Text(
                       'Chọn Size:',
@@ -280,12 +267,10 @@ class ProductHeader extends StatelessWidget {
                     ),
                   ],
                 ),
-                const SizedBox(height: 4), // Giảm khoảng cách giữa tiêu đề và size
-
-                // Các tùy chọn size
+                const SizedBox(height: 4),
                 Wrap(
-                  spacing: 8.0, // Khoảng cách ngang giữa các size
-                  runSpacing: 4.0, // Giảm khoảng cách dọc nếu xuống hàng
+                  spacing: 8.0,
+                  runSpacing: 4.0,
                   children: List.generate(availableSizes.length, (index) {
                     final isSelected = controller.selectedSizeIndex.value == index;
                     return GestureDetector(
@@ -298,7 +283,7 @@ class ProductHeader extends StatelessWidget {
                             color: isSelected ? const Color.fromRGBO(212, 163, 115, 1) : Colors.grey.shade300,
                             width: 1.5,
                           ),
-                          borderRadius: BorderRadius.circular(20), // Bo góc
+                          borderRadius: BorderRadius.circular(20),
                           boxShadow: isSelected
                               ? [
                             BoxShadow(
@@ -330,4 +315,3 @@ class ProductHeader extends StatelessWidget {
     );
   }
 }
-

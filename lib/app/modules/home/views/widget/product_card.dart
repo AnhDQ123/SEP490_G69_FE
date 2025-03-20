@@ -28,9 +28,11 @@ class ProductCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double cardWidth = isCompact ? UtilsReponsive.width(180, context) : UtilsReponsive.width(210, context);
-    double cardHeight = isCompact ? UtilsReponsive.height(85, context) : UtilsReponsive.height(110, context);
-    double imageSize = isCompact ? UtilsReponsive.width(70, context) : UtilsReponsive.width(80, context);
+    // Tăng kích thước của card để chứa ảnh lớn và text bên cạnh
+    double cardWidth = isCompact ? UtilsReponsive.width(220, context) : UtilsReponsive.width(260, context);
+    double cardHeight = isCompact ? UtilsReponsive.height(100, context) : UtilsReponsive.height(130, context);
+    // Tăng kích thước ảnh
+    double imageSize = isCompact ? UtilsReponsive.width(100, context) : UtilsReponsive.width(120, context);
     double fontSize = isCompact ? UtilsReponsive.formatFontSize(10, context) : UtilsReponsive.formatFontSize(12, context);
 
     return InkWell(
@@ -45,11 +47,11 @@ class ProductCard extends StatelessWidget {
           context,
           left: (index == 0) ? 12 : 6,
           right: (index == total - 1) ? 12 : 6,
-        ), // ✅ Responsive margin
-        padding: UtilsReponsive.paddingAll(context, padding: 8), // ✅ Responsive padding
+        ),
+        padding: UtilsReponsive.paddingAll(context, padding: 8),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(UtilsReponsive.width(8, context)), // ✅ Responsive border radius
+          borderRadius: BorderRadius.circular(UtilsReponsive.width(8, context)),
           border: Border.all(color: Colors.grey.shade300, width: 0.5),
           boxShadow: [
             BoxShadow(
@@ -61,7 +63,7 @@ class ProductCard extends StatelessWidget {
         ),
         child: Row(
           children: [
-            // Ảnh sản phẩm (Bên trái)
+            // Ảnh sản phẩm bên trái với kích thước lớn hơn
             ClipRRect(
               borderRadius: BorderRadius.circular(UtilsReponsive.width(6, context)),
               child: Image.network(
@@ -71,15 +73,14 @@ class ProductCard extends StatelessWidget {
                 fit: BoxFit.cover,
               ),
             ),
-            SizedBoxConst.sizeWith(context: context, size: 10), // ✅ Responsive spacing
-
-            // Thông tin sản phẩm (Bên phải)
+            SizedBox(width: UtilsReponsive.width(20, context)),
+            // Thông tin sản phẩm bên phải
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // ✅ Tên sản phẩm
+                  // Tên sản phẩm
                   Text(
                     product.name ?? 'Tên sản phẩm',
                     style: TextStyle(
@@ -90,14 +91,12 @@ class ProductCard extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
-
-                  SizedBoxConst.size(context: context, size: 4), // 🔹 Responsive spacing
-
-                  // ✅ Row hiển thị rating
+                  SizedBox(height: UtilsReponsive.height(4, context)),
+                  // Row hiển thị rating
                   Row(
                     children: [
                       Icon(Icons.star, color: Colors.orange, size: fontSize),
-                      SizedBoxConst.sizeWith(context: context, size: 2),
+                      SizedBox(width: UtilsReponsive.width(2, context)),
                       Text(
                         product.rate != null ? product.rate!.toStringAsFixed(1) : '0.0',
                         style: TextStyle(
@@ -107,10 +106,8 @@ class ProductCard extends StatelessWidget {
                       ),
                     ],
                   ),
-
-                  SizedBoxConst.size(context: context, size: 4), // 🔹 Responsive spacing
-
-                  // ✅ `Đã bán` luôn nằm dưới `Rate`
+                  SizedBox(height: UtilsReponsive.height(4, context)),
+                  // Hiển thị số lượng đã bán
                   SizedBox(
                     width: double.infinity,
                     child: Text(
