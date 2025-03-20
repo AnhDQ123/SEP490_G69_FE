@@ -22,51 +22,45 @@ class CartController extends GetxController {
 
       Product product = await cartService.fetchProductDetails(productId);
 
+      // 🔥 Tìm Size đã chọn trong giỏ hàng
+      CartItemOption? selectedSize;
+      for (var shop in carts) {
+        for (var item in shop.cartItemDTOList) {
+          if (item.productId == productId) {
+            selectedSize = item.cartItemOptionDTOList
+                .firstWhereOrNull((opt) => opt.typeId == 2); // Lấy Size từ giỏ hàng
+            break;
+          }
+        }
+      }
+
+      // 🔥 Lấy danh sách Size từ API nhưng giữ nguyên giá từ giỏ hàng nếu có
       List<CartItemOption> sizes = product.foodOptions
           .where((opt) => opt.typeId == 2)
           .map((opt) => CartItemOption(
         optionId: opt.id,
         typeId: opt.typeId,
         optionName: opt.name,
-        price: opt.price,
-        totalPrice: opt.price, // Giá ban đầu = giá Size
+        price: (selectedSize != null && selectedSize.optionId == opt.id)
+            ? selectedSize.price // ✅ Giữ nguyên giá từ giỏ hàng
+            : opt.price, // Nếu chưa có, lấy từ API
+        totalPrice: (selectedSize != null && selectedSize.optionId == opt.id)
+            ? selectedSize.price// ✅ Cập nhật tổng giá
+            : opt.price * 1,
         quantity: 1,
         cartItemId: 0,
       ))
           .toList();
 
       productOptions[productId] = sizes;
-
-      // ✅ Cập nhật giá của Size trong giỏ hàng
-      for (var shop in carts) {
-        for (var item in shop.cartItemDTOList) {
-          if (item.productId == productId) {
-            CartItemOption? selectedSize = item.cartItemOptionDTOList
-                .firstWhereOrNull((opt) => opt.typeId == 2);
-
-            if (selectedSize != null) {
-              // 🔹 Đối chiếu optionId để lấy giá từ productOptions
-              CartItemOption? matchedSize = sizes.firstWhereOrNull(
-                      (size) => size.optionId == selectedSize!.optionId);
-
-              if (matchedSize != null) {
-                selectedSize.price = matchedSize.price;
-                selectedSize.totalPrice = matchedSize.price! * item.quantity;
-                item.totalPrice = selectedSize.totalPrice!;
-              }
-            }
-          }
-        }
-      }
-
       carts.refresh(); // ✅ Cập nhật UI
+
     } catch (e) {
       print('❌ Lỗi khi lấy option sản phẩm: $e');
     } finally {
       isLoadingOptions(false);
     }
   }
-
 
   /// **Thay đổi Size của sản phẩm trong giỏ hàng**
   void updateSize(int shopId, int productId, CartItemOption newSize) {
@@ -138,23 +132,20 @@ class CartController extends GetxController {
       if (cartData != null) {
         carts.assignAll(cartData);
 
-        // 🔹 Gọi API để lấy danh sách Size cho từng sản phẩm trong Cart
         for (var shop in carts) {
           for (var item in shop.cartItemDTOList) {
-            await fetchProductOptions(item.productId); // Đợi lấy Size trước khi cập nhật giá
+            await fetchProductOptions(item.productId); // ✅ Lấy danh sách Size trước
 
-            // ✅ Đối chiếu `optionId` với danh sách Size để cập nhật `price`
+            // ✅ Chỉ lấy giá từ `cartItemOptionDTOList`
             CartItemOption? selectedSize = item.cartItemOptionDTOList
                 .firstWhereOrNull((opt) => opt.typeId == 2);
 
-            if (selectedSize != null) {
-              CartItemOption? matchedSize = productOptions[item.productId]
-                  ?.firstWhereOrNull((size) => size.optionId == selectedSize.optionId);
+            print("🔍 DEBUG | Sản phẩm: ${item.productName}, Size: ${selectedSize?.optionName}, Giá: ${selectedSize?.price}");
 
-              if (matchedSize != null) {
-                selectedSize.price = matchedSize.price; // Cập nhật giá từ Product API
-                item.totalPrice = selectedSize.price! * item.quantity; // Cập nhật tổng giá
-              }
+            if (selectedSize != null) {
+              item.totalPrice = (selectedSize.price ?? 0) * item.quantity;
+            } else {
+              item.totalPrice = 0; // Nếu không có size, giá mặc định = 0
             }
           }
         }
@@ -165,7 +156,6 @@ class CartController extends GetxController {
       isLoading(false);
     }
   }
-
 
 
   /// **Chọn tất cả sản phẩm**
