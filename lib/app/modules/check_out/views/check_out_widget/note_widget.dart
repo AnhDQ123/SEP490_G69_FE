@@ -1,16 +1,25 @@
 import 'package:flutter/material.dart';
-import '../../../../models/check_out.dart';
-import 'package:get/get.dart';
-import '../../controllers/check_out_controller.dart';
+import '../../../../models/order.dart';
 
-class NoteWidget extends StatelessWidget {
-  final CheckoutInfo checkout;
-  const NoteWidget({Key? key, required this.checkout}) : super(key: key);
+class NoteWidget extends StatefulWidget {
+  final Order order; // Added parameter
+  const NoteWidget({Key? key, required this.order}) : super(key: key);
+
+  @override
+  _NoteWidgetState createState() => _NoteWidgetState();
+}
+
+class _NoteWidgetState extends State<NoteWidget> {
+  final TextEditingController _noteController = TextEditingController();
+
+  @override
+  void dispose() {
+    _noteController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.find<CheckOutController>();
-    final textController = TextEditingController(text: checkout.note);
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -18,8 +27,8 @@ class NoteWidget extends StatelessWidget {
         const SizedBox(width: 8),
         Expanded(
           child: TextField(
-            controller: textController,
-            onChanged: (value) => controller.updateNote(value),
+            controller: _noteController,
+            maxLines: 3,
             decoration: InputDecoration(
               hintText: "Ghi chú cho người giao hàng",
               hintStyle: const TextStyle(fontSize: 10),
@@ -28,7 +37,6 @@ class NoteWidget extends StatelessWidget {
               ),
               contentPadding: const EdgeInsets.all(8),
             ),
-            maxLines: 3,
           ),
         ),
       ],

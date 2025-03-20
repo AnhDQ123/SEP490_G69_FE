@@ -1,47 +1,55 @@
 import 'package:flutter/material.dart';
-import '../../../../models/check_out.dart';
-import '../../../../models/checkout_option.dart';
+import 'package:intl/intl.dart';
+import '../../../../models/order.dart';
+import '../../../../models/order_item.dart';
+import '../../../../models/order_item_option.dart';
 
 class OrderItemsSectionWidget extends StatelessWidget {
-  final CheckoutInfo checkout;
-  const OrderItemsSectionWidget({Key? key, required this.checkout}) : super(key: key);
+  final Order order;
+  const OrderItemsSectionWidget({Key? key, required this.order}) : super(key: key);
 
-  // Hàm nhóm các món theo shopName
-  Map<String, List<CheckoutItem>> _groupItemsByShop(List<CheckoutItem> items) {
-    final Map<String, List<CheckoutItem>> shopMap = {};
-    for (var item in items) {
-      shopMap.putIfAbsent(item.shopName, () => []).add(item);
-    }
-    return shopMap;
+  // Nhóm các item theo shopName (với Order chỉ có 1 shop, ta dùng luôn order.shopName)
+  Map<String, List<OrderItem>> _groupItemsByShop(List<OrderItem> items) {
+    return {order.shopName: items};
   }
 
-  // Tính giá món chính (có discount)
-  double _calculateBasePrice(CheckoutItem item) {
-    final discountRate = (100 - item.discount) / 100;
+  // Tính giá món chính sau discount
+  double _calculateDiscountedPrice(OrderItem item) {
+    // Giả sử item.discount là số thập phân (ví dụ 0.12 cho 12%)
+    final discountRate = (100 - (item.discount * 100)) / 100;
     return item.price * item.quantity * discountRate;
   }
 
-  // Tính giá của 1 option (có quantity)
-  int _calculateOptionPrice(CheckoutOption option) {
+  // Giá gốc của món
+  double _calculateOriginalPrice(OrderItem item) {
+    return item.price * item.quantity;
+  }
+
+  // Tính giá của 1 option
+  double _calculateOptionPrice(OrderItemOption option) {
     return option.price * option.quantity;
+  }
+
+  // Hàm định dạng giá theo VNĐ
+  String _formatPrice(double price) {
+    final formatter =
+    NumberFormat.currency(locale: 'vi_VN', symbol: '₫', decimalDigits: 0);
+    return formatter.format(price);
   }
 
   @override
   Widget build(BuildContext context) {
-    if (checkout.items.isEmpty) {
+    if (order.items.isEmpty) {
       return const SizedBox.shrink();
     }
-
-    final groupedItems = _groupItemsByShop(checkout.items);
-
+    final groupedItems = _groupItemsByShop(order.items);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Hiển thị danh sách các shop
+        // Hiển thị danh sách shop (ở đây chỉ có 1 shop)
         ...groupedItems.entries.map((entry) {
           final shopName = entry.key;
           final shopItems = entry.value;
-
           return Padding(
             padding: const EdgeInsets.only(bottom: 16.0),
             child: Card(
@@ -49,7 +57,7 @@ class OrderItemsSectionWidget extends StatelessWidget {
               margin: const EdgeInsets.symmetric(horizontal: 8),
               child: Padding(
                 padding: const EdgeInsets.all(12.0),
-                child: _buildShopSection(shopName, shopItems),
+                child: _buildShopSection(shopName, shopItems, context),
               ),
             ),
           );
@@ -58,8 +66,9 @@ class OrderItemsSectionWidget extends StatelessWidget {
     );
   }
 
-  // Widget hiển thị 1 shop (tên shop + danh sách món)
-  Widget _buildShopSection(String shopName, List<CheckoutItem> shopItems) {
+  // Widget hiển thị 1 shop: tiêu đề shop, voucher (nếu có) và danh sách món
+  Widget _buildShopSection(
+      String shopName, List<OrderItem> shopItems, BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -71,128 +80,174 @@ class OrderItemsSectionWidget extends StatelessWidget {
             Text(
               shopName,
               style: const TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-              ),
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black),
             ),
           ],
         ),
-        // Hiển thị voucher của shop nếu có
-        if (checkout.vouchers.containsKey(shopName))
+        // Hiển thị voucher nếu có (dựa trên order: voucherId và voucherAmount)
+        if (order.voucherId != null && order.voucherAmount > 0)
           Padding(
-            padding: const EdgeInsets.only(top: 4.0, bottom: 4.0),
+            padding: const EdgeInsets.symmetric(vertical: 4.0),
             child: Row(
               children: [
                 const Icon(Icons.discount, size: 14, color: Colors.redAccent),
                 const SizedBox(width: 4),
                 Text(
-                  "Voucher: ${checkout.vouchers[shopName]!.name} (-${checkout.vouchers[shopName]!.value.toInt()}đ)",
-                  style: const TextStyle(fontSize: 10, color: Colors.redAccent),
+                  "Voucher: -${(order.voucherAmount * 100).toInt()}%",
+                  style:
+                  const TextStyle(fontSize: 10, color: Colors.redAccent),
                 ),
               ],
             ),
           ),
         const Divider(),
         // Danh sách món của shop
-        ...shopItems.map((item) => _buildMainItemWithOptions(item)).toList(),
+        ...shopItems
+            .map((item) => _buildMainItemWithOptions(item, context))
+            .toList(),
       ],
     );
   }
 
-  // Widget hiển thị món chính cùng option của nó
-  Widget _buildMainItemWithOptions(CheckoutItem item) {
-    final basePrice = _calculateBasePrice(item);
+  // Widget hiển thị món chính và các option (đã lọc theo typeId)
+  Widget _buildMainItemWithOptions(OrderItem item, BuildContext context) {
+    final discountedPrice = _calculateDiscountedPrice(item);
+    final originalPrice = _calculateOriginalPrice(item);
+    // Lấy option với typeId == 2 làm size, nếu có
+    OrderItemOption? sizeOption;
+    try {
+      sizeOption = item.options.firstWhere((option) => option.typeId == 2);
+    } catch (e) {
+      sizeOption = null;
+    }
+    // Lọc các option có typeId == 1
+    final additionalOptions =
+    item.options.where((option) => option.typeId == 1).toList();
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildMainItemRow(item, basePrice),
-        if (item.options.isNotEmpty)
+        _buildMainItemRow(item, originalPrice, discountedPrice, sizeOption, context),
+        if (additionalOptions.isNotEmpty)
           Column(
-            children: item.options.map((option) {
+            children: additionalOptions.map((option) {
               final optionPrice = _calculateOptionPrice(option);
-              return _buildOptionRow(option, optionPrice);
+              return _buildOptionRow(option, optionPrice, context);
             }).toList(),
           ),
       ],
     );
   }
 
-  // Row hiển thị món chính: ảnh, tên + quantity, size, giá
-  Widget _buildMainItemRow(CheckoutItem item, double basePrice) {
+  // Row hiển thị món chính: ảnh (với discount overlay), thông tin món (tên, quantity, size nếu có) và giá
+  Widget _buildMainItemRow(OrderItem item, double originalPrice, double discountedPrice,
+      OrderItemOption? sizeOption, BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6.0),
       child: Row(
         children: [
-          // Ảnh món chính (60x60)
-          ClipRRect(
-            borderRadius: BorderRadius.circular(4),
-            child: Image.network(
-              item.imageUrl,
-              width: 60,
-              height: 60,
-              fit: BoxFit.cover,
-            ),
+          // Ảnh món chính với overlay discount (nếu discount > 0)
+          Stack(
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(4),
+                child: Image.network(
+                  item.imageUrl,
+                  width: 60,
+                  height: 60,
+                  fit: BoxFit.cover,
+                ),
+              ),
+              if (item.discount > 0)
+                Positioned(
+                  top: 0,
+                  left: 0,
+                  child: Container(
+                    padding: const EdgeInsets.all(2),
+                    color: Colors.redAccent,
+                    child: Text(
+                      "${(item.discount * 100).toInt()}%",
+                      style: const TextStyle(fontSize: 8, color: Colors.white),
+                    ),
+                  ),
+                ),
+            ],
           ),
           const SizedBox(width: 8),
-          // Thông tin món chính với chữ nhỏ hơn
+          // Thông tin món: số lượng, tên, và nếu có Size (từ option typeId == 2)
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "${item.quantity} x ${item.name}",
+                  "${item.quantity} x ${item.dishName}",
                   style: const TextStyle(fontSize: 10, color: Colors.black),
                 ),
-                if (item.size.isNotEmpty)
+                if (sizeOption != null)
                   Padding(
                     padding: const EdgeInsets.only(top: 2.0),
                     child: Text(
-                      "Size: ${item.size}",
+                      "Size: ${sizeOption.optionName}",
                       style: const TextStyle(fontSize: 8, color: Colors.black54),
                     ),
                   ),
               ],
             ),
           ),
-          // Giá món chính
-          Text(
-            "${basePrice.toStringAsFixed(0)}đ",
-            style: const TextStyle(fontSize: 10, color: Colors.black),
+          // Hiển thị giá: nếu có discount thì hiển thị giá cũ bị gạch và giá mới
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              if (item.discount > 0)
+                Text(
+                  _formatPrice(originalPrice),
+                  style: const TextStyle(
+                    fontSize: 9,
+                    color: Colors.grey,
+                    decoration: TextDecoration.lineThrough,
+                  ),
+                ),
+              Text(
+                _formatPrice(discountedPrice),
+                style: const TextStyle(fontSize: 10, color: Colors.black),
+              ),
+            ],
           ),
         ],
       ),
     );
   }
 
-  // Row hiển thị 1 option: ảnh, tên + quantity, giá
-  Widget _buildOptionRow(CheckoutOption option, int optionPrice) {
+  // Row hiển thị 1 option (loại typeId == 1)
+  Widget _buildOptionRow(OrderItemOption option, double optionPrice, BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(left: 48.0, bottom: 6.0),
       child: Row(
         children: [
-          // Ảnh option (40x40)
-          if (option.imageUrl.isNotEmpty)
-            ClipRRect(
-              borderRadius: BorderRadius.circular(4),
-              child: Image.network(
-                option.imageUrl,
-                width: 40,
-                height: 40,
-                fit: BoxFit.cover,
-              ),
-            )
-          else
-            const SizedBox(width: 40, height: 40),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(4),
+            child: Image.network(
+              // Sử dụng placeholder nếu không có ảnh thực
+              'https://via.placeholder.com/40',
+              width: 40,
+              height: 40,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) =>
+              const Icon(Icons.error, size: 40),
+            ),
+          ),
           const SizedBox(width: 8),
           Expanded(
             child: Text(
-              "${option.quantity} x ${option.name}",
+              "${option.quantity} x ${option.optionName}",
               style: const TextStyle(fontSize: 9, color: Colors.black),
+              overflow: TextOverflow.ellipsis,
             ),
           ),
           Text(
-            "${optionPrice}đ",
+            _formatPrice(optionPrice),
             style: const TextStyle(fontSize: 9, color: Colors.black),
           ),
         ],

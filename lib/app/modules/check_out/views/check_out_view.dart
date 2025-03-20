@@ -1,17 +1,17 @@
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/check_out_controller.dart';
 import 'check_out_widget/address_section_widget.dart';
-import 'check_out_widget/cost_summary_widget.dart';
 import 'check_out_widget/delivery_time_widget.dart';
-import 'check_out_widget/disclaimer_widget.dart';
+import 'check_out_widget/order_items_section_widget.dart';
+import 'check_out_widget/voucher_section_widget.dart';
+import 'check_out_widget/shipping_method_widget.dart';
 import 'check_out_widget/extra_tool_widget.dart';
 import 'check_out_widget/note_widget.dart';
-import 'check_out_widget/order_items_section_widget.dart';
+import 'check_out_widget/cost_summary_widget.dart';
 import 'check_out_widget/payment_method_widget.dart';
-import 'check_out_widget/shipping_method_widget.dart';
-import 'check_out_widget/voucher_section_widget.dart';
-
+import 'check_out_widget/disclaimer_widget.dart';
 
 class CheckOutView extends GetView<CheckOutController> {
   const CheckOutView({Key? key}) : super(key: key);
@@ -29,54 +29,74 @@ class CheckOutView extends GetView<CheckOutController> {
         ),
       ),
       body: Obx(() {
-        final checkout = controller.checkoutInfo.value;
-        return SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          child: Column(
-            children: [
-              AddressSectionWidget(checkout: checkout),
-              const SizedBox(height: 12),
-              DeliveryTimeWidget(checkout: checkout),
-              const SizedBox(height: 12),
-              const Divider(height: 1, thickness: 1),
-              OrderItemsSectionWidget(checkout: checkout),
-              const Divider(height: 1, thickness: 1),
-              VoucherSectionWidget(checkout: checkout),
-              const SizedBox(height: 12),
-               ShippingMethodWidget(),
-              const SizedBox(height: 12),
-              ExtraToolWidget(checkout: checkout),
-              const SizedBox(height: 12),
-              NoteWidget(checkout: checkout),
-              const SizedBox(height: 12),
-              const Divider(height: 1, thickness: 1),
-              CostSummaryWidget(checkout: checkout),
-              const SizedBox(height: 12),
-              PaymentMethodWidget(checkout: checkout),
-              const SizedBox(height: 12),
-              const DisclaimerWidget(),
-              const SizedBox(height: 12),
-            ],
-          ),
-        );
+        if (controller.isLoading.value) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (controller.errorMessage.isNotEmpty) {
+          return Center(child: Text(controller.errorMessage.value));
+        } else if (controller.orders.isEmpty) {
+          return const Center(child: Text("Không có đơn hàng nào"));
+        } else {
+          // Nếu có nhiều đơn hàng, bạn có thể hiển thị theo shop; ví dụ ở đây hiển thị đơn hàng đầu tiên
+          final order = controller.orders.first;
+          return SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                AddressSectionWidget(order: order),
+                const SizedBox(height: 12),
+                DeliveryTimeWidget(order: order),
+                const SizedBox(height: 12),
+                const Divider(height: 1, thickness: 1),
+                OrderItemsSectionWidget(order: order),
+                const Divider(height: 1, thickness: 1),
+                VoucherSectionWidget(order: order),
+                const SizedBox(height: 12),
+                ShippingMethodWidget(order: order),
+                const SizedBox(height: 12),
+                ExtraToolWidget(order: order),
+                const SizedBox(height: 12),
+                NoteWidget(order: order),
+                const SizedBox(height: 12),
+                const Divider(height: 1, thickness: 1),
+                CostSummaryWidget(order: order),
+                const SizedBox(height: 12),
+                PaymentMethodWidget(order: order),
+                const SizedBox(height: 12),
+                const DisclaimerWidget(),
+                const SizedBox(height: 12),
+              ],
+            ),
+          );
+        }
       }),
       bottomNavigationBar: SafeArea(
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           height: 60,
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: mainColor,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
+          child: Obx(() {
+            return ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: mainColor,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
               ),
-            ),
-            onPressed: () async {
-              await controller.placeOrder();
-              // TODO: Xử lý chuyển trang hoặc thông báo thành công
-            },
-            child: const Text("Đặt hàng", style: TextStyle(fontSize: 16)),
-          ),
+              onPressed: controller.isLoading.value
+                  ? null
+                  : () async {
+                if (controller.orders.isNotEmpty) {
+                  final order = controller.orders.first;
+                  await controller.placeOrder(order);
+                  Get.toNamed('/my-order', arguments: order);
+                }
+              },
+
+              child: controller.isLoading.value
+                  ? const CircularProgressIndicator(color: Colors.white)
+                  : const Text("Đặt hàng", style: TextStyle(fontSize: 16)),
+            );
+          }),
         ),
       ),
     );
