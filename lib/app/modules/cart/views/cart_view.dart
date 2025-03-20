@@ -4,7 +4,6 @@ import '../../../models/cart_item.dart';
 import '../controllers/cart_controller.dart';
 import '../../../models/cart.dart';
 import '../../../models/cart_item_option.dart';
-import 'package:collection/collection.dart';
 
 class CartView extends StatelessWidget {
   final CartController controller = Get.put(CartController());
@@ -282,35 +281,51 @@ class CartView extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text("Thêm lựa chọn", style: TextStyle(fontWeight: FontWeight.bold)),
+                      const Text(
+                        "Thêm lựa chọn",
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 6), // Tạo khoảng cách giữa tiêu đề và danh sách
 
                       // 🔹 Hiển thị các lựa chọn đã chọn trong giỏ hàng
                       if (selectedFoodOptions.isNotEmpty)
                         Column(
                           children: selectedFoodOptions.map((option) {
-                            return Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                // Hiển thị Option đã chọn
-                                Text(
-                                    option.optionName,
-                                    style: const TextStyle(fontSize: 12),
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 4.0), // Khoảng cách giữa các options
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  // Hiển thị Option đã chọn
+                                  Expanded(
+                                    flex: 2,
+                                    child: Text(
+                                      option.optionName,
+                                      style: const TextStyle(fontSize: 14),
+                                    ),
                                   ),
 
-                                // Hiển thị giá của lựa chọn bổ sung
-                                Text(
-                                  "${controller.formatCurrency(option.price * option.quantity)}",
-                                  style: const TextStyle(fontSize: 16),
-                                ),
+                                  // Hiển thị giá của lựa chọn bổ sung (Căn cứng độ rộng)
+                                  Expanded(
+                                    flex: 1,
+                                    child: Text(
+                                      "${controller.formatCurrency(option.price * option.quantity)}",
+                                      textAlign: TextAlign.center,
+                                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                    ),
+                                  ),
 
-                                // Dùng chung bộ điều khiển số lượng
-                                _buildQuantityControl(
-                                  shopId: shopId,
-                                  productId: item.productId,
-                                  optionId: option.optionId,
-                                  quantity: option.quantity,
-                                ),
-                              ],
+                                  const SizedBox(width: 40),
+
+                                  // Dùng chung bộ điều khiển số lượng
+                                  _buildQuantityControl(
+                                      shopId: shopId,
+                                      productId: item.productId,
+                                      optionId: option.optionId,
+                                      quantity: option.quantity,
+                                  ),
+                                ],
+                              ),
                             );
                           }).toList(),
                         ),
@@ -333,9 +348,12 @@ class CartView extends StatelessWidget {
               // Nếu sản phẩm không có lựa chọn nào, hiển thị thông báo
                 const Padding(
                   padding: EdgeInsets.only(top: 8),
-                  child: Text("Không có lựa chọn thêm nào",
-                      style: TextStyle(fontSize: 12, color: Colors.grey)),
+                  child: Text(
+                    "Không có lựa chọn thêm nào",
+                    style: TextStyle(fontSize: 12, color: Colors.grey),
+                  ),
                 ),
+
             ],
           ),
         ),
@@ -363,7 +381,7 @@ class CartView extends StatelessWidget {
                     title: Text(size.optionName,
                         style: const TextStyle(fontSize: 16)),
                     trailing:
-                        Text("${controller.formatCurrency(size.price ?? 0)}"),
+                        Text("${controller.formatCurrency(size.price)}"),
                     onTap: () {
                       // 🔹 Cập nhật size đã chọn vào giỏ hàng
                       controller.updateSize(shopId, productId, size);
@@ -493,10 +511,9 @@ class CartView extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Obx(() {
-            double totalAmount = controller.getTotalAmount();
             return Text(
-              "Tổng tiền: ${controller.formatCurrency(totalAmount)}",
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              "Tổng tiền: ${controller.formatCurrency(controller.getTotalAmount())}",
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             );
           }),
           OutlinedButton(

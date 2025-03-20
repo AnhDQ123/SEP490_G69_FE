@@ -79,7 +79,7 @@ class CartController extends GetxController {
     item.cartItemOptionDTOList.add(newSize);
 
     // 🔹 Cập nhật lại giá sản phẩm theo size mới (tránh lỗi LateInitializationError)
-    item.totalPrice = (newSize.price ?? 0) * item.quantity;
+    item.totalPrice = (newSize.price) * item.quantity;
     carts.refresh();
   }
 
@@ -151,25 +151,29 @@ class CartController extends GetxController {
   }
 
 
-  /// **Lấy tổng tiền của giỏ hàng**
+  /// **Lấy tổng tiền của giỏ hàng (bao gồm Size & Food Options)**
   double getTotalAmount() {
     double total = 0;
-
     for (var shop in carts) {
       for (var item in shop.cartItemDTOList) {
         if (selectedItems[shop.shopId]?.contains(item.productId) ?? false) {
-          var selectedSize = item.cartItemOptionDTOList
-              .firstWhereOrNull((opt) => opt.typeId == 2);
+          // 🔹 Lấy giá từ Size đã chọn
+          var selectedSize = item.cartItemOptionDTOList.firstWhereOrNull((opt) => opt.typeId == 2);
           double sizePrice = selectedSize?.price ?? 0;
 
-          total += sizePrice * item.quantity;
+          // 🔹 Lấy tổng giá từ Food Options đã chọn
+          double foodOptionsPrice = item.cartItemOptionDTOList
+              .where((opt) => opt.typeId == 3) // Chỉ lấy các lựa chọn Food Option
+              .fold(0.0, (sum, opt) => sum + (opt.price * opt.quantity));
+
+          // ✅ Tính toán chính xác:
+          // Giá sản phẩm = (Giá Size * Số lượng sản phẩm) + Tổng giá Food Options
+          total += (sizePrice * item.quantity) + foodOptionsPrice;
         }
       }
     }
     return total;
   }
-
-
 
   /// **Định dạng tiền VNĐ**
   String formatCurrency(double amount) {
@@ -201,7 +205,7 @@ class CartController extends GetxController {
             print("🔍 DEBUG | Sản phẩm: ${item.productName}, Size: ${selectedSize?.optionName}, Giá: ${selectedSize?.price}");
 
             if (selectedSize != null) {
-              item.totalPrice = (selectedSize.price ?? 0) * item.quantity;
+              item.totalPrice = (selectedSize.price) * item.quantity;
             } else {
               item.totalPrice = 0; // Nếu không có size, giá mặc định = 0
             }
