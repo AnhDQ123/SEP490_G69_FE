@@ -44,62 +44,62 @@ class CartService {
     }
   }
 
-  /// Lấy danh sách Size của sản phẩm và cập nhật vào giỏ hàng
-  Future<void> fetchProductOptions(int productId) async {
-    try {
-      final controller = Get.find<CartController>();
+    /// Lấy danh sách Size của sản phẩm và cập nhật vào giỏ hàng
+    Future<void> fetchProductOptions(int productId) async {
+      try {
+        final controller = Get.find<CartController>();
 
-      print("🟢 Bắt đầu lấy thông tin sản phẩm ID: $productId");
+        print("🟢 Bắt đầu lấy thông tin sản phẩm ID: $productId");
 
-      Product product = await fetchProductDetails(productId);
+        Product product = await fetchProductDetails(productId);
 
-      // Lọc danh sách chỉ lấy option typeId = 2 (size)
-      List<CartItemOption> sizes = product.foodOptions
-          .where((opt) => opt.typeId == 2)
-          .map((opt) => CartItemOption(
-        optionId: opt.id,
-        typeId: opt.typeId,
-        optionName: opt.name,
-        price: opt.price,
-        cartItemId: 0,
-        quantity: 1,
-      ))
-          .toList();
+        // Lọc danh sách chỉ lấy option typeId = 2 (size)
+        List<CartItemOption> sizes = product.foodOptions
+            .where((opt) => opt.typeId == 2)
+            .map((opt) => CartItemOption(
+          optionId: opt.id,
+          typeId: opt.typeId,
+          optionName: opt.name,
+          price: opt.price,
+          cartItemId: 0,
+          quantity: 1,
+        ))
+            .toList();
 
-      // ✅ Log danh sách option của product
-      print("✅ Lấy được ${sizes.length} kích thước cho sản phẩm ID: $productId");
+        // ✅ Log danh sách option của product
+        print("✅ Lấy được ${sizes.length} kích thước cho sản phẩm ID: $productId");
 
-      // Cập nhật danh sách option vào controller
-      controller.productOptions[productId] = sizes;
+        // Cập nhật danh sách option vào controller
+        controller.productOptions[productId] = sizes;
 
-      // ✅ Cập nhật giá hiển thị trong cart
-      for (var shop in controller.carts) {
-        for (var item in shop.cartItemDTOList) {
-          if (item.productId == productId) {
-            CartItemOption? selectedSize = item.cartItemOptionDTOList
-                .firstWhereOrNull((opt) => opt.typeId == 2);
+        // ✅ Cập nhật giá hiển thị trong cart
+        for (var shop in controller.carts) {
+          for (var item in shop.cartItemDTOList) {
+            if (item.productId == productId) {
+              CartItemOption? selectedSize = item.cartItemOptionDTOList
+                  .firstWhereOrNull((opt) => opt.typeId == 2);
 
-            if (selectedSize != null) {
-              CartItemOption? sizeFromProduct = sizes.firstWhereOrNull(
-                      (size) => size.optionId == selectedSize.optionId);
+              if (selectedSize != null) {
+                CartItemOption? sizeFromProduct = sizes.firstWhereOrNull(
+                        (size) => size.optionId == selectedSize.optionId);
 
-              if (sizeFromProduct != null) {
-                print("🔹 Giá size '${sizeFromProduct.optionName}' của sản phẩm ID: $productId là ${sizeFromProduct.price}");
-                item.totalPrice = sizeFromProduct.price ?? 0;
-                print("✅ Đã cập nhật giá totalPrice = ${item.totalPrice} cho sản phẩm ID: $productId");
-              } else {
-                print("⚠️ Không tìm thấy giá cho size ID: ${selectedSize.optionId}");
+                if (sizeFromProduct != null) {
+                  print("🔹 Giá size '${sizeFromProduct.optionName}' của sản phẩm ID: $productId là ${sizeFromProduct.price}");
+                  item.totalPrice = sizeFromProduct.price ?? 0;
+                  print("✅ Đã cập nhật giá totalPrice = ${item.totalPrice} cho sản phẩm ID: $productId");
+                } else {
+                  print("⚠️ Không tìm thấy giá cho size ID: ${selectedSize.optionId}");
+                }
               }
             }
           }
         }
+
+        controller.carts.refresh();  // Cập nhật lại giỏ hàng
+
+      } catch (e) {
+        print("❌ Lỗi khi lấy danh sách Size: $e");
       }
-
-      controller.carts.refresh();  // Cập nhật lại giỏ hàng
-
-    } catch (e) {
-      print("❌ Lỗi khi lấy danh sách Size: $e");
     }
-  }
 
 }
