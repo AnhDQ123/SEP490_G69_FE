@@ -5,9 +5,9 @@ class CartItemOption {
   final String optionName;
   final String? image;
   final int cartItemId;
-  final double? price;
-  final double? totalPrice;
-  late final int quantity;
+  double? price;
+  double? totalPrice;
+  int quantity;
 
   CartItemOption({
     this.id,

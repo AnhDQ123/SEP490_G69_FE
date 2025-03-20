@@ -6,10 +6,9 @@ class CartItem {
   final int productId;
   final String productName;
   final String? image;
-  final double? price;
-  late final double totalPrice;
-  late final int quantity;
-  final List<CartItemOption> cartItemOptionDTOList;
+  int quantity; // ❌ Bỏ `final`
+  double totalPrice;
+  List<CartItemOption> cartItemOptionDTOList;
 
   CartItem({
     required this.id,
@@ -17,25 +16,24 @@ class CartItem {
     required this.productId,
     required this.productName,
     this.image,
-    this.price,
+    required this.quantity, // ✅ Không cần `final`
     required this.totalPrice,
-    required this.quantity,
     required this.cartItemOptionDTOList,
   });
 
   factory CartItem.fromJson(Map<String, dynamic> json) {
     return CartItem(
-      id: json['id'],
-      cartId: json['cartId'],
-      productId: json['productId'],
-      productName: json['productName'],
+      id: json['id'] ?? 0,
+      cartId: json['cartId'] ?? 0,
+      productId: json['productId'] ?? 0,
+      productName: json['productName'] ?? '',
       image: json['image'],
-      price: json['price'] != null ? (json['price'] as num).toDouble() : null,
-      totalPrice: (json['totalPrice'] as num).toDouble(),
-      quantity: json['quantity'],
-      cartItemOptionDTOList: (json['cartItemOptionDTOList'] as List)
-          .map((item) => CartItemOption.fromJson(item))
-          .toList(),
+      quantity: json['quantity'] ?? 1, // ✅ Giá trị có thể thay đổi sau
+      totalPrice: (json['totalPrice'] as num?)?.toDouble() ?? 0.0,
+      cartItemOptionDTOList: (json['cartItemOptionDTOList'] as List?)
+          ?.map((item) => CartItemOption.fromJson(item))
+          .toList() ??
+          [],
     );
   }
 }
