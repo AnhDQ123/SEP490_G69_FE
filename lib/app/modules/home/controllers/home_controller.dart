@@ -2,6 +2,7 @@ import 'package:ffb_fe_flutter/app/models/product.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+
 import '../../../service/home_api_service.dart';
 
 class HomeController extends GetxController {

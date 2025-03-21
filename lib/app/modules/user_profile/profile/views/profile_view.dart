@@ -35,7 +35,15 @@ class ProfileView extends GetView<ProfileController> {
           ),
         ],
       ),
-      bottomNavigationBar: BottomNav(currentIndex: 3),
+      bottomNavigationBar: BottomNav(
+        currentIndex: 3,
+        onItemSelected: (index) {
+          // Xử lý sự kiện khi item được chọn, ví dụ chuyển trang:
+          // Get.toNamed(AppPages.routes[index]);
+          // Hoặc bạn có thể thực hiện hành động khác tại đây.
+        },
+      ),
+
       floatingActionButton: FloatingActionButton(
         onPressed: () => Get.toNamed('/home'),
         backgroundColor: Colors.blue,
