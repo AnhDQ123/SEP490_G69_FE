@@ -12,7 +12,7 @@ part 'app_routes.dart';
 class AppPages {
   AppPages._();
 
-  static const INITIAL = Routes.CHECK_OUT;
+  static const INITIAL = Routes.MY_ORDER;
 
   static final routes = [
     GetPage(

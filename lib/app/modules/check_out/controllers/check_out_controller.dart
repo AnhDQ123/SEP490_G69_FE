@@ -11,7 +11,7 @@ class CheckOutController extends GetxController {
   var isLoading = false.obs;
   var errorMessage = ''.obs;
 
-  List<int> orderIds = [19,20];
+  List<int> orderIds = [21, 22, 23];
 
   @override
   void onInit() {

@@ -8,14 +8,11 @@ class OrderItemsSectionWidget extends StatelessWidget {
   final Order order;
   const OrderItemsSectionWidget({Key? key, required this.order}) : super(key: key);
 
-  // Nhóm các item theo shopName (với Order chỉ có 1 shop, ta dùng luôn order.shopName)
   Map<String, List<OrderItem>> _groupItemsByShop(List<OrderItem> items) {
     return {order.shopName: items};
   }
 
-  // Tính giá món chính sau discount
   double _calculateDiscountedPrice(OrderItem item) {
-    // Giả sử item.discount là số thập phân (ví dụ 0.12 cho 12%)
     final discountRate = (100 - (item.discount * 100)) / 100;
     return item.price * item.quantity * discountRate;
   }
@@ -25,7 +22,6 @@ class OrderItemsSectionWidget extends StatelessWidget {
     return item.price * item.quantity;
   }
 
-  // Tính giá của 1 option
   double _calculateOptionPrice(OrderItemOption option) {
     return option.price * option.quantity;
   }
@@ -46,7 +42,6 @@ class OrderItemsSectionWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Hiển thị danh sách shop (ở đây chỉ có 1 shop)
         ...groupedItems.entries.map((entry) {
           final shopName = entry.key;
           final shopItems = entry.value;
@@ -66,7 +61,6 @@ class OrderItemsSectionWidget extends StatelessWidget {
     );
   }
 
-  // Widget hiển thị 1 shop: tiêu đề shop, voucher (nếu có) và danh sách món
   Widget _buildShopSection(
       String shopName, List<OrderItem> shopItems, BuildContext context) {
     return Column(
@@ -86,7 +80,6 @@ class OrderItemsSectionWidget extends StatelessWidget {
             ),
           ],
         ),
-        // Hiển thị voucher nếu có (dựa trên order: voucherId và voucherAmount)
         if (order.voucherId != null && order.voucherAmount > 0)
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 4.0),
@@ -103,7 +96,6 @@ class OrderItemsSectionWidget extends StatelessWidget {
             ),
           ),
         const Divider(),
-        // Danh sách món của shop
         ...shopItems
             .map((item) => _buildMainItemWithOptions(item, context))
             .toList(),
@@ -111,7 +103,6 @@ class OrderItemsSectionWidget extends StatelessWidget {
     );
   }
 
-  // Widget hiển thị món chính và các option (đã lọc theo typeId)
   Widget _buildMainItemWithOptions(OrderItem item, BuildContext context) {
     final discountedPrice = _calculateDiscountedPrice(item);
     final originalPrice = _calculateOriginalPrice(item);
