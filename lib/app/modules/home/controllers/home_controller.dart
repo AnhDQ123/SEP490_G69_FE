@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 
+import '../../../base/base_common.dart';
 import '../../../service/home_api_service.dart';
 
 class HomeController extends GetxController {
@@ -26,6 +27,8 @@ class HomeController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    final userId = BaseCommon.instance.userId;
+    print('🆔 User đang đăng nhập có ID: $userId');
     fetchCategories();
     fetchAllProducts();
     fetchPopularProducts();

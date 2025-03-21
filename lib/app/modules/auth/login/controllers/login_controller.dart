@@ -1,4 +1,3 @@
-
 import 'package:ffb_fe_flutter/app/resources/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -41,5 +40,3 @@ class LoginController extends BaseController {
     }
   }
 }
-
-

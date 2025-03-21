@@ -66,7 +66,7 @@ class HomeView extends GetView<HomeController> {
                 height: UtilsReponsive.height(60, context), // 🔥 Đặt chiều cao rõ ràng
                 color: Colors.white, // Đảm bảo nền trắng để không bị chìm
                 alignment: Alignment.center, // 🔥 Giữ nội dung ở giữa
-                child: FoodTabs(controller: controller), // Sử dụng trực tiếp `FoodTabs`
+                child: FoodTabs(controller: controller),
               ),
             ),
           ),
@@ -75,17 +75,11 @@ class HomeView extends GetView<HomeController> {
           SliverToBoxAdapter(child: _sectionCard(context, FoodList(controller: controller))),
 
           // 🔹 Khoảng cách cuối
-          SliverToBoxAdapter(child: SizedBoxConst.size(context: context, size: 16)),
+          SliverToBoxAdapter(child: SizedBox(height: UtilsReponsive.height(16, context))),
         ],
       ),
-      bottomNavigationBar: Obx(
-            () => BottomNav(
-          currentIndex: controller.bottomNavIndex.value,
-          onItemSelected: (index) {
-            controller.switchBottomNav(index);
-          },
-        ),
-      ),
+      // Ở trang Home, set sẵn initialIndex là 2 (theo ánh xạ Routes.HOME)
+      bottomNavigationBar: const BottomNav(initialIndex: 2),
     );
   }
 }
@@ -106,9 +100,9 @@ class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
   @override
   Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
     return Container(
-      height: maxExtent, // 🔥 Đảm bảo chiều cao luôn đúng
-      color: Colors.white, // Đảm bảo nền trắng để không bị chìm vào nội dung cuộn
-      alignment: Alignment.center, // 🔥 Giữ nội dung hiển thị chính giữa
+      height: maxExtent,
+      color: Colors.white,
+      alignment: Alignment.center,
       child: child,
     );
   }
@@ -118,4 +112,3 @@ class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
     return maxHeight != oldDelegate.maxHeight || minHeight != oldDelegate.minHeight || child != oldDelegate.child;
   }
 }
-

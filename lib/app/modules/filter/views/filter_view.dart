@@ -8,7 +8,6 @@ import '../../../resources/widget/custom_header.dart';
 import '../../../routes/app_pages.dart';
 import '../controllers/filter_controller.dart';
 
-
 class FilterView extends GetView<FilterController> {
   const FilterView({Key? key}) : super(key: key);
 
@@ -26,16 +25,8 @@ class FilterView extends GetView<FilterController> {
           Expanded(child: ProductList()),
         ],
       ),
-      // Bottom Navigation
-      bottomNavigationBar: Obx(
-            () => BottomNav(
-          currentIndex: controller.bottomNavIndex.value,
-          onItemSelected: (index) {
-            controller.switchBottomNav(index);
-          },
-        ),
-      ),
+      // Gọi BottomNav với initialIndex cố định (ví dụ: 1)
+      bottomNavigationBar: const BottomNav(initialIndex: 1),
     );
   }
 }
-

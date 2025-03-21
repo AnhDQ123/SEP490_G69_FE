@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../modules/user_profile/profile/controllers/profile_controller.dart';
-import '../../routes/app_pages.dart';
+import '../controllers/profile_controller.dart';
+import '../../../../routes/app_pages.dart';
 
 class UserHeader extends StatelessWidget {
   final ProfileController controller = Get.put(ProfileController());
@@ -32,17 +32,19 @@ class UserHeader extends StatelessWidget {
                 ],
               ),
             ),
-
-
             Positioned(
               left: 20,
               bottom: 40,
               child: Row(
                 children: [
-                  CircleAvatar(
+                  // Sử dụng Obx để cập nhật avatar khi dữ liệu thay đổi
+                  Obx(() => CircleAvatar(
                     radius: 45,
                     backgroundColor: Colors.grey.shade400,
-                  ),
+                    backgroundImage: controller.avatarUrl.value.isNotEmpty
+                        ? NetworkImage(controller.avatarUrl.value)
+                        : null,
+                  )),
                   const SizedBox(width: 16),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -54,6 +56,7 @@ class UserHeader extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                       )),
                       const SizedBox(height: 4),
+                      // Có thể hiển thị thêm thông tin khác nếu cần
                     ],
                   ),
                 ],
