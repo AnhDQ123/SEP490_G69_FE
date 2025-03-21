@@ -1,10 +1,13 @@
-import 'package:ffb_fe_flutter/app/models/product.dart';
 import 'package:get/get.dart';
-import '../../../models/extra_option.dart';
-import '../../../service/product_detail_service.dart';
+import 'package:ffb_fe_flutter/app/models/product.dart';
+import 'package:ffb_fe_flutter/app/models/extra_option.dart';
+import 'package:ffb_fe_flutter/app/service/product_detail_service.dart';
+import 'package:ffb_fe_flutter/app/service/cart_api_service.dart';
+
+
+import '../../../models/cartDTO.dart';
 
 class ProductDetailController extends GetxController {
-
   var _product = Rxn<Product>();
   var similarProducts = <Product>[].obs;
   var extraOptions = <ExtraOption>[].obs;
@@ -14,38 +17,41 @@ class ProductDetailController extends GetxController {
   var selectedSizeIndex = 0.obs;
   var isDescriptionExpanded = false.obs;
   var isReviewExpanded = false.obs;
+  var reviews = <dynamic>[].obs;
 
   final ProductDetailApiService apiService = ProductDetailApiService();
+  final CartApiService cartApiService = CartApiService(); // Thêm service giỏ hàng
 
+  // Getter trả về sản phẩm hiện tại, nếu null thì trả về đối tượng mẫu
   Product get currentProduct => _product.value ??
       Product(
         id: 0,
         name: '',
-        manufacturer: '',  // Thêm manufacturer với giá trị mặc định (ví dụ: chuỗi rỗng)
-        supplier: '',      // Thêm supplier
+        manufacturer: '',
+        supplier: '',
         quantity: 0,
-        category: '',      // Thêm category
-        discount: 0.0,     // Thêm discount
+        category: '',
+        discount: 0.0,
         image: '',
         description: '',
         rate: 0.0,
-        shop: '',          // Thêm shop
+        shop: '',
         defaultPrice: 0.0,
         foodOptions: [],
       );
-
 
   @override
   void onInit() {
     super.onInit();
     fetchProductData();
 
+    // Các dữ liệu mẫu cho menuProducts, drinkProducts, reviews...
     menuProducts.assignAll([
       Product(
-        id: 0,
+        id: 1,
         name: 'Thực đơn 1',
-        manufacturer: '',     // Giá trị mặc định
-        supplier: '',         // Giá trị mặc định
+        manufacturer: '',
+        supplier: '',
         quantity: 1,
         category: '',         // Giá trị mặc định
         discount: 0.12,        // Giá trị mặc định
@@ -54,10 +60,10 @@ class ProductDetailController extends GetxController {
         rate: 5,
         shop: 'Shop A',
         defaultPrice: 50000,
-        foodOptions: [],      // Giá trị mặc định
+        foodOptions: [],
       ),
       Product(
-        id: 0,
+        id: 2,
         name: 'Thực đơn 2',
         manufacturer: '',
         supplier: '',
@@ -73,10 +79,9 @@ class ProductDetailController extends GetxController {
       ),
     ]);
 
-
     drinkProducts.assignAll([
       Product(
-        id: 0,
+        id: 3,
         name: 'Đồ uống 1',
         manufacturer: '',
         supplier: '',
@@ -91,7 +96,7 @@ class ProductDetailController extends GetxController {
         foodOptions: [],
       ),
       Product(
-        id: 0,
+        id: 4,
         name: 'Đồ uống 2',
         manufacturer: '',
         supplier: '',
@@ -107,17 +112,16 @@ class ProductDetailController extends GetxController {
       ),
     ]);
 
-    // Gán dữ liệu cứng cho phần đánh giá sản phẩm với ảnh user
     reviews.assignAll([
       {
         'user': 'Nguyễn Văn A',
-        'avatar': 'https://via.placeholder.com/50', // URL ảnh đại diện
+        'avatar': 'https://via.placeholder.com/50',
         'rating': 4.5,
         'comment': 'Sản phẩm rất tốt, chất lượng vượt mong đợi!'
       },
       {
         'user': 'Trần Thị B',
-        'avatar': '', // Không có ảnh, hiển thị icon mặc định
+        'avatar': '',
         'rating': 3.0,
         'comment': 'Chất lượng bình thường, cần cải thiện thêm.'
       },
@@ -130,9 +134,7 @@ class ProductDetailController extends GetxController {
     ]);
   }
 
-
   void fetchProductData() async {
-    // Kiểm tra xem Get.arguments có null không
     final productIdArg = Get.arguments;
     if (productIdArg == null) {
       print("Error: Product ID is null. Cannot fetch product data.");
@@ -152,27 +154,24 @@ class ProductDetailController extends GetxController {
           name: e.name,
           price: e.price,
           imageUrl: e.image.isNotEmpty ? e.image : null,
-          unit: "suất", // Hoặc thay đổi theo logic của bạn
+          unit: "suất",
           selected: false,
           quantity: 1,
         ))
             .toList(),
       );
 
-      List<Product> similar =
-      await apiService.getSimilarProducts(detail.name);
+      List<Product> similar = await apiService.getSimilarProducts(detail.name);
       similarProducts.assignAll(similar);
     } catch (e) {
       print("Error fetching product data: $e");
     }
   }
 
-  /// Phương thức tăng số lượng mua
   void incrementQuantity() {
     quantity.value++;
   }
 
-  /// Phương thức giảm số lượng mua (không cho giảm dưới 1)
   void decrementQuantity() {
     if (quantity.value > 1) {
       quantity.value--;
@@ -182,30 +181,73 @@ class ProductDetailController extends GetxController {
   double get currentPrice {
     if (_product.value == null) return 0;
     double basePrice = _product.value!.defaultPrice;
-    // Lọc danh sách các foodOption có typeId == 2 (đại diện cho size)
     List availableSizes = _product.value!.foodOptions
         .where((option) => option.typeId == 2)
         .toList();
     if (availableSizes.isNotEmpty) {
       int index = selectedSizeIndex.value;
       if (index < availableSizes.length) {
-        // Giá hiển thị: giá cơ bản cộng thêm giá của option size được chọn
         return basePrice + availableSizes[index].price;
       }
     }
     return basePrice;
   }
 
-
   void selectSize(int index) {
     selectedSizeIndex.value = index;
   }
 
+  /// Cập nhật hàm addToCartWithOptions để gọi API
+  void addToCartWithOptions() async {
+    // Tính tổng tiền: giá sản phẩm (bao gồm option size) * số lượng + tổng tiền của extra options
+    final double totalPrice = currentPrice * quantity.value + totalExtraPrice;
 
-  void addToCartWithOptions() {
-    final total = currentPrice * quantity.value + totalExtraPrice;
-    print(
-        "Thêm vào giỏ: ${currentProduct.name}, size index: ${selectedSizeIndex.value}, quantity: ${quantity.value}, Extra: ${_selectedOptionNames()}, total: $total");
+    // Xây dựng danh sách CartItemOptionDTO từ extraOptions được chọn
+    List<CartItemOptionDTO> cartItemOptionDTOList = extraOptions
+        .where((option) => option.selected)
+        .map((option) => CartItemOptionDTO(
+      optionId: int.tryParse(option.id) ?? 0,
+      typeId: 1, // Thay đổi theo logic: 1 hoặc 2 tùy vào loại option
+      optionName: option.name,
+      image: option.imageUrl ?? '',
+      cartItemId: 0, // Backend sẽ gán sau
+      price: option.price,
+      totalPrice: option.price * option.quantity,
+      quantity: option.quantity,
+    ))
+        .toList();
+
+    // Xây dựng CartItemDTO cho sản phẩm hiện tại
+    CartItemDTO cartItemDTO = CartItemDTO(
+      cartId: 0,
+      productId: currentProduct.id,
+      productName: currentProduct.name,
+      image: currentProduct.image,
+      price: currentProduct.defaultPrice,
+      totalPrice: currentPrice * quantity.value,
+      quantity: quantity.value,
+      cartItemOptionDTOList: cartItemOptionDTOList,
+    );
+
+    // Xây dựng đối tượng CartDTO
+    CartDTO cartDTO = CartDTO(
+      id: 0,
+      userId: 2, // Cần thay bằng userId thực tế khi có thông tin người dùng
+      shopId: 0, // Bạn có thể lấy thông tin shop từ currentProduct hoặc logic khác
+      shopName: currentProduct.shop,
+      price: totalPrice,
+      status: "PENDING",
+      cartItemDTOList: [cartItemDTO],
+    );
+
+    try {
+      bool success = await cartApiService.addToCart(cartDTO);
+      if (success) {
+        Get.snackbar("Thành công", "Đã thêm vào giỏ hàng");
+      }
+    } catch (e) {
+      Get.snackbar("Lỗi", "Không thể thêm vào giỏ hàng: $e");
+    }
   }
 
   double get totalExtraPrice {
@@ -215,8 +257,7 @@ class ProductDetailController extends GetxController {
   }
 
   String _selectedOptionNames() {
-    final selected =
-    extraOptions.where((o) => o.selected).map((o) => o.name).toList();
+    final selected = extraOptions.where((o) => o.selected).map((o) => o.name).toList();
     return selected.isEmpty ? 'Không có' : selected.join(', ');
   }
 
@@ -234,9 +275,8 @@ class ProductDetailController extends GetxController {
 
   void addProductToCart(Product product) {
     print("Thêm sản phẩm tương tự vào giỏ: ${product.name} với số lượng ${product.quantity}");
+    // Bạn có thể tương tự xây dựng đối tượng CartDTO từ product này và gọi cartApiService.addToCart(...)
   }
-
-  var reviews = <dynamic>[].obs;
 
   void toggleDescription() {
     isDescriptionExpanded.value = !isDescriptionExpanded.value;

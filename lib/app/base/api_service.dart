@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
+import 'package:get/get_connect/http/src/multipart/form_data.dart';
 import 'package:http/http.dart' as http;
 
 import 'base_common.dart';
@@ -49,21 +50,41 @@ class ApiService {
     throw Exception(json.decode(response.body)['message']);
   }
 
+  // Future<T> fetchDataObjectWithPost<T>(
+  //     String apiUrl, T Function(Map<String, dynamic>) fromJson,
+  //     {required Object body, bool isUsingToken = true}) async {
+  //   final response = await http.post(Uri.parse(apiUrl),
+  //       headers: BaseCommon.instance.headerRequest(isUsingToken: false),
+  //       body: jsonEncode(body));
+  //   log("payload: ${jsonEncode(body)}");
+  //   log('StatusCode ${response.statusCode} - $apiUrl');
+  //   log('Body ${response.body}');
+  //   if (response.statusCode == 200) {
+  //     final data = json.decode(response.body)["data"];
+  //     return fromJson(data);
+  //   }
+  //   throw Exception(json.decode(response.body)['message']);
+  // }
   Future<T> fetchDataObjectWithPost<T>(
       String apiUrl, T Function(Map<String, dynamic>) fromJson,
       {required Object body, bool isUsingToken = true}) async {
     final response = await http.post(Uri.parse(apiUrl),
-        headers: BaseCommon.instance.headerRequest(isUsingToken: false),
+        headers: BaseCommon.instance.headerRequest(isUsingToken: isUsingToken),
         body: jsonEncode(body));
     log("payload: ${jsonEncode(body)}");
     log('StatusCode ${response.statusCode} - $apiUrl');
     log('Body ${response.body}');
+
     if (response.statusCode == 200) {
-      final data = json.decode(response.body)["data"];
+      final Map<String, dynamic> jsonResponse = json.decode(response.body);
+      final Map<String, dynamic> data = jsonResponse.containsKey("data")
+          ? jsonResponse["data"]
+          : jsonResponse; // Nếu không có key "data", dùng trực tiếp jsonResponse
       return fromJson(data);
     }
     throw Exception(json.decode(response.body)['message']);
   }
+
 
   Future<T> fetchDataObjectWithPut<T>(
       String apiUrl, T Function(Map<String, dynamic>) fromJson,
@@ -81,9 +102,9 @@ class ApiService {
   }
 
   Future<bool> validationWithPost(String apiUrl,
-      {required Object body, bool is201 = false}) async {
+      {required Object body, bool is201 = false, bool isUsingToken = true}) async {
     final response = await http.post(Uri.parse(apiUrl),
-        headers: BaseCommon.instance.headerRequest(), body: jsonEncode(body));
+        headers: BaseCommon.instance.headerRequest(isUsingToken: isUsingToken), body: jsonEncode(body));
     log("payload: ${body.toString()}");
     log('StatusCode ${response.statusCode} - $apiUrl');
     log('Body ${response.body}');
@@ -163,4 +184,25 @@ class ApiService {
     }
     throw Exception(json.decode(response.body)['message']);
   }
+
+
+  Future<http.Response> postMultipart(
+      String apiUrl, {
+        required Map<String, String> fields,
+        required List<http.MultipartFile> files,
+        bool isUsingToken = true,
+      }) async {
+    var uri = Uri.parse(apiUrl);
+    var request = http.MultipartRequest("POST", uri);
+
+    request.headers.addAll(BaseCommon.instance.headerRequestForMultipart(isUsingToken: isUsingToken, isMultipart: true));
+    request.fields.addAll(fields);
+    request.files.addAll(files);
+
+    var streamedResponse = await request.send();
+    var response = await http.Response.fromStream(streamedResponse);
+    return response;
+  }
+
+
 }
