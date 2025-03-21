@@ -1,3 +1,4 @@
+import 'package:ffb_fe_flutter/app/modules/cart/views/cart_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ffb_fe_flutter/app/modules/product_detail/views/widget/extra_options_sheet.dart';
@@ -75,10 +76,20 @@ class ProductDetailView extends GetView<ProductDetailController> {
             children: [
               // Nút xem giỏ hàng
               ElevatedButton(
-                onPressed: () => print('Xem giỏ hàng'),
+                onPressed: () {
+                  showModalBottomSheet(
+                    context: Get.context!,
+                    isScrollControlled: true,
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+                    ),
+                    builder: (context) => const CartView(),
+                  );
+                },
                 style: ElevatedButton.styleFrom(
-                  foregroundColor: const Color.fromRGBO(212, 163, 115, 1), backgroundColor: Colors.white, shape: const CircleBorder(),
-                  padding: const EdgeInsets.all(16), // Màu icon phù hợp
+                  foregroundColor: const Color.fromRGBO(212, 163, 115, 1), backgroundColor: Colors.white,
+                  shape: const CircleBorder(),
+                  padding: const EdgeInsets.all(16),
                   shadowColor: Colors.grey.withOpacity(0.5),
                   elevation: 4,
                 ),
@@ -87,6 +98,7 @@ class ProductDetailView extends GetView<ProductDetailController> {
                   color: Color.fromRGBO(212, 163, 115, 1),
                 ),
               ),
+
               const SizedBox(width: 16),
               // Nút thêm vào giỏ hàng
               Expanded(
