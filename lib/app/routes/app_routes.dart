@@ -11,6 +11,12 @@ abstract class Routes {
   static const CHANGE_PASSWORD = _Paths.CHANGE_PASSWORD;
   static const SETTING_LOGOUT = _Paths.SETTING_LOGOUT;
   static const HOME = _Paths.HOME;
+  static const CART = _Paths.CART;
+  static const FILTER = _Paths.FILTER;
+  static const PRODUCT_LIST_SHOP = _Paths.PRODUCT_LIST_SHOP;
+  static const PRODUCT_FORM = _Paths.PRODUCT_FORM;
+  static const PRODUCT_DETAIL = _Paths.PRODUCT_DETAIL;
+  static const PRODUCT_SELECTION = _Paths.PRODUCT_SELECTION;
   static const FORGOT_PASSWORD = _Paths.FORGOT_PASSWORD;
   static const RESET_PASSWORD = _Paths.RESET_PASSWORD;
   static const OTP_VERIFICATION = _Paths.OTP_VERIFICATION;
@@ -29,6 +35,12 @@ abstract class _Paths {
   static const CHANGE_PASSWORD = '/change-password';
   static const SETTING_LOGOUT = '/setting-logout';
   static const HOME = '/home';
+  static const CART = '/cart';
+  static const FILTER = '/filter';
+  static const PRODUCT_LIST_SHOP = '/product-list-shop';
+  static const PRODUCT_FORM = '/product-form';
+  static const PRODUCT_DETAIL = '/product-detail';
+  static const PRODUCT_SELECTION = '/product-selection';
   static const FORGOT_PASSWORD = '/forgot-password';
   static const RESET_PASSWORD = '/reset-password';
   static const OTP_VERIFICATION = '/otp-verification';
