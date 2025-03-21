@@ -5,6 +5,7 @@ import '../../../../models/product.dart';
 import '../../../../resources/responsive_utils.dart';
 import '../../../../resources/text_style.dart';
 import '../../controllers/home_controller.dart';
+import 'package:intl/intl.dart';
 
 class FoodList extends StatelessWidget {
   final HomeController controller;
@@ -231,3 +232,6 @@ class FoodList extends StatelessWidget {
     });
   }
 }
+
+
+

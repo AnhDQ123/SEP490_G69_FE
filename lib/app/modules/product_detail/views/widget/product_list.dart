@@ -37,6 +37,7 @@ class ProductListWidget extends StatelessWidget {
           double discountFraction = (item.discount ?? 0).toDouble();
           double discountedPrice = originalPrice * (1 - discountFraction);
 
+
           return Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
