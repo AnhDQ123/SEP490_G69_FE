@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 
 import '../../modules/cart/controllers/cart_controller.dart';
+import '../../routes/app_pages.dart';
 
 class BottomNav extends StatelessWidget {
   final int currentIndex;
