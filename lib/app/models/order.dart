@@ -8,12 +8,16 @@ class Order {
   final int shipMethodId;
   final int paymentMethodId;
   final int? voucherId;
-  final double voucherAmount; // thêm trường voucherAmount
-  final int? discountId;
+  final double voucherAmount;
   final String address;
   final double total;
   final DateTime createdAt;
+  final String status;
+  final String? reason;
   final List<OrderItem> items;
+
+  final int shopId;      // ✅ Thêm
+  final String? image;    // ✅ Thêm
 
   Order({
     required this.id,
@@ -24,11 +28,14 @@ class Order {
     required this.paymentMethodId,
     this.voucherId,
     required this.voucherAmount,
-    this.discountId,
     required this.address,
     required this.total,
     required this.createdAt,
+    required this.status,
     required this.items,
+    this.reason,
+    required this.shopId,       // ✅ Gán vào constructor
+    this.image,        // ✅ Gán vào constructor
   });
 
   factory Order.fromJson(Map<String, dynamic> json) {
@@ -40,33 +47,38 @@ class Order {
       shipMethodId: (json['shipMethodId'] as int?) ?? 0,
       paymentMethodId: (json['paymentMethodId'] as int?) ?? 0,
       voucherId: json['voucherId'] as int?,
-      voucherAmount: (json['voucherAmount'] as num?)?.toDouble() ?? 0.0, // parse voucherAmount
-      discountId: json['discountId'] as int?,
+      voucherAmount: (json['voucherAmount'] as num?)?.toDouble() ?? 0.0,
       address: json['address'] ?? 'Không có địa chỉ',
       total: (json['total'] as num?)?.toDouble() ?? 0.0,
       createdAt: json['createdAt'] != null ? DateTime.parse(json['createdAt']) : DateTime.now(),
       items: (json['orderItem'] as List?)
           ?.map((item) => OrderItem.fromJson(item as Map<String, dynamic>))
           .toList() ?? [],
+      status: json['status'] ?? 'UNKNOWN',
+      reason: json['reason'] ?? '',
+      shopId: json['shopId'] as int,           // ✅ Parse
+      image: json['image'] as String?,          // ✅ Parse
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'orderId': id,
+      'id': id,
       'shopName': shopName,
       'ownerId': ownerId,
       'shipperId': shipperId,
       'shipMethodId': shipMethodId,
       'paymentMethodId': paymentMethodId,
       'voucherId': voucherId,
-      'voucherAmount': voucherAmount, // xuất voucherAmount
-      'discountId': discountId,
+      'voucherAmount': voucherAmount,
       'address': address,
       'total': total,
       'createdAt': createdAt.toIso8601String(),
+      'status': status,
       'orderItem': items.map((item) => item.toJson()).toList(),
+      'reason': reason,
+      'shopId': shopId,         // ✅ Xuất ra JSON nếu cần
+      'image': image,           // ✅ Xuất ra JSON nếu cần
     };
   }
 }
-

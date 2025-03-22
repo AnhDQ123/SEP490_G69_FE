@@ -1,4 +1,3 @@
-
 import 'package:get/get.dart';
 import '../../../models/order.dart';
 import '../../../service/order_service.dart';
@@ -6,25 +5,34 @@ import '../../../service/order_service.dart';
 class CheckOutController extends GetxController {
   final OrderService orderService = OrderService();
 
-  // Danh sách đơn hàng được lấy từ API
   var orders = <Order>[].obs;
   var isLoading = false.obs;
   var errorMessage = ''.obs;
 
-  List<int> orderIds = [21, 22, 23];
-
+  int? orderId; // chỉ 1 đơn
+  var order = Rxn<Order>(); // đơn hiện tại
   @override
   void onInit() {
     super.onInit();
-    fetchOrders();
+    // orderId = Get.arguments as int?;
+    orderId = 21; // 👈 Gán cứng tại đây để test
+    fetchOrder();
   }
 
-  Future<void> fetchOrders() async {
+  /// 🔁 Gọi từng đơn theo ID vì API không hỗ trợ list
+  Future<void> fetchOrder() async {
+    if (orderId == null) return;
+
     try {
       isLoading.value = true;
       errorMessage.value = '';
-      final fetchedOrders = await orderService.fetchOrders(orderIds);
-      orders.assignAll(fetchedOrders);
+
+      final fetchedOrder = await orderService.fetchOrderById(orderId!);
+      if (fetchedOrder != null) {
+        order.value = fetchedOrder;
+      } else {
+        errorMessage.value = 'Không tìm thấy đơn hàng.';
+      }
     } catch (e) {
       errorMessage.value = e.toString();
     } finally {
@@ -32,6 +40,8 @@ class CheckOutController extends GetxController {
     }
   }
 
+
+  /// ✅ Đặt hàng
   Future<void> placeOrder(Order order) async {
     try {
       isLoading.value = true;
@@ -51,4 +61,3 @@ class CheckOutController extends GetxController {
     }
   }
 }
-

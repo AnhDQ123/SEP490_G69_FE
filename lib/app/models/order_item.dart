@@ -53,6 +53,7 @@ class OrderItem {
   final int productId;
   final String dishName; // Thêm
   final String imageUrl; // Thêm
+  final int? discountId;       // mới thêm
   final double price;
   final int quantity;
   final double total;
@@ -67,6 +68,7 @@ class OrderItem {
     required this.dishName, // Thêm
     required this.imageUrl, // Thêm
     required this.price,
+    this.discountId,
     required this.quantity,
     required this.total,
     required this.discount, // Thêm
@@ -82,6 +84,7 @@ class OrderItem {
       dishName: json['productName'] ?? 'Không có tên', // Nếu null, gán giá trị mặc định
       imageUrl: json['image'] ?? 'https://image.pngaaa.com/305/269305-middle.png', // Nếu null, gán chuỗi rỗng
       price: (json['price'] as num?)?.toDouble() ?? 0.0, // Nếu null, gán 0.0
+      discountId: (json['discountId'] as int?) ?? 0,
       quantity: (json['quantity'] as int?) ?? 1, // Nếu null, gán 1
       total: (json['total'] as num?)?.toDouble() ?? 0.0, // Nếu null, gán 0.0
       discount: (json['discount'] as num?)?.toDouble() ?? 0.0, // Nếu null, gán 0.0
@@ -102,6 +105,7 @@ class OrderItem {
       'productName': dishName, // Thêm
       'image': imageUrl, // Thêm
       'price': price,
+      'discountId': discountId,
       'quantity': quantity,
       'total': total,
       'discount': discount, // Thêm

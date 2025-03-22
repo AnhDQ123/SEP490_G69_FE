@@ -42,6 +42,7 @@ dependencies:
 
   font_awesome_flutter:
   google_fonts: ^4.0.4
+  image_picker: ^1.1.2
 
   get:
   get_cli:

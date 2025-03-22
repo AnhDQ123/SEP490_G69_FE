@@ -33,11 +33,10 @@ class CheckOutView extends GetView<CheckOutController> {
           return const Center(child: CircularProgressIndicator());
         } else if (controller.errorMessage.isNotEmpty) {
           return Center(child: Text(controller.errorMessage.value));
-        } else if (controller.orders.isEmpty) {
+        } else if (controller.order.value == null) {
           return const Center(child: Text("Không có đơn hàng nào"));
         } else {
-          // Nếu có nhiều đơn hàng, bạn có thể hiển thị theo shop; ví dụ ở đây hiển thị đơn hàng đầu tiên
-          final order = controller.orders.first;
+          final order = controller.order.value!;
           return SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Column(
@@ -82,16 +81,13 @@ class CheckOutView extends GetView<CheckOutController> {
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
-              onPressed: controller.isLoading.value
+              onPressed: controller.isLoading.value || controller.order.value == null
                   ? null
                   : () async {
-                if (controller.orders.isNotEmpty) {
-                  final order = controller.orders.first;
-                  await controller.placeOrder(order);
-                  Get.toNamed('/my-order', arguments: order);
-                }
+                final order = controller.order.value!;
+                await controller.placeOrder(order);
+                Get.toNamed('/my-order', arguments: order);
               },
-
               child: controller.isLoading.value
                   ? const CircularProgressIndicator(color: Colors.white)
                   : const Text("Đặt hàng", style: TextStyle(fontSize: 16)),
@@ -101,4 +97,5 @@ class CheckOutView extends GetView<CheckOutController> {
       ),
     );
   }
+
 }

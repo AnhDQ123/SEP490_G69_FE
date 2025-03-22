@@ -6,6 +6,8 @@ abstract class Routes {
   static const MY_ORDER = _Paths.MY_ORDER;
   static const RECOMMENDED_PRODUCTS = _Paths.RECOMMENDED_PRODUCTS;
   static const CHECK_OUT = _Paths.CHECK_OUT;
+  static const SHOP_ORDER = _Paths.SHOP_ORDER;
+  static const RETURN_ORDER_DETAIL_PAGE = _Paths.RETURN_ORDER_DETAIL_PAGE;
 }
 
 abstract class _Paths {
@@ -13,4 +15,6 @@ abstract class _Paths {
   static const MY_ORDER = '/my-order';
   static const RECOMMENDED_PRODUCTS = '/recommended-products';
   static const CHECK_OUT = '/check-out';
+  static const SHOP_ORDER = '/shop-order';
+  static const RETURN_ORDER_DETAIL_PAGE = '/return-order-detail-page';
 }

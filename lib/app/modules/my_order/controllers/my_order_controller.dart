@@ -11,7 +11,9 @@ class MyOrderController extends GetxController {
   final shippingOrders = <Order>[].obs;
   final deliveredOrders = <Order>[].obs;
   final canceledOrders = <Order>[].obs;
+  final returnPendingOrders = <Order>[].obs;
   final returnedOrders = <Order>[].obs;
+  final rejectedOrders = <Order>[].obs;
 
   final OrderService _orderService = OrderService(); // Dùng OrderService
 
@@ -32,7 +34,10 @@ class MyOrderController extends GetxController {
       shippingOrders.assignAll(await _orderService.fetchOrdersByOwnerAndStatus(id: ownerId, status: "SHIPPING"));
       deliveredOrders.assignAll(await _orderService.fetchOrdersByOwnerAndStatus(id: ownerId, status: "DELIVERED"));
       canceledOrders.assignAll(await _orderService.fetchOrdersByOwnerAndStatus(id: ownerId, status: "CANCELLED"));
+      returnPendingOrders.assignAll(await _orderService.fetchOrdersByOwnerAndStatus(id: ownerId, status: "RETURN_PENDING"));
       returnedOrders.assignAll(await _orderService.fetchOrdersByOwnerAndStatus(id: ownerId, status: "RETURNED"));
+      rejectedOrders.assignAll(await _orderService.fetchOrdersByOwnerAndStatus(id: ownerId, status: "REJECTED"));
+
 
       print("📦 Đã nhận các đơn hàng theo trạng thái từ API");
     } catch (e) {

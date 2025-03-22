@@ -6,13 +6,17 @@ import '../modules/my_order/bindings/my_order_binding.dart';
 import '../modules/my_order/views/my_order_view.dart';
 import '../modules/recommended_products/bindings/recommended_products_binding.dart';
 import '../modules/recommended_products/views/recommended_products_view.dart';
+import '../modules/return_order_detail_page/bindings/return_order_detail_page_binding.dart';
+import '../modules/return_order_detail_page/views/return_order_detail_page_view.dart';
+import '../modules/shop_order/bindings/shop_order_binding.dart';
+import '../modules/shop_order/views/shop_order_view.dart';
 
 part 'app_routes.dart';
 
 class AppPages {
   AppPages._();
 
-  static const INITIAL = Routes.MY_ORDER;
+  static const INITIAL = Routes.SHOP_ORDER;
 
   static final routes = [
     GetPage(
@@ -29,6 +33,16 @@ class AppPages {
       name: _Paths.CHECK_OUT,
       page: () => const CheckOutView(),
       binding: CheckOutBinding(),
+    ),
+    GetPage(
+      name: _Paths.SHOP_ORDER,
+      page: () => const ShopOrderView(),
+      binding: ShopOrderBinding(),
+    ),
+    GetPage(
+      name: _Paths.RETURN_ORDER_DETAIL_PAGE,
+      page: () => const ReturnOrderDetailPageView(),
+      binding: ReturnOrderDetailPageBinding(),
     ),
   ];
 }

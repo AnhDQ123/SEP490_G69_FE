@@ -15,6 +15,8 @@ class OrderListWidget extends StatelessWidget {
   final String status;
   final Color Function(String) getStatusColor;
   final ActionWidgetBuilder? actionWidgetBuilder;
+  final bool isShopView; // ✅ THÊM MỚI
+
 
   const OrderListWidget({
     Key? key,
@@ -22,6 +24,8 @@ class OrderListWidget extends StatelessWidget {
     required this.status,
     required this.getStatusColor,
     this.actionWidgetBuilder,
+    this.isShopView = false, // ✅ mặc định false
+
   }) : super(key: key);
 
   // Hàm định dạng giá theo kiểu tiền Việt Nam, ví dụ: 30.000₫
@@ -46,7 +50,7 @@ class OrderListWidget extends StatelessWidget {
     }
 
     return ListView.builder(
-      itemCount: orders.length + 1, // thêm 1 cho phần recommend
+      itemCount: isShopView ? orders.length : orders.length + 1,
       itemBuilder: (context, index) {
         if (index < orders.length) {
           final order = orders[index];
@@ -69,7 +73,7 @@ class OrderListWidget extends StatelessWidget {
                       const SizedBox(width: 4),
                       Expanded(
                         child: Text(
-                          order.shopName ?? '',
+                          isShopView ? "Đơn hàng #${order.id}" : (order.shopName ?? ''),
                           style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -294,11 +298,14 @@ class OrderListWidget extends StatelessWidget {
             ),
           );
         } else {
+          if (isShopView) return const SizedBox(); // ❌ Không hiển thị ở shop
+
           if (!Get.isRegistered<RecommendedProductsController>()) {
             Get.put(RecommendedProductsController());
           }
           return const RecommendWithProducts();
         }
+
       },
     );
   }
