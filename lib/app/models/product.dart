@@ -1,4 +1,5 @@
-import 'food_option.dart';
+
+import 'package:ffb_fe_flutter/app/models/food_option_model.dart';
 
 class Product {
   final int id;
@@ -71,3 +72,5 @@ class Product {
     };
   }
 }
+
+

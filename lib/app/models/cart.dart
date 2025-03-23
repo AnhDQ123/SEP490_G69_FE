@@ -1,35 +1,48 @@
 import 'cart_item.dart';
 
-class Cart {
-  final int id;
-  final int userId;
-  final int shopId;
-  final String shopName;
-  final double price;
-  final String? status;
-  final List<CartItem> cartItemDTOList;
+class CartDTO {
+  int? id;
+  int userId;
+  int shopId;
+  String shopName;
+  double price;
+  String status;
+  List<CartItemDTO> cartItemDTOList;
 
-  Cart({
-    required this.id,
+  CartDTO({
+    this.id,
     required this.userId,
     required this.shopId,
     required this.shopName,
     required this.price,
-    this.status,
+    required this.status,
     required this.cartItemDTOList,
   });
 
-  factory Cart.fromJson(Map<String, dynamic> json) {
-    return Cart(
+  factory CartDTO.fromJson(Map<String, dynamic> json) {
+    return CartDTO(
       id: json['id'],
       userId: json['userId'],
       shopId: json['shopId'],
-      shopName: json['shopName'],
+      shopName: json['shopName'] ??'',
       price: (json['price'] as num).toDouble(),
-      status: json['status'],
+      status: json['status'] ??'',
       cartItemDTOList: (json['cartItemDTOList'] as List)
-          .map((item) => CartItem.fromJson(item))
+          .map((e) => CartItemDTO.fromJson(e))
           .toList(),
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'userId': userId,
+      'shopId': shopId,
+      'shopName': shopName,
+      'price': price,
+      'status': status,
+      'cartItemDTOList':
+      cartItemDTOList.map((item) => item.toJson()).toList(),
+    };
   }
 }

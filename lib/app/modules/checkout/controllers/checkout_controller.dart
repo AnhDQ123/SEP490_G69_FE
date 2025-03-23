@@ -2,15 +2,15 @@ import 'package:get/get.dart';
 import '../../../models/cart.dart';
 
 class CheckoutController extends GetxController {
-  var selectedCarts = <Cart>[].obs; // Danh sách các shop với sản phẩm đã chọn
+  var selectedCarts = <CartDTO>[].obs; // Danh sách các shop với sản phẩm đã chọn
   var totalAmount = 0.0.obs; // Tổng tiền cần thanh toán
 
   @override
   void onInit() {
     super.onInit();
     // Nhận danh sách sản phẩm từ Get.arguments
-    if (Get.arguments != null && Get.arguments is List<Cart>) {
-      selectedCarts.assignAll(Get.arguments as List<Cart>);
+    if (Get.arguments != null && Get.arguments is List<CartDTO>) {
+      selectedCarts.assignAll(Get.arguments as List<CartDTO>);
       calculateTotalAmount();
     }
   }

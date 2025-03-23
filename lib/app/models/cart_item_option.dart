@@ -1,38 +1,51 @@
-class CartItemOption {
-  final int? id;
-  final int optionId;
-  final int typeId;
-  final String optionName;
-  final String? image;
-  final int cartItemId;
+class CartItemOptionDTO {
+  int? id;
+  int optionId;
+  int typeId;
+  String optionName;
+  String image;
+  int cartItemId;
   double price;
-  double? totalPrice;
+  double totalPrice;
   int quantity;
 
-  CartItemOption({
+  CartItemOptionDTO({
     this.id,
     required this.optionId,
     required this.typeId,
     required this.optionName,
-    this.image,
+    required this.image,
     required this.cartItemId,
     required this.price,
-    this.totalPrice,
+    required this.totalPrice,
     required this.quantity,
   });
 
-  factory CartItemOption.fromJson(Map<String, dynamic> json) {
-    return CartItemOption(
+  factory CartItemOptionDTO.fromJson(Map<String, dynamic> json) {
+    return CartItemOptionDTO(
       id: json['id'],
       optionId: json['optionId'],
       typeId: json['typeId'],
-      optionName: json['optionName'],
-      image: json['image'],
+      optionName: json['optionName'] ?? '',
+      image: json['image'] ?? '',
       cartItemId: json['cartItemId'],
-      price: json['price'],
-      totalPrice:
-      json['totalPrice'] != null ? (json['totalPrice'] as num).toDouble() : null,
-      quantity: json['quantity'],
+      price: (json['price'] ?? 0).toDouble(),
+      totalPrice: (json['totalPrice'] ?? 0).toDouble(),
+      quantity: (json['quantity'] ?? 1) as int,
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'optionId': optionId,
+      'typeId': typeId,
+      'optionName': optionName,
+      'image': image,
+      'cartItemId': cartItemId,
+      'price': price,
+      'totalPrice': totalPrice,
+      'quantity': quantity,
+    };
   }
 }

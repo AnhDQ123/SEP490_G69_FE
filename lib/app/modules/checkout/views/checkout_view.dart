@@ -66,7 +66,7 @@ class CheckoutView extends StatelessWidget {
   }
 
   /// **Hiển thị từng sản phẩm trong giỏ hàng**
-  Widget _buildCartItem(CartItem item) {
+  Widget _buildCartItem(CartItemDTO item) {
     return Padding(
       padding: const EdgeInsets.all(10),
       child: Row(

@@ -1,6 +1,7 @@
 name: ffb_fe_flutter
 description: "A new Flutter project."
-# The following line prevents the package from being accidentally published to
+# The following line prevents the pac
+#  kage from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
@@ -44,9 +45,12 @@ dependencies:
 
   font_awesome_flutter:
   google_fonts: ^4.0.4
+  universal_platform: ^1.1.0
+  shared_preferences: ^2.5.2
 
   get:
   get_cli:
+  get_storage: ^2.1.1
   intl:
   envied:
   flutter_localization: ^0.2.2
@@ -55,29 +59,43 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
 
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
+  flutter_launcher_icons: ^0.14.3
   flutter_lints: ^5.0.0
+#  flutter_icons:
+#    android: true
+#    ios: true
+#    image_path: "assets/images/logo.png"
 
+#flutter_icons:
+#  android: true
+#  ios: true
+#  image_path: "assets/images/logo.png"
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
 # The following section is specific to Flutter packages.
 flutter:
+  assets:
+    - assets/images/banner1.avif
+    - assets/images/banner2.avif
+    - assets/images/banner3.avif
+    - assets/images/placeholder.png
+    - assets/images/logo.png
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
-  assets:
-    - assets/
+
 
   # To add assets to your application, add an assets section, like this:
   # assets:
