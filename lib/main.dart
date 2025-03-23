@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      initialRoute: Routes.SHIPPER_REGISTER,  // Sử dụng initialRoute thay vì home
+      initialRoute: Routes.SHIPPER_HOME,  // Sử dụng initialRoute thay vì home
       getPages: AppPages.routes,  // Định nghĩa danh sách routes
     );
   }

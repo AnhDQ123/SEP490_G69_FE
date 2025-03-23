@@ -77,32 +77,39 @@ class ShipperRegisterView extends StatelessWidget {
               isPortrait: true, // Ảnh Lý Lịch Tư Pháp theo chiều dọc
             ),
 
-
-
-
             const SizedBox(height: 20),
             Center(
               child: Obx(() => OutlinedButton(
                 style: OutlinedButton.styleFrom(
-                  side: BorderSide(color: Colors.black), // Viền màu đen
+                  side: BorderSide(color: Colors.black),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30), // Bo tròn góc
+                    borderRadius: BorderRadius.circular(30),
                   ),
-                  padding: EdgeInsets.symmetric(horizontal: 40, vertical: 12), // Kích thước nút
+                  padding: EdgeInsets.symmetric(horizontal: 40, vertical: 12),
                   backgroundColor: controller.isFormValid.value
-                      ? Color.fromRGBO(212, 163, 115, 1)  // Khi form hợp lệ, đổi màu
-                      : Colors.grey[200],  // Khi form chưa hợp lệ, màu xám nhạt
+                      ? Color.fromRGBO(212, 163, 115, 1)
+                      : Colors.grey[200],
                 ),
-                onPressed: controller.isFormValid.value ? controller.submitRegistration : null,
-                child: Text(
-                  "Đăng ký",
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.black, // Chữ màu đen
+                onPressed: controller.isFormValid.value && !controller.isLoading.value
+                    ? () => controller.submitRegistration(1) // ✅ Tránh bấm nhiều lần khi đang gửi request
+                    : null,
+
+                child: controller.isLoading.value
+                    ? SizedBox(
+                  width: 24,
+                  height: 24,
+                  child: CircularProgressIndicator(
+                    color: Colors.black, // ✅ Màu loading
+                    strokeWidth: 2,
                   ),
+                )
+                    : Text(
+                  "Đăng ký",
+                  style: TextStyle(fontSize: 16, color: Colors.black),
                 ),
               )),
             ),
+
           ],
         ),
       ),

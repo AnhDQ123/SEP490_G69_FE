@@ -2,9 +2,12 @@ import 'dart:io';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../../routes/app_pages.dart';
 import '../../../service/shipper_service.dart';
 
 class ShipperRegisterController extends GetxController {
+  RxBool isLoading = false.obs; // ✅ Trạng thái loading
+
   // Các trường dữ liệu
   var fullName = ''.obs;
   var gender = ''.obs;
@@ -71,35 +74,57 @@ class ShipperRegisterController extends GetxController {
         legalRecordImage.value != null;
   }
 
-  // Hàm submit đăng ký
-  void submitRegistration() async {
+  void submitRegistration(int userId) async {
     if (!isFormValid.value) {
       Get.snackbar("Lỗi", "Vui lòng điền đầy đủ thông tin");
       return;
     }
 
+    isLoading.value = true; // ✅ Bắt đầu loading
+
     final response = await ShipperService().registerShipper(
-      fullName: fullName.value,
+      userId: userId,
+      name: fullName.value,
       gender: gender.value,
-      dateOfBirth: dateOfBirth.value,
+      dob: formatDate(dateOfBirth.value),
       phone: phone.value,
       email: email.value,
-      idNumber: idNumber.value,
-      idExpiryDate: expiryDate.value,
-      licenseNumber: licenseNumber.value,
-      licenseExpiry: licenseExpiry.value,
-      idFrontImage: idFrontImage.value,
-      idBackImage: idBackImage.value,
-      licenseFrontImage: licenseFrontImage.value,
-      licenseBackImage: licenseBackImage.value,
-      legalRecordImage: legalRecordImage.value,
+      citizenIDNumber: idNumber.value,
+      citizenIDExpiredDate: formatDate(expiryDate.value),
+      drivingLicenseExpiredDate: formatDate(licenseExpiry.value),
+      citizenIDFront: idFrontImage.value,
+      citizenIDBack: idBackImage.value,
+      drivingLicenseFront: licenseFrontImage.value,
+      drivingLicenseBack: licenseBackImage.value,
+      judicialRecord: legalRecordImage.value,
     );
+
+    isLoading.value = false; // ✅ Kết thúc loading
 
     if (response.success) {
       Get.snackbar("Thành công", response.message);
+      Future.delayed(Duration(seconds: 1), () {
+        Get.offAllNamed(Routes.SHIPPER_HOME); // ✅ Chuyển trang khi thành công
+      });
     } else {
       Get.snackbar("Thất bại", response.message);
     }
   }
 
+
+  String formatDate(String date) {
+    try {
+      List<String> parts = date.split('/'); // Nếu date ở dạng "dd/MM/yyyy"
+      if (parts.length == 3) {
+        String day = parts[0].padLeft(2, '0');
+        String month = parts[1].padLeft(2, '0');
+        String year = parts[2];
+        return "$year-$month-$day"; // Đổi thành yyyy-MM-dd
+      }
+      return date; // Trả về nguyên bản nếu không cần format
+    } catch (e) {
+      print("Lỗi khi xử lý ngày: $e");
+      return "0000-00-00"; // Trả về giá trị mặc định nếu lỗi
+    }
+  }
 }

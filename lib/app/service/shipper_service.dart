@@ -3,74 +3,79 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 
+import '../models/order.dart';
+
 class ShipperService {
+
+  final String baseUrl = "http://10.0.2.2:8080/api";
+
   Future<ApiResponse> registerShipper({
-    required String fullName,
+    required int userId, // ✅ Thêm userId vào API request
+    required String name,
     required String gender,
-    required String dateOfBirth,
+    required String dob, // yyyy-MM-dd
     required String phone,
     required String email,
-    required String idNumber,
-    required String idExpiryDate,
-    required String licenseNumber,
-    required String licenseExpiry,
-    required File? idFrontImage,
-    required File? idBackImage,
-    required File? licenseFrontImage,
-    required File? licenseBackImage,
-    required File? legalRecordImage,
+    required String citizenIDNumber,
+    required String citizenIDExpiredDate, // yyyy-MM-dd
+    required String drivingLicenseExpiredDate, // yyyy-MM-dd
+    required File? citizenIDFront,
+    required File? citizenIDBack,
+    required File? drivingLicenseFront,
+    required File? drivingLicenseBack,
+    required File? judicialRecord,
   }) async {
-    var uri = Uri.parse('http://10.0.2.2:8080/api/shippers/register'); // đổi URL theo server của bạn
+    var uri = Uri.parse('$baseUrl/shippers/register/$userId');
+
     var request = http.MultipartRequest('POST', uri);
 
-    // Text fields
-    request.fields['fullName'] = fullName;
+    // ✅ Gửi đúng tên trường theo Backend
+    request.fields['name'] = name;
     request.fields['gender'] = gender;
-    request.fields['dateOfBirth'] = dateOfBirth;
+    request.fields['dob'] = dob;
     request.fields['phone'] = phone;
     request.fields['email'] = email;
-    request.fields['idNumber'] = idNumber;
-    request.fields['idExpiryDate'] = idExpiryDate;
-    request.fields['licenseNumber'] = licenseNumber;
-    request.fields['licenseExpiry'] = licenseExpiry;
+    request.fields['citizenIDNumber'] = citizenIDNumber;
+    request.fields['citizenIDExpiredDate'] = citizenIDExpiredDate;
+    request.fields['drivingLicenseExpiredDate'] = drivingLicenseExpiredDate;
 
-    // File fields
-    if (idFrontImage != null) {
+    // ✅ Gửi đúng tên file theo Backend
+    if (citizenIDFront != null) {
       request.files.add(await http.MultipartFile.fromPath(
-        'idFrontImage',
-        idFrontImage.path,
+        'citizenIDFront',
+        citizenIDFront.path,
         contentType: MediaType('image', 'jpeg'),
       ));
     }
 
-    if (idBackImage != null) {
+    if (citizenIDBack != null) {
       request.files.add(await http.MultipartFile.fromPath(
-        'idBackImage',
-        idBackImage.path,
+        'citizenIDBack',
+        citizenIDBack.path,
         contentType: MediaType('image', 'jpeg'),
       ));
     }
 
-    if (licenseFrontImage != null) {
+    if (drivingLicenseFront != null) {
       request.files.add(await http.MultipartFile.fromPath(
-        'licenseFrontImage',
-        licenseFrontImage.path,
+        'drivingLicenseFront',
+        drivingLicenseFront.path,
         contentType: MediaType('image', 'jpeg'),
       ));
     }
 
-    if (licenseBackImage != null) {
+    if (drivingLicenseBack != null) {
       request.files.add(await http.MultipartFile.fromPath(
-        'licenseBackImage',
-        licenseBackImage.path,
+        'drivingLicenseBack',
+        drivingLicenseBack.path,
         contentType: MediaType('image', 'jpeg'),
       ));
     }
 
-    if (legalRecordImage != null) {
+    if (judicialRecord != null) {
       request.files.add(await http.MultipartFile.fromPath(
-        'legalRecordImage',
-        legalRecordImage.path,
+        'judicialRecord',
+        judicialRecord.path,
         contentType: MediaType('image', 'jpeg'),
       ));
     }
@@ -97,6 +102,50 @@ class ShipperService {
       return ApiResponse(success: false, message: "Không thể kết nối tới server.");
     }
   }
+
+  Future<List<Order>> fetchOrdersByShipper(int userId) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/order/shipper?id=$userId'),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(utf8.decode(response.bodyBytes)); // ✅ decode đúng UTF-8
+
+        // Lấy danh sách đơn hàng từ trường "content"
+        final List<dynamic> ordersJson = data['content'];
+
+        // Convert từng item thành Order
+        return ordersJson.map((json) => Order.fromJson(json)).toList();
+      } else {
+        throw Exception('Lỗi khi lấy đơn hàng: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Lỗi kết nối tới server: $e');
+    }
+  }
+
+  Future<ApiResponse> acceptShipping({required int orderId, required int userId}) async {
+    final url = Uri.parse('$baseUrl/order/acceptShip?id=$orderId&userId=$userId');
+
+    try {
+      final response = await http.post(url);
+
+      print("📦 [acceptShipping] Status: ${response.statusCode}");
+      print("📦 [acceptShipping] Body: ${response.body}");
+
+      if (response.statusCode == 200) {
+        return ApiResponse(success: true, message: "Nhận đơn thành công");
+      } else {
+        return ApiResponse(success: false, message: "Không thể nhận đơn: ${response.body}");
+      }
+    } catch (e) {
+      print("❌ Lỗi khi gọi acceptShipping: $e");
+      return ApiResponse(success: false, message: "Lỗi kết nối đến server.");
+    }
+  }
+
+
 }
 
 class ApiResponse {
