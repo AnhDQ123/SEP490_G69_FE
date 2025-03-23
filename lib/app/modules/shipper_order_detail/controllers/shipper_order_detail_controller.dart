@@ -32,13 +32,13 @@ class ShipperOrderDetailController extends GetxController {
       order.value!.status = 'SHIPPING';
       order.refresh();
 
-      // 🔙 Truyền lại order đã cập nhật khi quay về
+      // ✅ Trả đơn hàng mới về để màn danh sách xử lý tiếp
       Get.back(result: order.value);
-      Get.snackbar("✅ Thành công", "Đã xác nhận giao đơn hàng!");
     } else {
       Get.snackbar("❌ Thất bại", result.message);
     }
   }
+
 
 
 }

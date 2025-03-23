@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -99,25 +101,15 @@ class ShipperOrderListView extends GetView<ShipperOrderListController> {
   }
 
   Widget _buildOrderCard(Order order) {
-    final formattedTotal = NumberFormat.currency(locale: 'vi_VN', symbol: '').format(order.total);
+    final formattedTotal =
+    NumberFormat.currency(locale: 'vi_VN', symbol: '').format(order.total);
 
-    return GestureDetector(
-        onTap: () async {
-          final updatedOrder = await Get.toNamed(
-            Routes.SHIPPER_ORDER_DETAIL,
-            arguments: {
-              'orderId': order.id,
-              'orders': controller.orders,
-            },
-          );
+    // Các biến style chung
+    const textStyleDefault = TextStyle(fontSize: 16);
+    const textStyleBold = TextStyle(fontSize: 18, fontWeight: FontWeight.bold);
+    const textStyleSmall = TextStyle(fontSize: 15);
 
-          // ✅ Nếu có kết quả trả về → cập nhật trong danh sách
-          if (updatedOrder != null && updatedOrder is Order) {
-            controller.updateOrderInList(updatedOrder);
-          }
-        },
-
-        child: Container(
+    return Container(
       margin: const EdgeInsets.symmetric(vertical: 8),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -128,50 +120,170 @@ class ShipperOrderListView extends GetView<ShipperOrderListController> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("Mã đơn: #${order.id}", style: const TextStyle(fontWeight: FontWeight.bold)),
-          const SizedBox(height: 6),
-          _textWithIcon(Icons.store, "Địa chỉ quán: ${order.address ?? 'Không rõ'}"),
-          _textWithIcon(Icons.location_on, "Địa chỉ người nhận: [Cập nhật sau]"),
-          const SizedBox(height: 6),
-          Text("Sản phẩm:", style: const TextStyle(fontWeight: FontWeight.bold)),
-          ...order.orderItem.map((item) {
-            final sizes = item.orderItemOptions
-                .where((o) => o.typeId == 2)
-                .map((o) => "x${o.quantity} ${o.optionName}")
-                .join(', ');
-            final extras = item.orderItemOptions
-                .where((o) => o.typeId == 1)
-                .map((o) => "x${o.quantity} ${o.optionName}")
-                .join(', ');
+          // 👇 Phần clickable
+          GestureDetector(
+            onTap: () async {
+              final result = await Get.toNamed(
+                Routes.SHIPPER_ORDER_DETAIL,
+                arguments: {
+                  'orderId': order.id,
+                  'orders': controller.orders,
+                },
+              );
 
-            return Padding(
-              padding: const EdgeInsets.only(top: 4),
-              child: Text(
-                " ${item.productName}"
-                    "${sizes.isNotEmpty ? " - $sizes" : ""}"
-                    "${extras.isNotEmpty ? "\n    -  $extras" : ""}",
-              ),
-            );
-          }),
-          const SizedBox(height: 6),
-          Text("Tổng tiền: $formattedTotalđ", style: const TextStyle(fontWeight: FontWeight.bold)),
+              // ✅ Nếu result là 1 đơn đã cập nhật
+              if (result is Order) {
+                controller.updateOrderInList(result); // cập nhật đơn trong danh sách
+
+                Get.snackbar(
+                  "✅ Thành công",
+                  "Đơn hàng #${result.id} đã được xác nhận.",
+                  snackPosition: SnackPosition.TOP,
+                  backgroundColor: Colors.green.shade50,
+                  colorText: Colors.green.shade800,
+                  icon: const Icon(Icons.check_circle, color: Colors.green),
+                  duration: const Duration(seconds: 2),
+                );
+              }
+            },
+
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text("Mã đơn: #${order.id}", style: textStyleBold),
+                const SizedBox(height: 6),
+                _textWithIcon(Icons.store,
+                    "Địa chỉ quán: ${order.shopAddress}", style: textStyleDefault),
+                _textWithIcon(Icons.location_on,
+                    "Địa chỉ người nhận: ${order.address ?? 'Không rõ'}", style: textStyleDefault),
+                _textWithIcon(Icons.phone,
+                    "SĐT: ${order.phone}", style: textStyleDefault),
+                const SizedBox(height: 6),
+                Text("Sản phẩm:", style: textStyleBold),
+                ...order.orderItem.map((item) {
+                  final sizes = item.orderItemOptions
+                      .where((o) => o.typeId == 2)
+                      .map((o) => "x${o.quantity} ${o.optionName}")
+                      .join(', ');
+                  final extras = item.orderItemOptions
+                      .where((o) => o.typeId == 1)
+                      .map((o) => "x${o.quantity} ${o.optionName}")
+                      .join(', ');
+
+                  return Padding(
+                    padding: const EdgeInsets.only(top: 4),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            "${item.productName}${sizes.isNotEmpty ? " - $sizes" : ""}"
+                                "${extras.isNotEmpty ? "\n    -  $extras" : ""}",
+                            style: textStyleSmall,
+                            softWrap: false,
+                            overflow: TextOverflow.visible,
+                          ),
+
+                        ),
+                      ],
+                    ),
+                  );
+
+                }),
+                const SizedBox(height: 6),
+                Text("Tổng tiền: $formattedTotalđ", style: textStyleBold),
+              ],
+            ),
+          ),
+
+          if (order.status == 'SHIPPING')
+            buildOrderImagePicker(
+              orderId: order.id,
+              deliveryImages: controller.deliveryImages,
+              onPickImage: controller.pickDeliveryImage,
+              onRemoveImage: controller.removeDeliveryImage,
+            ),
+
           const Divider(height: 20),
-          _buildActionButtonsByStatus(order),
+
+          _buildActionButtonsByStatus(order), // 📦 Nút theo trạng thái
         ],
       ),
-    ),
     );
   }
 
-  Widget _textWithIcon(IconData icon, String text) {
+
+  Widget buildOrderImagePicker({
+    required int orderId,
+    required RxMap<int, Rxn<File>> deliveryImages,
+    required void Function(int orderId) onPickImage,
+    required void Function(int orderId) onRemoveImage,
+  }) {
+    return Obx(() {
+      final Rxn<File>? imageRx = deliveryImages[orderId];
+      final File? image = imageRx?.value;
+
+      return GestureDetector(
+        onTap: () => onPickImage(orderId),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text("Ảnh khi giao sản phẩm", style: TextStyle(fontWeight: FontWeight.bold)),
+            const SizedBox(height: 6),
+            Stack(
+              alignment: Alignment.center,
+              children: [
+                Container(
+                  width: 150,
+                  height: 150,
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey),
+                    borderRadius: BorderRadius.circular(12),
+                    color: Colors.grey[100],
+                  ),
+                  child: image != null
+                      ? ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: Image.file(image, width: 150, height: 150, fit: BoxFit.cover),
+                  )
+                      : const Icon(Icons.camera_alt, size: 40, color: Colors.grey),
+                ),
+                if (image != null)
+                  Positioned(
+                    top: 4,
+                    right: 4,
+                    child: GestureDetector(
+                      onTap: () => onRemoveImage(orderId),
+                      child: Container(
+                        decoration: const BoxDecoration(
+                          color: Colors.red,
+                          shape: BoxShape.circle,
+                        ),
+                        padding: const EdgeInsets.all(4),
+                        child: const Icon(Icons.close, size: 16, color: Colors.white),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ],
+        ),
+      );
+    });
+  }
+
+  Widget _textWithIcon(IconData icon, String text, {TextStyle? style}) {
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, size: 16),
+        Icon(icon, size: 20),
         const SizedBox(width: 6),
-        Expanded(child: Text(text)),
+        Expanded(child: Text(text, style: style)),
       ],
     );
   }
+
+
 
   Widget _actionButton(IconData icon, String label, {VoidCallback? onTap}) {
     return GestureDetector(
@@ -196,12 +308,15 @@ class ShipperOrderListView extends GetView<ShipperOrderListController> {
       return Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
+          _actionButton(Icons.call, "Gọi", onTap: () {
+              controller.callPhoneNumber(order.phone);
+          }),
           _actionButton(Icons.close, "Từ chối", onTap: () {
-            // TODO: gọi API từ chối đơn nếu có
             Get.snackbar("Từ chối", "Bạn đã từ chối đơn hàng.");
           }),
           _actionButton(Icons.check, "Xác nhận", onTap: () {
-            int shipperId = 3; // ⚠️ nên lấy từ auth
+            /// ⚠️ lấy từ auth
+            int shipperId = 3;
             controller.handleAcceptOrder(order, shipperId);
           }),
         ],
@@ -210,18 +325,34 @@ class ShipperOrderListView extends GetView<ShipperOrderListController> {
       return Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          _actionButton(Icons.call, "Gọi"),
-          _actionButton(Icons.chat, "Nhắn tin"),
-          _actionButton(Icons.check, "Đã giao", onTap: () {
-            // TODO: gọi API xác nhận đã giao hàng
-            Get.snackbar("Hoàn tất", "Bạn đã giao đơn thành công.");
+          _actionButton(Icons.call, "Gọi", onTap: () {
+              controller.callPhoneNumber(order.phone);
+          }),
+          _actionButton(Icons.chat, "Nhắn tin", onTap: () {
+            Get.snackbar("Chat", "Tính năng đang phát triển.");
+          }),
+          _actionButton(Icons.check, "Đã giao", onTap: () async {
+            final imageRx = controller.deliveryImages[order.id];
+            final file = imageRx?.value;
+
+            if (file == null) {
+              Get.snackbar("Thiếu ảnh", "Vui lòng chụp ảnh trước khi xác nhận.");
+              return;
+            }
+
+            int userId = 3; // TODO: lấy từ Auth sau
+
+            await controller.handleConfirmDelivered(
+              order: order,
+              userId: userId,
+              imageFile: file,
+            );
           }),
         ],
       );
     } else {
-      return const SizedBox(); // Trạng thái khác không hiện nút
+      return const SizedBox(); // Không hiển thị nếu trạng thái khác
     }
   }
-
 
 }

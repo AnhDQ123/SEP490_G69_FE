@@ -83,7 +83,7 @@ class ShipperHomeView extends GetView<ShipperHomeController> {
           context,
           ship_pending.toString(),
           "Đơn chờ xác nhận",
-              () => Get.toNamed(
+              () => Get.offNamed(
                 Routes.SHIPPER_ORDER_LIST,
                 arguments: {
                   'orders': controller.orders,
@@ -95,7 +95,7 @@ class ShipperHomeView extends GetView<ShipperHomeController> {
           context,
           delivering.toString(),
           "Đơn đang giao",
-              () => Get.toNamed(
+              () => Get.offNamed(
                 Routes.SHIPPER_ORDER_LIST,
                 arguments: {
                   'orders': controller.orders,
@@ -107,7 +107,7 @@ class ShipperHomeView extends GetView<ShipperHomeController> {
           context,
           completed.toString(),
           "Đơn đã giao",
-              () => Get.toNamed(
+              () => Get.offNamed(
                 Routes.SHIPPER_ORDER_LIST,
                 arguments: {
                   'orders': controller.orders,

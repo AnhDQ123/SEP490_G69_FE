@@ -8,7 +8,7 @@ class OrderItem {
   final int? discountId;
   final double discount;
   final String? image;
-  final double? price;
+  final double price;
   final DateTime? createdAt;
   final int quantity;
   final double total;
@@ -22,7 +22,7 @@ class OrderItem {
     this.discountId,
     required this.discount,
     this.image,
-    this.price,
+    required this.price,
     this.createdAt,
     required this.quantity,
     required this.total,
@@ -38,7 +38,7 @@ class OrderItem {
       discountId: json['discountId'],
       discount: (json['discount'] ?? 0).toDouble(),
       image: json['image'],
-      price: (json['price'] != null) ? (json['price'] as num).toDouble() : null,
+      price: (json['price'] as num).toDouble(),
       createdAt: json['createdAt'] != null ? DateTime.tryParse(json['createdAt']) : null,
       quantity: json['quantity'],
       total: (json['total'] ?? 0).toDouble(),

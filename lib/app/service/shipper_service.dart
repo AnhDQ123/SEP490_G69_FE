@@ -7,7 +7,7 @@ import '../models/order.dart';
 
 class ShipperService {
 
-  final String baseUrl = "http://10.0.2.2:8080/api";
+  final String baseUrl = "http://192.168.1.11:8080/api";
 
   Future<ApiResponse> registerShipper({
     required int userId, // ✅ Thêm userId vào API request
@@ -141,6 +141,42 @@ class ShipperService {
       }
     } catch (e) {
       print("❌ Lỗi khi gọi acceptShipping: $e");
+      return ApiResponse(success: false, message: "Lỗi kết nối đến server.");
+    }
+  }
+
+  Future<ApiResponse> confirmDelivery({
+    required int orderId,
+    required int userId,
+    required String status,
+    required File avatarImage,
+  }) async {
+    final uri = Uri.parse('$baseUrl/order/changeStatus');
+
+    var request = http.MultipartRequest('POST', uri)
+      ..fields['id'] = orderId.toString()
+      ..fields['userId'] = userId.toString()
+      ..fields['status'] = status
+      ..files.add(await http.MultipartFile.fromPath(
+        'avatar',
+        avatarImage.path,
+        contentType: MediaType('image', 'jpeg'), // hoặc 'png' tùy file
+      ));
+
+    try {
+      final response = await request.send();
+      final responseBody = await response.stream.bytesToString();
+
+      print("🚚 [confirmDelivery] Status: ${response.statusCode}");
+      print("🚚 [confirmDelivery] Body: $responseBody");
+
+      if (response.statusCode == 200) {
+        return ApiResponse(success: true, message: "Đơn đã được xác nhận giao thành công.");
+      } else {
+        return ApiResponse(success: false, message: "Lỗi xác nhận đơn: $responseBody");
+      }
+    } catch (e) {
+      print("❌ Lỗi khi gọi confirmDelivery: $e");
       return ApiResponse(success: false, message: "Lỗi kết nối đến server.");
     }
   }

@@ -10,6 +10,8 @@ class Order {
   final double? voucherAmount;
   final String? address;
   final String shopName;
+  final String shopAddress;
+  final String phone;
   final int shopId;
   String status;
   final String? image;
@@ -29,6 +31,8 @@ class Order {
     this.voucherAmount,
     this.address,
     required this.shopName,
+    required this.shopAddress,
+    required this.phone,
     required this.shopId,
     required this.status,
     this.image,
@@ -50,6 +54,8 @@ class Order {
       voucherAmount: (json['voucherAmount'] ?? 0).toDouble(),
       address: json['address'],
       shopName: json['shopName'] ?? '',
+      shopAddress: json['shopAddress'],
+      phone: json['phone'],
       shopId: json['shopId'],
       status: json['status'] ?? 'UNKNOWN',
       image: json['image'],

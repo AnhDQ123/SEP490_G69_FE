@@ -46,6 +46,22 @@ class ShipperOrderDetailView extends GetView<ShipperOrderDetailController> {
   }
 
   Widget _buildOrderCard(Order order) {
+    // ✅ Tính tổng gốc: item.price + topping options (typeId == 1)
+    final double originalTotal = order.orderItem.fold(0, (sum, item) {
+      final options = List<OrderItemOption>.from(item.orderItemOptions);
+      final extraOptions = options.where((o) => o.typeId == 1).toList();
+
+      final extraTotal = extraOptions.fold<double>(
+        0,
+            (optSum, o) => optSum + (o.price * o.quantity),
+      );
+
+      return sum + ((item.price + extraTotal) * item.quantity);
+    });
+
+    final discountRate = order.voucherAmount ?? 0;
+    final discountAmount = originalTotal * discountRate;
+
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
@@ -53,20 +69,33 @@ class ShipperOrderDetailView extends GetView<ShipperOrderDetailController> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("Mã đơn: #${order.id}", style: const TextStyle(fontWeight: FontWeight.bold)),
+            Text(
+              "Mã đơn: #${order.id}",
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
+            ),
             const SizedBox(height: 6),
-            Text("Người nhận hàng: ${order.ownerName}"),
-            Text("Địa chỉ: ${order.address}"),
+            Text("👤 Người nhận: ${order.ownerName}", style: const TextStyle(fontSize: 15)),
+            const SizedBox(height: 6),
+            Text("📞 SĐT: ${order.phone}", style: const TextStyle(fontSize: 15)),
+            const SizedBox(height: 6),
+            Text("🏠 Địa chỉ người nhận: ${order.address}", style: const TextStyle(fontSize: 15)),
+            const SizedBox(height: 6),
+            Text("🏪 Địa chỉ quán: ${order.shopAddress}", style: const TextStyle(fontSize: 15)),
             const SizedBox(height: 12),
-            const Text("Sản phẩm:", style: TextStyle(fontWeight: FontWeight.bold)),
+            const Text("🧾 Sản phẩm:", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
             const SizedBox(height: 6),
             ...order.orderItem.map(_buildOrderItem),
             const Divider(),
-            Text("Giảm giá: ${currency.format((order.voucherAmount ?? 0) * (order.total))}đ"),
-            Text("Tổng tiền: ${currency.format(order.total)}đ", style: const TextStyle(fontWeight: FontWeight.bold)),
+            Text("💵 Tổng giá gốc: ${currency.format(originalTotal)}đ", style: const TextStyle(fontSize: 15)),
+            Text("🔻 Giảm giá: ${discountRate * 100}% (-${currency.format(discountAmount)}đ)", style: const TextStyle(fontSize: 15)),
+            Text(
+              "💰 Tổng tiền thanh toán: ${currency.format(order.total)}đ",
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
             const SizedBox(height: 8),
-            Text("Trạng thái đơn hàng: ${_translateStatus(order.status)}"),
+            Text("🚚 Trạng thái đơn hàng: ${_translateStatus(order.status)}", style: const TextStyle(fontSize: 15)),
           ],
+
         ),
       ),
     );
@@ -126,9 +155,10 @@ class ShipperOrderDetailView extends GetView<ShipperOrderDetailController> {
           style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
         ),
         ElevatedButton.icon(
-          onPressed: () {
-            const int shipperId = 3; // hoặc lấy từ AuthService
-            controller.acceptOrder(shipperId);
+          onPressed: () async {
+            const int shipperId = 3;
+            await controller.acceptOrder(shipperId);
+            Get.back(result: true); // ✅ báo cho màn trước biết là cần cập nhật
           },
           icon: const Icon(Icons.check),
           label: const Text("Xác nhận"),

@@ -376,8 +376,4 @@ class ShipperRegisterView extends StatelessWidget {
       },
     );
   }
-
-
-
-
 }

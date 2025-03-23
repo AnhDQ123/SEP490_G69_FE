@@ -1,7 +1,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+
     <application
         android:label="ffb_fe_flutter"
-        android:name="${applicationName}"
+        android:name="Fast F&B"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
