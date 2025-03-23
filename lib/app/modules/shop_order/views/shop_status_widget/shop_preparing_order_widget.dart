@@ -35,7 +35,7 @@ class ShopPreparingOrderWidget extends StatelessWidget {
             try {
               await OrderService().changeOrderStatus(
                 id: order.id,
-                status: "SHIPPING",
+                status: "SHIP_PENDING",
                 userId: order.shopId,
                 avatarFile: File(image.path),
               );

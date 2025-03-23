@@ -7,6 +7,7 @@ import 'package:ffb_fe_flutter/app/modules/shop_order/views/shop_status_widget/s
 import 'package:ffb_fe_flutter/app/modules/shop_order/views/shop_status_widget/shop_return_rejected_order_widget.dart';
 import 'package:ffb_fe_flutter/app/modules/shop_order/views/shop_status_widget/shop_returned_order_widget.dart';
 import 'package:ffb_fe_flutter/app/modules/shop_order/views/shop_status_widget/shop_shipping_order_widget.dart';
+import 'package:ffb_fe_flutter/app/modules/shop_order/views/shop_status_widget/shop_waiting_order_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../my_order/views/order_tab_bar.dart';
@@ -23,6 +24,8 @@ class ShopOrderView extends GetView<ShopOrderController> {
       case "Chờ xác nhận":
         return Colors.orange;
       case "Đang chuẩn bị":
+        return Colors.blue;
+      case "Chờ xử lý":
         return Colors.blue;
       case "Đang giao":
         return Colors.purple;
@@ -47,6 +50,7 @@ class ShopOrderView extends GetView<ShopOrderController> {
     final tabs = const [
       "Chờ xác nhận",
       "Đang chuẩn bị",
+      "Chờ xử lý",
       "Đang giao",
       "Đã giao",
       "Đã huỷ",
@@ -77,6 +81,10 @@ class ShopOrderView extends GetView<ShopOrderController> {
               ),
               ShopPreparingOrderWidget(
                 orders: controller.processing,
+                getStatusColor: _getStatusColor,
+              ),
+              ShopWaitingOrderWidget(
+                orders: controller.shipPending,
                 getStatusColor: _getStatusColor,
               ),
               ShopShippingOrderWidget(

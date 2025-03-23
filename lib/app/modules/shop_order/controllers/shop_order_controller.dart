@@ -10,6 +10,7 @@ class ShopOrderController extends GetxController {
   final pending = <Order>[].obs;
   final processing = <Order>[].obs;
   final shipping = <Order>[].obs;
+  final shipPending = <Order>[].obs;
   final delivered = <Order>[].obs;
   final rejected = <Order>[].obs;
   final cancelled = <Order>[].obs;
@@ -34,6 +35,7 @@ class ShopOrderController extends GetxController {
       pending.assignAll(await _orderService.fetchOrdersByShopAndStatus(id: shopId, status: "PENDING"));
       processing.assignAll(await _orderService.fetchOrdersByShopAndStatus(id: shopId, status: "PROCESSING"));
       shipping.assignAll(await _orderService.fetchOrdersByShopAndStatus(id: shopId, status: "SHIPPING"));
+      shipPending.assignAll(await _orderService.fetchOrdersByShopAndStatus(id: shopId, status: "SHIP_PENDING"));
       delivered.assignAll(await _orderService.fetchOrdersByShopAndStatus(id: shopId, status: "DELIVERED"));
       rejected.assignAll(await _orderService.fetchOrdersByShopAndStatus(id: shopId, status: "REJECTED"));
       cancelled.assignAll(await _orderService.fetchOrdersByShopAndStatus(id: shopId, status: "CANCELLED"));
