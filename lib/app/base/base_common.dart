@@ -54,17 +54,22 @@ class BaseCommon {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString('accessToken', jwt);
     log("✅ Token mới đã được lưu: $jwt");
-    // Kiểm tra token có thực sự được lưu không
-    String? savedToken = prefs.getString('accessToken');
-    if (savedToken == null || savedToken.isEmpty) {
-      log("⚠️ Token không lưu được vào SharedPreferences!");
-    } else {
-      log("✅ Token đã lưu thành công trong SharedPreferences!");
-    }
 
     Map<String, dynamic> decodedToken = JwtDecoder.decode(jwt);
+
+    // Lưu số điện thoại từ "sub"
     ownPhone = decodedToken['sub'];
+
+    // Lưu userId nếu có
+    if (decodedToken.containsKey("userId")) {
+      userId = decodedToken["userId"].toString();
+      await prefs.setString("userId", userId!);
+      log("✅ userId đã được lấy từ token và lưu: $userId");
+    } else {
+      log("⚠️ Token không chứa userId!");
+    }
   }
+
 
   Future<void> removeToken() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -127,6 +132,5 @@ class BaseCommon {
     await prefs.remove('userId');
     log("✅ userId đã được xóa khỏi SharedPreferences!");
   }
-
 
 }

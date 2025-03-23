@@ -1,8 +1,11 @@
 import 'package:get/get.dart';
+import '../../../../base/base_common.dart';
 import '../../../../service/user_service.dart';
+import '../../../../models/user_profile.dart';
 
 class ProfileController extends GetxController {
   var userName = "".obs;
+  var avatarUrl = "".obs;
   var orderStatus = ["Chờ xác nhận", "Đang chuẩn bị", "Đang giao", "Đã giao", "Đã huỷ", "Hoàn tiền"].obs;
   final UserService _userService = UserService();
 
@@ -14,20 +17,30 @@ class ProfileController extends GetxController {
 
   void fetchProfile() async {
     try {
-      final data = await _userService.fetchUserProfile(46);
-      print("Data received: $data");
-      if (data != null) {
-        userName.value = data['name'] ?? "";
-        print("User name updated to: ${userName.value}");
+      final userIdStr = BaseCommon.instance.userId;
+      if (userIdStr == null) {
+        print("⚠️ Không tìm thấy userId trong BaseCommon");
+        return;
+      }
+
+      final userId = int.tryParse(userIdStr);
+      if (userId == null) {
+        print("⚠️ userId không hợp lệ: $userIdStr");
+        return;
+      }
+
+      UserProfile? profile = await _userService.fetchUserProfile(userId);
+      print("Data received: $profile");
+
+      if (profile != null) {
+        userName.value = profile.name;
+        avatarUrl.value = profile.avatar;
       } else {
-        print("Failed to fetch profile - data is null");
+        print("⚠️ fetchProfile trả về null");
       }
     } catch (e, stackTrace) {
-      print("Error during fetchProfile: $e");
-      print("Stack trace: $stackTrace");
+      print("❌ Lỗi khi fetchProfile: $e");
+      print(stackTrace);
     }
   }
-
-
 }
-

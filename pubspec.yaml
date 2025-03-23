@@ -50,6 +50,7 @@ dependencies:
 
   get:
   get_cli:
+  get_storage: ^2.1.1
   intl:
   envied:
   flutter_localization: ^0.2.2
@@ -88,6 +89,7 @@ flutter:
     - assets/images/banner2.avif
     - assets/images/banner3.avif
     - assets/images/placeholder.png
+    - assets/images/logo.png
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

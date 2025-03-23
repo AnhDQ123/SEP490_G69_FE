@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
+import '../../../../resources/text_style.dart';
 import '../../controllers/home_controller.dart';
 
 class CategorySection extends StatefulWidget {
@@ -47,26 +47,27 @@ class _CategorySectionState extends State<CategorySection> {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // ✅ Tiêu đề danh mục
-          // ✅ Cập nhật phần tiêu đề danh mục
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          // Cập nhật tiêu đề danh mục với TextConstant
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             child: Row(
               children: [
-                Icon(Icons.category, size: 20, color: Color.fromRGBO(212, 163, 115, 1)), // ✅ Thêm icon danh mục
-                SizedBox(width: 6), // ✅ Tạo khoảng cách giữa icon và chữ
-                Text(
-                  'Danh mục',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                  ),
+                const Icon(
+                  Icons.category,
+                  size: 20,
+                  color: Color.fromRGBO(212, 163, 115, 1),
+                ),
+                const SizedBox(width: 6),
+                TextConstant.subTile2(
+                  context,
+                  text: 'Danh mục',
+                  size: 14,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
                 ),
               ],
             ),
           ),
-
 
           SizedBox(
             height: sectionHeight,
@@ -112,7 +113,7 @@ class _CategorySectionState extends State<CategorySection> {
                       Text(
                         category.name ?? 'No Name',
                         style: const TextStyle(
-                          fontSize: 12,
+                          fontSize: 11,
                           fontWeight: FontWeight.w500,
                           color: Colors.black87,
                         ),
@@ -144,7 +145,7 @@ class _CategorySectionState extends State<CategorySection> {
                       child: Container(
                         height: 4,
                         decoration: BoxDecoration(
-                          color: Color.fromRGBO(212, 163, 115, 1),
+                          color: const Color.fromRGBO(212, 163, 115, 1),
                           borderRadius: BorderRadius.circular(4),
                         ),
                       ),

@@ -9,7 +9,7 @@ class Category {
     return Category(
       id: json['id'] ?? 0, // Nếu id bị null, gán giá trị mặc định là 0
       name: json['name'] ?? 'No Name', // Nếu name bị null, gán "No Name"
-      image: json['image'] ?? 'https://yourserver.com/default_image.png',
+      image: json['image'] ?? 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRSDvRIHDPhNygFHzCXVLlh_ujsoJNBSFz1OA&s',
     );
   }
 }
