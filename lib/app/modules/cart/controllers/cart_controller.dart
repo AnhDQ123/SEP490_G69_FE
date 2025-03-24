@@ -29,8 +29,9 @@ class CartController extends GetxController {
         return;
       }
 
+      // Lọc các size (typeId == 2)
       List<CartItemOptionDTO> sizes = product.foodOptions
-          .where((opt) => opt.typeId == 2)
+          .where((opt) => opt.typeId == 2) // Lấy các size
           .map((opt) => CartItemOptionDTO(
         optionId: opt.id,
         typeId: opt.typeId,
@@ -43,8 +44,9 @@ class CartController extends GetxController {
       ))
           .toList();
 
-      List<CartItemOptionDTO> foodOptions = product.foodOptions
-          .where((opt) => opt.typeId == 1)
+      // Lọc các topping (typeId == 1)
+      List<CartItemOptionDTO> toppings = product.foodOptions
+          .where((opt) => opt.typeId == 1) // Lấy các topping
           .map((opt) => CartItemOptionDTO(
         optionId: opt.id,
         typeId: opt.typeId,
@@ -57,14 +59,18 @@ class CartController extends GetxController {
       ))
           .toList();
 
-      productOptions[productId] = [...sizes, ...foodOptions];
+      // Cập nhật lại các tùy chọn size và topping cho sản phẩm này
+      productOptions[productId] = {...sizes, ...toppings}.toList();
       carts.refresh();
     } catch (e) {
-      print('❌ Lỗi khi lấy option sản phẩm $productId: $e');
+      print('❌ Lỗi khi lấy các tùy chọn sản phẩm $productId: $e');
     } finally {
       isLoadingOptions(false);
     }
   }
+
+
+
 
   void updateSize(int shopId, int productId, CartItemOptionDTO newSize) {
     var shop = carts.firstWhere((s) => s.shopId == shopId);
