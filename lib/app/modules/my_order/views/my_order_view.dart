@@ -1,3 +1,5 @@
+import 'package:ffb_fe_flutter/app/modules/my_order/views/status_widget/return_rejected_order_widget.dart';
+import 'package:ffb_fe_flutter/app/modules/my_order/views/status_widget/ship_pending_order_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../resources/bottom_nav.dart';
@@ -45,7 +47,7 @@ class MyOrderView extends GetView<MyOrderController> {
     final MyOrderController controller = Get.find<MyOrderController>();
 
     return DefaultTabController(
-      length: 8, // ✅ Đã tăng từ 7 lên 8
+      length: 10,
       child: Scaffold(
         appBar: AppBar(
           leading: IconButton(
@@ -60,12 +62,14 @@ class MyOrderView extends GetView<MyOrderController> {
               tabs: const [
                 Tab(text: "Chờ xác nhận"),
                 Tab(text: "Đang chuẩn bị"),
+                Tab(text: "Chờ xử lý"),        // ✅ mới
                 Tab(text: "Đang giao"),
                 Tab(text: "Đã giao"),
                 Tab(text: "Đã huỷ"),
-                Tab(text: "Đang trả hàng"), // ✅ Mới
-                Tab(text: "Đã trả hàng"),   // ✅ Mới
+                Tab(text: "Đang trả hàng"),
+                Tab(text: "Đã trả hàng"),
                 Tab(text: "Bị từ chối"),
+                Tab(text: "Từ chối trả"),      // ✅ mới
               ],
               labelColor: Colors.orange,
               unselectedLabelColor: Colors.grey,
@@ -83,7 +87,7 @@ class MyOrderView extends GetView<MyOrderController> {
               controller.shippingOrders.isEmpty &&
               controller.deliveredOrders.isEmpty &&
               controller.canceledOrders.isEmpty &&
-              controller.returnPendingOrders.isEmpty && // ✅ Thêm check
+              controller.returnPendingOrders.isEmpty &&
               controller.returnedOrders.isEmpty &&
               controller.rejectedOrders.isEmpty) {
             return const Center(
@@ -93,40 +97,19 @@ class MyOrderView extends GetView<MyOrderController> {
 
           return TabBarView(
             children: [
-              PendingOrderWidget(
-                orders: controller.pendingOrders,
-                getStatusColor: _getStatusColor,
-              ),
-              PreparingOrderWidget(
-                orders: controller.preparingOrders,
-                getStatusColor: _getStatusColor,
-              ),
-              ShippingOrderWidget(
-                orders: controller.shippingOrders,
-                getStatusColor: _getStatusColor,
-              ),
-              DeliveredOrderWidget(
-                orders: controller.deliveredOrders,
-                getStatusColor: _getStatusColor,
-              ),
-              CanceledOrderWidget(
-                orders: controller.canceledOrders,
-                getStatusColor: _getStatusColor,
-              ),
-              ReturnPendingOrderWidget( // ✅ Tab "Đang trả hàng"
-                orders: controller.returnPendingOrders,
-                getStatusColor: _getStatusColor,
-              ),
-              ReturnedOrderWidget( // ✅ Tab "Đã trả hàng"
-                orders: controller.returnedOrders,
-                getStatusColor: _getStatusColor,
-              ),
-              RejectedOrderWidget(
-                orders: controller.rejectedOrders,
-                getStatusColor: _getStatusColor,
-              ),
+              PendingOrderWidget(orders: controller.pendingOrders, getStatusColor: _getStatusColor),
+              PreparingOrderWidget(orders: controller.preparingOrders, getStatusColor: _getStatusColor),
+              ShipPendingOrderWidget(orders: controller.shipPendingOrders, getStatusColor: _getStatusColor), // ✅
+              ShippingOrderWidget(orders: controller.shippingOrders, getStatusColor: _getStatusColor),
+              DeliveredOrderWidget(orders: controller.deliveredOrders, getStatusColor: _getStatusColor),
+              CanceledOrderWidget(orders: controller.canceledOrders, getStatusColor: _getStatusColor),
+              ReturnPendingOrderWidget(orders: controller.returnPendingOrders, getStatusColor: _getStatusColor),
+              ReturnedOrderWidget(orders: controller.returnedOrders, getStatusColor: _getStatusColor),
+              RejectedOrderWidget(orders: controller.rejectedOrders, getStatusColor: _getStatusColor),
+              ReturnRejectedOrderWidget(orders: controller.returnRejectedOrders, getStatusColor: _getStatusColor), // ✅
             ],
           );
+
         }),
         bottomNavigationBar: Obx(
               () => BottomNav(

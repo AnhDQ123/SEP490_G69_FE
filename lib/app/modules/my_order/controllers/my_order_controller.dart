@@ -14,6 +14,9 @@ class MyOrderController extends GetxController {
   final returnPendingOrders = <Order>[].obs;
   final returnedOrders = <Order>[].obs;
   final rejectedOrders = <Order>[].obs;
+  final shipPendingOrders = <Order>[].obs;
+  final returnRejectedOrders = <Order>[].obs;
+
 
   final OrderService _orderService = OrderService(); // Dùng OrderService
 
@@ -26,7 +29,7 @@ class MyOrderController extends GetxController {
   Future<void> loadOrders() async {
     try {
       isLoading.value = true;
-      int ownerId = 23; // Thay ownerId theo ý bạn
+      int ownerId = 34;
 
       // Gọi API cho từng trạng thái và assign vào các danh sách tương ứng
       pendingOrders.assignAll(await _orderService.fetchOrdersByOwnerAndStatus(id: ownerId, status: "PENDING"));
@@ -37,6 +40,9 @@ class MyOrderController extends GetxController {
       returnPendingOrders.assignAll(await _orderService.fetchOrdersByOwnerAndStatus(id: ownerId, status: "RETURN_PENDING"));
       returnedOrders.assignAll(await _orderService.fetchOrdersByOwnerAndStatus(id: ownerId, status: "RETURNED"));
       rejectedOrders.assignAll(await _orderService.fetchOrdersByOwnerAndStatus(id: ownerId, status: "REJECTED"));
+      shipPendingOrders.assignAll(await _orderService.fetchOrdersByOwnerAndStatus(id: ownerId, status: "SHIP_PENDING"));
+      returnRejectedOrders.assignAll(await _orderService.fetchOrdersByOwnerAndStatus(id: ownerId, status: "RETURN_REJECTED"));
+
 
 
       print("📦 Đã nhận các đơn hàng theo trạng thái từ API");

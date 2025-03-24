@@ -8,6 +8,8 @@ abstract class Routes {
   static const CHECK_OUT = _Paths.CHECK_OUT;
   static const SHOP_ORDER = _Paths.SHOP_ORDER;
   static const RETURN_ORDER_DETAIL_PAGE = _Paths.RETURN_ORDER_DETAIL_PAGE;
+  static const VOUCHER_LIST = _Paths.VOUCHER_LIST;
+  static const ADD_VOUCHER = _Paths.ADD_VOUCHER;
 }
 
 abstract class _Paths {
@@ -17,4 +19,6 @@ abstract class _Paths {
   static const CHECK_OUT = '/check-out';
   static const SHOP_ORDER = '/shop-order';
   static const RETURN_ORDER_DETAIL_PAGE = '/return-order-detail-page';
+  static const VOUCHER_LIST = '/voucher-list';
+  static const ADD_VOUCHER = '/add-voucher';
 }

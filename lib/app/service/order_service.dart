@@ -5,7 +5,7 @@ import '../models/order.dart';
 import '../models/return_order.dart';
 
 class OrderService {
-  final String baseUrl = 'http://192.168.1.11:8080/api/order';
+  final String baseUrl = 'http://192.168.128.215:8080/api/order';
 
   /// 🔁 Lấy đơn hàng theo ID duy nhất
   Future<Order?> fetchOrderById(int id) async {

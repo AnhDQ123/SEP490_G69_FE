@@ -91,7 +91,6 @@ class ShopOrderView extends GetView<ShopOrderController> {
                 orders: controller.shipping,
                 getStatusColor: _getStatusColor,
               ),
-
               ShopDeliveredOrderWidget(
                 orders: controller.delivered,
                 getStatusColor: _getStatusColor,
