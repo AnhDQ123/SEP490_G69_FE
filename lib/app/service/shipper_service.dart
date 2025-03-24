@@ -2,11 +2,9 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
-
 import '../models/order.dart';
 
 class ShipperService {
-
   final String baseUrl = "http://192.168.1.11:8080/api";
 
   Future<ApiResponse> registerShipper({
@@ -92,14 +90,18 @@ class ShipperService {
       } else {
         if (responseBody.isNotEmpty) {
           var decoded = jsonDecode(responseBody);
-          return ApiResponse(success: false, message: decoded['message'] ?? "Đăng ký thất bại.");
+          return ApiResponse(
+              success: false,
+              message: decoded['message'] ?? "Đăng ký thất bại.");
         } else {
-          return ApiResponse(success: false, message: "Phản hồi rỗng từ server.");
+          return ApiResponse(
+              success: false, message: "Phản hồi rỗng từ server.");
         }
       }
     } catch (e) {
       print("❌ Lỗi gửi API: $e");
-      return ApiResponse(success: false, message: "Không thể kết nối tới server.");
+      return ApiResponse(
+          success: false, message: "Không thể kết nối tới server.");
     }
   }
 
@@ -110,7 +112,8 @@ class ShipperService {
       );
 
       if (response.statusCode == 200) {
-        final data = jsonDecode(utf8.decode(response.bodyBytes)); // ✅ decode đúng UTF-8
+        final data =
+            jsonDecode(utf8.decode(response.bodyBytes)); // ✅ decode đúng UTF-8
 
         // Lấy danh sách đơn hàng từ trường "content"
         final List<dynamic> ordersJson = data['content'];
@@ -125,8 +128,10 @@ class ShipperService {
     }
   }
 
-  Future<ApiResponse> acceptShipping({required int orderId, required int userId}) async {
-    final url = Uri.parse('$baseUrl/order/acceptShip?id=$orderId&userId=$userId');
+  Future<ApiResponse> acceptShipping(
+      {required int orderId, required int userId}) async {
+    final url =
+        Uri.parse('$baseUrl/order/acceptShip?id=$orderId&userId=$userId');
 
     try {
       final response = await http.post(url);
@@ -137,7 +142,8 @@ class ShipperService {
       if (response.statusCode == 200) {
         return ApiResponse(success: true, message: "Nhận đơn thành công");
       } else {
-        return ApiResponse(success: false, message: "Không thể nhận đơn: ${response.body}");
+        return ApiResponse(
+            success: false, message: "Không thể nhận đơn: ${response.body}");
       }
     } catch (e) {
       print("❌ Lỗi khi gọi acceptShipping: $e");
@@ -171,17 +177,17 @@ class ShipperService {
       print("🚚 [confirmDelivery] Body: $responseBody");
 
       if (response.statusCode == 200) {
-        return ApiResponse(success: true, message: "Đơn đã được xác nhận giao thành công.");
+        return ApiResponse(
+            success: true, message: "Đơn đã được xác nhận giao thành công.");
       } else {
-        return ApiResponse(success: false, message: "Lỗi xác nhận đơn: $responseBody");
+        return ApiResponse(
+            success: false, message: "Lỗi xác nhận đơn: $responseBody");
       }
     } catch (e) {
       print("❌ Lỗi khi gọi confirmDelivery: $e");
       return ApiResponse(success: false, message: "Lỗi kết nối đến server.");
     }
   }
-
-
 }
 
 class ApiResponse {

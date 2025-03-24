@@ -1,12 +1,10 @@
 import 'package:get/get.dart';
 import '../../../models/order.dart';
-
 import '../../../service/shipper_service.dart';
 
 class ShipperOrderDetailController extends GetxController {
   late final int orderId;
   late final List<Order> orders;
-
   final Rxn<Order> order = Rxn<Order>();
 
   @override
@@ -38,7 +36,4 @@ class ShipperOrderDetailController extends GetxController {
       Get.snackbar("❌ Thất bại", result.message);
     }
   }
-
-
-
 }

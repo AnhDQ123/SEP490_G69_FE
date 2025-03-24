@@ -11,33 +11,40 @@ class ShipperHomeView extends GetView<ShipperHomeController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Vận chuyển', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text('Vận chuyển',
+            style: TextStyle(fontWeight: FontWeight.bold)),
         centerTitle: true,
-        actions: const [Padding(padding: EdgeInsets.only(right: 16), child: Icon(Icons.notifications_none))],
+        actions: const [
+          Padding(
+              padding: EdgeInsets.only(right: 16),
+              child: Icon(Icons.notifications_none))
+        ],
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Get.back(),
         ),
       ),
       body: Obx(() => SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildProfileCard(),
-            const SizedBox(height: 16),
-            _buildBusyToggle(),
-            const SizedBox(height: 16),
-            buildEarningsSummary(controller),
-            const SizedBox(height: 16),
-            Obx(() => _buildOrderSummary(context, controller),),
-            const SizedBox(height: 16),
-            _buildOrderTableHeader(),
-            const SizedBox(height: 8),
-            _buildOrderTable(context),
-          ],
-        ),
-      )),
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildProfileCard(),
+                const SizedBox(height: 16),
+                _buildBusyToggle(),
+                const SizedBox(height: 16),
+                buildEarningsSummary(controller),
+                const SizedBox(height: 16),
+                Obx(
+                  () => _buildOrderSummary(context, controller),
+                ),
+                const SizedBox(height: 16),
+                _buildOrderTableHeader(),
+                const SizedBox(height: 8),
+                _buildOrderTable(context),
+              ],
+            ),
+          )),
     );
   }
 
@@ -52,7 +59,8 @@ class ShipperHomeView extends GetView<ShipperHomeController> {
         children: [
           const CircleAvatar(radius: 24, child: Icon(Icons.person)),
           const SizedBox(width: 12),
-          Text('Xin chào, ${controller.userName}', style: const TextStyle(fontSize: 16)),
+          Text('Xin chào, ${controller.userName}',
+              style: const TextStyle(fontSize: 16)),
         ],
       ),
     );
@@ -62,19 +70,24 @@ class ShipperHomeView extends GetView<ShipperHomeController> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        const Text("Đang bận", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+        const Text("Đang bận",
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
         Obx(() => Switch(
-          value: controller.isBusy.value,
-          onChanged: (value) => controller.toggleBusy(value),
-        )),
+              value: controller.isBusy.value,
+              onChanged: (value) => controller.toggleBusy(value),
+            )),
       ],
     );
   }
 
-  Widget _buildOrderSummary(BuildContext context, ShipperHomeController controller) {
-    final ship_pending = controller.orders.where((o) => o.status == 'SHIP_PENDING').length;
-    final delivering = controller.orders.where((o) => o.status == 'SHIPPING').length;
-    final completed = controller.orders.where((o) => o.status == 'DELIVERED').length;
+  Widget _buildOrderSummary(
+      BuildContext context, ShipperHomeController controller) {
+    final ship_pending =
+        controller.orders.where((o) => o.status == 'SHIP_PENDING').length;
+    final delivering =
+        controller.orders.where((o) => o.status == 'SHIPPING').length;
+    final completed =
+        controller.orders.where((o) => o.status == 'DELIVERED').length;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -83,43 +96,44 @@ class ShipperHomeView extends GetView<ShipperHomeController> {
           context,
           ship_pending.toString(),
           "Đơn chờ xác nhận",
-              () => Get.offNamed(
-                Routes.SHIPPER_ORDER_LIST,
-                arguments: {
-                  'orders': controller.orders,
-                  'status': 'SHIP_PENDING', // hoặc lấy từ state đang chọn
-                },
-              ),
+          () => Get.offNamed(
+            Routes.SHIPPER_ORDER_LIST,
+            arguments: {
+              'orders': controller.orders,
+              'status': 'SHIP_PENDING', // hoặc lấy từ state đang chọn
+            },
+          ),
         ),
         _buildSummaryItem(
           context,
           delivering.toString(),
           "Đơn đang giao",
-              () => Get.offNamed(
-                Routes.SHIPPER_ORDER_LIST,
-                arguments: {
-                  'orders': controller.orders,
-                  'status': 'SHIPPING', // hoặc lấy từ state đang chọn
-                },
-              ),
+          () => Get.offNamed(
+            Routes.SHIPPER_ORDER_LIST,
+            arguments: {
+              'orders': controller.orders,
+              'status': 'SHIPPING', // hoặc lấy từ state đang chọn
+            },
+          ),
         ),
         _buildSummaryItem(
           context,
           completed.toString(),
           "Đơn đã giao",
-              () => Get.offNamed(
-                Routes.SHIPPER_ORDER_LIST,
-                arguments: {
-                  'orders': controller.orders,
-                  'status': 'DELIVERED', // hoặc lấy từ state đang chọn
-                },
-              ),
+          () => Get.offNamed(
+            Routes.SHIPPER_ORDER_LIST,
+            arguments: {
+              'orders': controller.orders,
+              'status': 'DELIVERED', // hoặc lấy từ state đang chọn
+            },
+          ),
         ),
       ],
     );
   }
 
-  Widget _buildSummaryItem(BuildContext context, String count, String label, VoidCallback onTap) {
+  Widget _buildSummaryItem(
+      BuildContext context, String count, String label, VoidCallback onTap) {
     double screenWidth = MediaQuery.of(context).size.width;
     double itemWidth = (screenWidth - 48) / 3;
 
@@ -156,7 +170,8 @@ class ShipperHomeView extends GetView<ShipperHomeController> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        const Text("Đơn hàng của bạn", style: TextStyle(fontWeight: FontWeight.bold)),
+        const Text("Đơn hàng của bạn",
+            style: TextStyle(fontWeight: FontWeight.bold)),
         TextButton(
           onPressed: () async {
             await Get.toNamed(
@@ -170,7 +185,8 @@ class ShipperHomeView extends GetView<ShipperHomeController> {
             // ⏬ Cập nhật lại danh sách đơn sau khi quay về
             await controller.fetchOrders();
           },
-          child: const Text("Xem thêm >", style: TextStyle(color: Colors.blueAccent)),
+          child: const Text("Xem thêm >",
+              style: TextStyle(color: Colors.blueAccent)),
         ),
       ],
     );
@@ -184,16 +200,30 @@ class ShipperHomeView extends GetView<ShipperHomeController> {
       child: DataTable(
         columnSpacing: 12, // 👈 Giảm khoảng cách giữa các cột
         columns: const [
-          DataColumn(label: Expanded(child: Text("Mã đơn", style: TextStyle(fontWeight: FontWeight.bold)))),
-          DataColumn(label: Expanded(child: Text("Tình trạng", style: TextStyle(fontWeight: FontWeight.bold)))),
-          DataColumn(label: Expanded(child: Text("Ngày giao", style: TextStyle(fontWeight: FontWeight.bold)))),
-          DataColumn(label: Expanded(child: Text("Tổng tiền", style: TextStyle(fontWeight: FontWeight.bold)))),
+          DataColumn(
+              label: Expanded(
+                  child: Text("Mã đơn",
+                      style: TextStyle(fontWeight: FontWeight.bold)))),
+          DataColumn(
+              label: Expanded(
+                  child: Text("Tình trạng",
+                      style: TextStyle(fontWeight: FontWeight.bold)))),
+          DataColumn(
+              label: Expanded(
+                  child: Text("Ngày giao",
+                      style: TextStyle(fontWeight: FontWeight.bold)))),
+          DataColumn(
+              label: Expanded(
+                  child: Text("Tổng tiền",
+                      style: TextStyle(fontWeight: FontWeight.bold)))),
         ],
         rows: controller.orders.take(5).map((order) {
           final formattedDate = order.createdAt != null
               ? DateFormat('dd/MM/yyyy').format(order.createdAt!)
               : '';
-          final formattedTotal = NumberFormat.currency(locale: 'vi_VN', symbol: '').format(order.total);
+          final formattedTotal =
+              NumberFormat.currency(locale: 'vi_VN', symbol: '')
+                  .format(order.total);
 
           return DataRow(cells: [
             DataCell(Text("#${order.id}")),
@@ -206,31 +236,30 @@ class ShipperHomeView extends GetView<ShipperHomeController> {
     );
   }
 
-
   Widget buildEarningsSummary(ShipperHomeController controller) {
     return Obx(() => Container(
-      padding: EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.green[100],
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            "Doanh thu:",
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          padding: EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.green[100],
+            borderRadius: BorderRadius.circular(12),
           ),
-          Text(
-            "${controller.totalEarnings.value}đ",
-            style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.green[800]),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                "Doanh thu:",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+              Text(
+                "${controller.totalEarnings.value}đ",
+                style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.green[800]),
+              ),
+            ],
           ),
-        ],
-      ),
-    ));
+        ));
   }
 
   Widget _buildStatusLabel(String status) {
@@ -264,8 +293,4 @@ class ShipperHomeView extends GetView<ShipperHomeController> {
       child: Text(label, style: TextStyle(color: color, fontSize: 12)),
     );
   }
-
-
-
 }
-

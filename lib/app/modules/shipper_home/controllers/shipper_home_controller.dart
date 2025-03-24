@@ -1,6 +1,5 @@
 import 'package:get/get.dart';
 import 'package:ffb_fe_flutter/app/service/shipper_service.dart';
-
 import '../../../models/order.dart';
 
 class ShipperHomeController extends GetxController {
@@ -36,8 +35,10 @@ class ShipperHomeController extends GetxController {
 
       // Thống kê
       doneOrders.value = result.where((o) => o.status == "DELIVERED").length;
-      deliveringOrders.value = result.where((o) => o.status == "SHIPPING").length;
-      ship_pendingOrders.value = result.where((o) => o.status == "SHIP_PENDING").length;
+      deliveringOrders.value =
+          result.where((o) => o.status == "SHIPPING").length;
+      ship_pendingOrders.value =
+          result.where((o) => o.status == "SHIP_PENDING").length;
       revenue.value = result.fold(0.0, (sum, o) => sum + (o.total));
     } catch (e) {
       print("❌ Lỗi lấy đơn hàng: $e");
