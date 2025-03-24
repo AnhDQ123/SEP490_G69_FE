@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-
 import '../../../models/order.dart';
 import '../../../models/order_item_option.dart';
 import '../controllers/shipper_order_detail_controller.dart';
@@ -21,7 +20,6 @@ class ShipperOrderDetailView extends GetView<ShipperOrderDetailController> {
           body: const Center(child: Text("Không tìm thấy đơn hàng")),
         );
       }
-
       return Scaffold(
         appBar: AppBar(
           title: const Text("Chi tiết đơn hàng"),
@@ -53,7 +51,7 @@ class ShipperOrderDetailView extends GetView<ShipperOrderDetailController> {
 
       final extraTotal = extraOptions.fold<double>(
         0,
-            (optSum, o) => optSum + (o.price * o.quantity),
+        (optSum, o) => optSum + (o.price * o.quantity),
       );
 
       return sum + ((item.price + extraTotal) * item.quantity);
@@ -74,40 +72,48 @@ class ShipperOrderDetailView extends GetView<ShipperOrderDetailController> {
               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
             ),
             const SizedBox(height: 6),
-            Text("👤 Người nhận: ${order.ownerName}", style: const TextStyle(fontSize: 15)),
+            Text("👤 Người nhận: ${order.ownerName}",
+                style: const TextStyle(fontSize: 15)),
             const SizedBox(height: 6),
-            Text("📞 SĐT: ${order.phone}", style: const TextStyle(fontSize: 15)),
+            Text("📞 SĐT: ${order.phone}",
+                style: const TextStyle(fontSize: 15)),
             const SizedBox(height: 6),
-            Text("🏠 Địa chỉ người nhận: ${order.address}", style: const TextStyle(fontSize: 15)),
+            Text("🏠 Địa chỉ người nhận: ${order.address}",
+                style: const TextStyle(fontSize: 15)),
             const SizedBox(height: 6),
-            Text("🏪 Địa chỉ quán: ${order.shopAddress}", style: const TextStyle(fontSize: 15)),
+            Text("🏪 Địa chỉ quán: ${order.shopAddress}",
+                style: const TextStyle(fontSize: 15)),
             const SizedBox(height: 12),
-            const Text("🧾 Sản phẩm:", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+            const Text("🧾 Sản phẩm:",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
             const SizedBox(height: 6),
             ...order.orderItem.map(_buildOrderItem),
             const Divider(),
-            Text("💵 Tổng giá gốc: ${currency.format(originalTotal)}đ", style: const TextStyle(fontSize: 15)),
-            Text("🔻 Giảm giá: ${discountRate * 100}% (-${currency.format(discountAmount)}đ)", style: const TextStyle(fontSize: 15)),
+            Text("💵 Tổng giá gốc: ${currency.format(originalTotal)}đ",
+                style: const TextStyle(fontSize: 15)),
+            Text(
+                "🔻 Giảm giá: ${discountRate * 100}% (-${currency.format(discountAmount)}đ)",
+                style: const TextStyle(fontSize: 15)),
             Text(
               "💰 Tổng tiền thanh toán: ${currency.format(order.total)}đ",
               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
             const SizedBox(height: 8),
-            Text("🚚 Trạng thái đơn hàng: ${_translateStatus(order.status)}", style: const TextStyle(fontSize: 15)),
+            Text("🚚 Trạng thái đơn hàng: ${_translateStatus(order.status)}",
+                style: const TextStyle(fontSize: 15)),
           ],
-
         ),
       ),
     );
   }
 
   Widget _buildOrderItem(orderItem) {
-    final List<OrderItemOption> options = List<OrderItemOption>.from(orderItem.orderItemOptions);
-
+    final List<OrderItemOption> options =
+        List<OrderItemOption>.from(orderItem.orderItemOptions);
     final sizeOption = options.firstWhereOrNull((o) => o.typeId == 2);
     final extraOptions = options.where((o) => o.typeId == 1).toList();
-
-    final sizeText = sizeOption != null ? " (Size: ${sizeOption.optionName})" : "";
+    final sizeText =
+        sizeOption != null ? " (Size: ${sizeOption.optionName})" : "";
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
@@ -119,14 +125,14 @@ class ShipperOrderDetailView extends GetView<ShipperOrderDetailController> {
             style: const TextStyle(fontWeight: FontWeight.w500),
           ),
           ...extraOptions.map((opt) => Padding(
-            padding: const EdgeInsets.only(left: 12, top: 2),
-            child: Text("- Thêm: ${opt.optionName} x${opt.quantity} (${currency.format(opt.price)}đ)"),
-          )),
+                padding: const EdgeInsets.only(left: 12, top: 2),
+                child: Text(
+                    "- Thêm: ${opt.optionName} x${opt.quantity} (${currency.format(opt.price)}đ)"),
+              )),
         ],
       ),
     );
   }
-
 
   String _translateStatus(String? status) {
     switch (status) {
@@ -164,7 +170,6 @@ class ShipperOrderDetailView extends GetView<ShipperOrderDetailController> {
           label: const Text("Xác nhận"),
           style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
         ),
-
       ],
     );
   }

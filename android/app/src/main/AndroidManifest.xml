@@ -5,7 +5,7 @@
 
     <application
         android:label="ffb_fe_flutter"
-        android:name="Fast F&B"
+        android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

@@ -1,12 +1,10 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../models/order.dart';
 import '../../../service/shipper_service.dart';
 import 'package:url_launcher/url_launcher.dart';
-
 
 class ShipperOrderListController extends GetxController {
   final RxString selectedStatus = 'SHIP_PENDING'.obs;
@@ -22,13 +20,12 @@ class ShipperOrderListController extends GetxController {
   Future<void> refreshOrders() async {
     try {
       final updated = await ShipperService().fetchOrdersByShipper(3);
-      orders.assignAll(updated);        // Cập nhật danh sách
-      orders.refresh();                 // ⚠️ BẮT BUỘC: thông báo Obx rebuild lại
+      orders.assignAll(updated); // Cập nhật danh sách
+      orders.refresh(); // ⚠️ BẮT BUỘC: thông báo Obx rebuild lại
     } catch (e) {
       Get.snackbar("Lỗi", "Không thể làm mới danh sách đơn hàng");
     }
   }
-
 
   @override
   void onInit() {
@@ -43,12 +40,13 @@ class ShipperOrderListController extends GetxController {
 
   Future<void> handleAcceptOrder(Order order, int userId) async {
     final service = ShipperService();
-    final result = await service.acceptShipping(orderId: order.id, userId: userId);
+    final result =
+        await service.acceptShipping(orderId: order.id, userId: userId);
 
     if (result.success) {
       final index = orders.indexWhere((o) => o.id == order.id);
       orders[index].status = 'SHIPPING'; // ✅ Cập nhật trạng thái
-      orders.refresh();                  // ✅ Trigger UI update cho Obx
+      orders.refresh(); // ✅ Trigger UI update cho Obx
       Get.snackbar(
         "✅ Thành công",
         "Đơn hàng #${order.id} đã được xác nhận.",
@@ -79,7 +77,6 @@ class ShipperOrderListController extends GetxController {
         child: CircularProgressIndicator(),
       ),
     );
-
     if (result.success) {
       final index = orders.indexWhere((o) => o.id == order.id);
       if (index != -1) {
@@ -131,5 +128,4 @@ class ShipperOrderListController extends GetxController {
       Get.snackbar("Lỗi", "Không thể mở ứng dụng gọi điện");
     }
   }
-
 }

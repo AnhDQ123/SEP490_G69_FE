@@ -26,7 +26,6 @@ class ShipperRegisterController extends GetxController {
   var licenseBackImage = Rxn<File>();
   var legalRecordImage = Rxn<File>();
 
-
   // Trạng thái hợp lệ của form
   final isFormValid = false.obs;
 
@@ -53,7 +52,6 @@ class ShipperRegisterController extends GetxController {
     imageController.value = null;
     validateForm();
   }
-
 
   // Hàm kiểm tra xem form đã đầy đủ chưa
   void validateForm() {
@@ -110,7 +108,6 @@ class ShipperRegisterController extends GetxController {
       Get.snackbar("Thất bại", response.message);
     }
   }
-
 
   String formatDate(String date) {
     try {
