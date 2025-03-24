@@ -3,16 +3,18 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart';
 import 'package:mime/mime.dart';
-import '../models/ShopProfile.dart';
+import '../models/shop_profile.dart';
 import 'package:http_parser/http_parser.dart';
 
 import '../models/bank.dart';
 
 class ShopService {
+  final String baseUrl = "http://10.0.2.2:8080/api";
 
   Future<List<Bank>> fetchBanks() async {
     try {
-      final response = await http.get(Uri.parse('https://api.vietqr.io/v2/banks'));
+      final response =
+          await http.get(Uri.parse('https://api.vietqr.io/v2/banks'));
 
       if (response.statusCode == 200) {
         final List<dynamic> data = jsonDecode(response.body)['data'];
@@ -26,7 +28,6 @@ class ShopService {
       return [];
     }
   }
-
 
   Future<ApiResponse> registerShop({
     required String name,
@@ -48,19 +49,18 @@ class ShopService {
     required String selectedBankBin,
     required String bankInfo,
   }) async {
-    var uri = Uri.parse('http://10.0.2.2:8080/api/shops/register');
+    var uri = Uri.parse('$baseUrl/shop/register');
     var request = http.MultipartRequest('POST', uri);
 
     // Thêm dữ liệu dạng text vào request
     request.fields['name'] = name;
-    request.fields['description'] = description.isNotEmpty ? description : ""; // Fix lỗi null
+    request.fields['description'] = description.isNotEmpty ? description : "";
     request.fields['address'] = address;
     request.fields['sellType'] = sellType;
     request.fields['taxCode'] = taxCode;
     request.fields['citizenIDNumber'] = citizenIDNumber;
     request.fields['citizenIDExpiredDate'] =
-    "${citizenIDExpiredDate.year}-${citizenIDExpiredDate.month.toString().padLeft(2, '0')}-${citizenIDExpiredDate.day.toString().padLeft(2, '0')}";
-
+        "${citizenIDExpiredDate.year}-${citizenIDExpiredDate.month.toString().padLeft(2, '0')}-${citizenIDExpiredDate.day.toString().padLeft(2, '0')}";
     request.fields['userId'] = "2";
     request.fields['openTime'] = openTime; // Gửi giờ mở cửa
     request.fields['closeTime'] = closeTime; // Gửi giờ đóng cửa
@@ -126,14 +126,57 @@ class ShopService {
         // ✅ Kiểm tra responseBody có dữ liệu không trước khi decode
         if (responseBody.isNotEmpty) {
           var decodedResponse = jsonDecode(responseBody);
-          return ApiResponse(success: false, message: decodedResponse['message'] ?? "Lỗi không xác định.");
+          return ApiResponse(
+              success: false,
+              message: decodedResponse['message'] ?? "Lỗi không xác định.");
         } else {
-          return ApiResponse(success: false, message: "Lỗi không xác định (phản hồi rỗng từ server).");
+          return ApiResponse(
+              success: false,
+              message: "Lỗi không xác định (phản hồi rỗng từ server).");
         }
       }
     } catch (e) {
       print("❌ Lỗi khi gửi request: $e"); // ✅ In lỗi chi tiết lên console
-      return ApiResponse(success: false, message: "Lỗi khi kết nối tới server.");
+      return ApiResponse(
+          success: false, message: "Lỗi khi kết nối tới server.");
+    }
+  }
+
+  Future<Map<String, int>> fetchOrderCounts(int shopId) async {
+    try {
+      final response =
+          await http.get(Uri.parse('$baseUrl/order/count?id=$shopId'));
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = json.decode(response.body);
+
+        // Kiểm tra nếu data không phải là null và có các khóa mong muốn
+        if (data != null) {
+          Map<String, int> orderCounts = {
+            'pending': data['pending'] ?? 0,
+            'processing': data['processing'] ?? 0,
+            'shipPending': data['shipPending'] ?? 0,
+            'shipping': data['shipping'] ?? 0,
+            'delivered': data['delivered'] ?? 0,
+            'cancelled': data['cancelled'] ?? 0,
+            'returned': data['returned'] ?? 0,
+            'rejected': data['rejected'] ?? 0,
+            'returnPending': data['returnPending'] ?? 0,
+            'returnRejected': data['returnRejected'] ?? 0,
+          };
+
+          return orderCounts; // Trả về Map chứa số lượng đơn theo trạng thái
+        } else {
+          print('Dữ liệu trả về không hợp lệ');
+          return {}; // Trả về map rỗng nếu dữ liệu không hợp lệ
+        }
+      } else {
+        print('Lỗi HTTP: ${response.statusCode}');
+        return {}; // Trả về map rỗng nếu lỗi HTTP
+      }
+    } catch (e) {
+      print('Lỗi khi gọi API: $e');
+      return {}; // Trả về map rỗng nếu có lỗi trong quá trình gọi API
     }
   }
 }

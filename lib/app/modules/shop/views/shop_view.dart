@@ -102,15 +102,33 @@ class ShopView extends GetView<ShopController> {
               title: Text('Đơn hàng của tôi', style: TextStyle(fontWeight: FontWeight.bold)),
               trailing: TextButton(onPressed: () {}, child: Text('Xem thêm >')),
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                _buildOrderStatus('2', 'Chờ xác nhận'),
-                _buildOrderStatus('0', 'Đang chuẩn bị'),
-                _buildOrderStatus('3', 'Đang giao'),
-                _buildOrderStatus('20', 'Đã giao'),
-              ],
-            ),
+            Obx(() {
+              // Kiểm tra nếu orderCounts đã được cập nhật từ API
+              if (controller.orderCounts.isEmpty) {
+                return CircularProgressIndicator(); // Chờ dữ liệu từ API
+              }
+
+              // Tính tổng trạng thái "Đã hủy/trả hàng"
+              int cancelledAndReturned = (controller.orderCounts['cancelled'] ?? 0) +
+                  (controller.orderCounts['rejected'] ?? 0) +
+                  (controller.orderCounts['returned'] ?? 0) +
+                  (controller.orderCounts['returnPending'] ?? 0) +
+                  (controller.orderCounts['returnRejected'] ?? 0);
+
+              return SingleChildScrollView(
+                scrollDirection: Axis.horizontal, // Cho phép kéo ngang
+                child: Row(
+                  children: [
+                    _buildOrderStatus(controller.orderCounts['pending']?.toString() ?? '0', 'Chờ xác nhận'),
+                    _buildOrderStatus(controller.orderCounts['processing']?.toString() ?? '0', 'Đang chuẩn bị'),
+                    _buildOrderStatus(controller.orderCounts['shipPending']?.toString() ?? '0', 'Chờ lấy hàng'),
+                    _buildOrderStatus(controller.orderCounts['shipping']?.toString() ?? '0', 'Đang giao hàng'),
+                    _buildOrderStatus(controller.orderCounts['delivered']?.toString() ?? '0', 'Đã giao'),
+                    _buildOrderStatus(cancelledAndReturned.toString(), 'Đã hủy/trả hàng'), // Tổng đã hủy/trả hàng
+                  ],
+                ),
+              );
+            }),
           ],
         ),
       ),
@@ -118,7 +136,8 @@ class ShopView extends GetView<ShopController> {
   }
 
   Widget _buildOrderStatus(String count, String status) {
-    return Flexible( // Sử dụng Flexible để tránh tràn
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8.0), // Thêm khoảng cách giữa các cột
       child: Column(
         children: [
           Text(count, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
@@ -127,6 +146,7 @@ class ShopView extends GetView<ShopController> {
       ),
     );
   }
+
 
   Widget _buildManagementGrid() {
     return GridView.count(

@@ -20,8 +20,7 @@ class ShopRegisterView extends GetView<ShopRegisterController> {
         }
         return true; // Thoát ứng dụng nếu đang ở Step 0
       },
-      child:
-      Scaffold(
+      child: Scaffold(
         appBar: AppBar(title: Text("Đăng ký cửa hàng")),
         body: Column(
           children: [
@@ -29,13 +28,15 @@ class ShopRegisterView extends GetView<ShopRegisterController> {
 
             Expanded(
               child: Obx(() {
-                final step = controller.currentStep.value; // đảm bảo Obx phụ thuộc vào biến Rx
+                final step = controller
+                    .currentStep.value; // đảm bảo Obx phụ thuộc vào biến Rx
                 return LayoutBuilder(
                   builder: (context, constraints) {
                     return SingleChildScrollView(
                       physics: BouncingScrollPhysics(),
                       child: ConstrainedBox(
-                        constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                        constraints:
+                            BoxConstraints(minHeight: constraints.maxHeight),
                         child: _buildStepContent(),
                       ),
                     );
@@ -44,14 +45,12 @@ class ShopRegisterView extends GetView<ShopRegisterController> {
               }),
             ),
 
-
             // Nút "Quay lại" & "Tiếp tục"
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Row(
                 children: [
-                  Obx(() =>
-                      Visibility(
+                  Obx(() => Visibility(
                         visible: controller.currentStep.value > 0,
                         child: Expanded(
                           child: ElevatedButton(
@@ -64,63 +63,72 @@ class ShopRegisterView extends GetView<ShopRegisterController> {
                       )),
                   SizedBox(width: 12),
                   Obx(() => Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        switch (controller.currentStep.value) {
-                          case 0:
-                            if (controller.selectedService.value == null) {
-                              Get.snackbar("Thông báo", "Vui lòng chọn đủ thông tin trước khi tiếp tục.");
-                              return;
+                        child: ElevatedButton(
+                          onPressed: () {
+                            switch (controller.currentStep.value) {
+                              case 0:
+                                if (controller.selectedService.value == null) {
+                                  Get.snackbar("Thông báo",
+                                      "Vui lòng chọn đủ thông tin trước khi tiếp tục.");
+                                  return;
+                                }
+                                break;
+
+                              case 1:
+                                if (!controller.isTermsAccepted.value) {
+                                  Get.snackbar("Thông báo",
+                                      "Bạn cần đồng ý với điều khoản trước khi tiếp tục.");
+                                  return;
+                                }
+                                break;
+
+                              case 2:
+                                if (controller.shopName.value.isEmpty ||
+                                    controller.openTime.value == null ||
+                                    controller.closeTime.value == null ||
+                                    controller.address.value.isEmpty ||
+                                    controller.phoneNumber.value.isEmpty) {
+                                  Get.snackbar("Thông báo",
+                                      "Vui lòng điền đầy đủ thông tin cửa hàng trước khi tiếp tục.");
+                                  return;
+                                }
+                                break;
+
+                              case 3:
+                                if (controller.idCardFrontImage.value == null ||
+                                    controller.idCardBackImage.value == null ||
+                                    controller.issuedDate.value == null ||
+                                    controller.registrationCertificateImage
+                                            .value ==
+                                        null ||
+                                    controller.safetyPolicyImage.value !=
+                                            null &&
+                                        controller.taxCode.value.isEmpty) {
+                                  Get.snackbar("Thông báo",
+                                      "Vui lòng tải lên đầy đủ giấy tờ theo yêu cầu.");
+                                  return;
+                                }
+                                break;
+
+                              default:
+                                break;
                             }
-                            break;
-
-                          case 1:
-                            if (!controller.isTermsAccepted.value) {
-                              Get.snackbar("Thông báo", "Bạn cần đồng ý với điều khoản trước khi tiếp tục.");
-                              return;
-                            }
-                            break;
-
-                          case 2:
-                            if (controller.shopName.value.isEmpty ||
-                                controller.openTime.value == null ||
-                                controller.closeTime.value == null ||
-                                controller.address.value.isEmpty ||
-                                controller.phoneNumber.value.isEmpty) {
-                              Get.snackbar("Thông báo", "Vui lòng điền đầy đủ thông tin cửa hàng trước khi tiếp tục.");
-                              return;
-                            }
-                            break;
-
-                          case 3:
-                            if (controller.idCardFrontImage.value == null ||
-                                controller.idCardBackImage.value == null ||
-                                controller.issuedDate.value == null ||
-                                controller.registrationCertificateImage.value == null ||
-                                controller.safetyPolicyImage.value != null &&
-                                controller.taxCode.value.isEmpty) {
-                              Get.snackbar("Thông báo", "Vui lòng tải lên đầy đủ giấy tờ theo yêu cầu.");
-                              return;
-                            }
-                            break;
-
-                          default:
-                            break;
-                        }
-                        controller.nextStep();
-                      },
-
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: _getButtonColor(),
-                        minimumSize: Size(double.infinity, 50), // Đảm bảo nút rộng ngang
-                      ),
-                      child: controller.currentStep.value == 3
-                          ? Obx(() => controller.isSubmitting.value
-                          ? CircularProgressIndicator(color: Colors.white) // Hiển thị loading khi gửi API
-                          : Text("Đăng ký"))
-                          : Text("Tiếp tục"),
-                    ),
-                  ))
+                            controller.nextStep();
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: _getButtonColor(),
+                            minimumSize: Size(
+                                double.infinity, 50), // Đảm bảo nút rộng ngang
+                          ),
+                          child: controller.currentStep.value == 3
+                              ? Obx(() => controller.isSubmitting.value
+                                  ? CircularProgressIndicator(
+                                      color: Colors
+                                          .white) // Hiển thị loading khi gửi API
+                                  : Text("Đăng ký"))
+                              : Text("Tiếp tục"),
+                        ),
+                      ))
                 ],
               ),
             ),
@@ -142,30 +150,28 @@ class ShopRegisterView extends GetView<ShopRegisterController> {
             : Color(0xFFD3D3D3);
       case 2:
         return (controller.shopName.value.isNotEmpty &&
-            controller.openTime.value != null &&
-            controller.closeTime.value != null &&
-            controller.address.value.isNotEmpty &&
-            controller.phoneNumber.value.isNotEmpty &&
-            controller.logo.value != null)
+                controller.openTime.value != null &&
+                controller.closeTime.value != null &&
+                controller.address.value.isNotEmpty &&
+                controller.phoneNumber.value.isNotEmpty &&
+                controller.logo.value != null)
             ? Colors.orange
             : Color(0xFFD3D3D3);
       case 3:
         return (controller.idCardFrontImage.value != null &&
-            controller.idCardBackImage.value != null &&
-            controller.issuedDate.value != null &&
-            controller.registrationCertificateImage.value != null &&
-            controller.safetyPolicyImage.value != null &&
-            controller.taxCode.value.isNotEmpty &&
-            controller.selectedBank.value != null &&
-            controller.bankInfo.value.isNotEmpty
-            )
+                controller.idCardBackImage.value != null &&
+                controller.issuedDate.value != null &&
+                controller.registrationCertificateImage.value != null &&
+                controller.safetyPolicyImage.value != null &&
+                controller.taxCode.value.isNotEmpty &&
+                controller.selectedBank.value != null &&
+                controller.bankInfo.value.isNotEmpty)
             ? Colors.orange
             : Color(0xFFD3D3D3);
       default:
         return Colors.black;
     }
   }
-
 
   Widget _buildStepContent() {
     switch (controller.currentStep.value) {
@@ -181,5 +187,4 @@ class ShopRegisterView extends GetView<ShopRegisterController> {
         return Container();
     }
   }
-
 }

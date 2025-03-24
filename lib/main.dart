@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
-import 'app/models/ShopProfile.dart';
+import 'app/models/shop_profile.dart';
 import 'app/routes/app_pages.dart';
 import 'app/service/shop_service.dart';
 
@@ -36,7 +36,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(useMaterial3: true),
       debugShowCheckedModeBanner: false,
       title: 'Shopkeeper App',
-      initialRoute: Routes.SHOP_REGISTER, // Điều hướng tới trang SHOP
+      initialRoute: Routes.SHOP, // Điều hướng tới trang SHOP
       getPages: AppPages.routes, // Định tuyến sử dụng GetX
     );
   }

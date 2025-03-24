@@ -20,16 +20,16 @@ class Step2 extends StatelessWidget {
           _buildTermsCard(),
           SizedBox(height: 12),
           Obx(() => CheckboxListTile(
-            value: controller.isTermsAccepted.value,
-            onChanged: (value) {
-              controller.isTermsAccepted(value!);
-            },
-            title: Text(
-              "Tôi xác nhận rằng đã đọc tất cả các điều khoản và điều kiện nêu trên và đồng ý với Fast F&B để trở thành đối tác bán hàng của Fast F&B",
-              style: TextStyle(fontSize: 14),
-            ),
-            controlAffinity: ListTileControlAffinity.leading,
-          )),
+                value: controller.isTermsAccepted.value,
+                onChanged: (value) {
+                  controller.isTermsAccepted(value!);
+                },
+                title: Text(
+                  "Tôi xác nhận rằng đã đọc tất cả các điều khoản và điều kiện nêu trên và đồng ý với Fast F&B để trở thành đối tác bán hàng của Fast F&B",
+                  style: TextStyle(fontSize: 14),
+                ),
+                controlAffinity: ListTileControlAffinity.leading,
+              )),
           SizedBox(height: 8),
           Text(
             "• Bằng việc tiếp tục đăng ký, Đối tác đồng ý sẽ chịu toàn bộ trách nhiệm liên quan đến việc đăng bán **SẢN PHẨM BỊ CẤM** trên Fast F&B",

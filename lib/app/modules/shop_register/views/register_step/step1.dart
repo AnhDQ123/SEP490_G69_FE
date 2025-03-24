@@ -19,14 +19,14 @@ class Step1 extends StatelessWidget {
           _buildServiceOption(
             title: "Đồ ăn nhanh",
             description:
-            "Món chủ đạo của cửa hàng là món ăn/Thức uống được chế biến nhằm phục vụ cho mục đích ăn nhanh với trạng thái món ở mức độ cao nhất có thể như: bún, phở, mì, cơm, cháo vẫn còn nóng...",
+                "Món chủ đạo của cửa hàng là món ăn/Thức uống được chế biến nhằm phục vụ cho mục đích ăn nhanh với trạng thái món ở mức độ cao nhất có thể như: bún, phở, mì, cơm, cháo vẫn còn nóng...",
             value: "COOKED",
           ),
           SizedBox(height: 8),
           _buildServiceOption(
             title: "Thực phẩm tươi sống",
             description:
-            "Sản phẩm chủ đạo của cửa hàng là các sản phẩm có chất lượng và độ tươi sống đạt chuẩn, thường là các mặt hàng như thịt, cá, rau củ quả tươi...",
+                "Sản phẩm chủ đạo của cửa hàng là các sản phẩm có chất lượng và độ tươi sống đạt chuẩn, thường là các mặt hàng như thịt, cá, rau củ quả tươi...",
             value: "FRESH",
           ),
         ],
@@ -40,42 +40,43 @@ class Step1 extends StatelessWidget {
     required String value,
   }) {
     return Obx(() => GestureDetector(
-      onTap: () => controller.selectedService(value),
-      child: Container(
-        padding: EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(
-            color: controller.selectedService.value == value
-                ? Colors.black
-                : Colors.grey,
-          ),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
+          onTap: () => controller.selectedService(value),
+          child: Container(
+            padding: EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: controller.selectedService.value == value
+                    ? Colors.black
+                    : Colors.grey,
+              ),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Radio<String>(
-                  value: value,
-                  groupValue: controller.selectedService.value,
-                  onChanged: (val) => controller.selectedService(val!),
+                Row(
+                  children: [
+                    Radio<String>(
+                      value: value,
+                      groupValue: controller.selectedService.value,
+                      onChanged: (val) => controller.selectedService(val!),
+                    ),
+                    Expanded(
+                      child: Text(
+                        title,
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ],
                 ),
-                Expanded(
-                  child: Text(
-                    title,
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 40.0),
+                  child: Text(description),
                 ),
               ],
             ),
-            Padding(
-              padding: const EdgeInsets.only(left: 40.0),
-              child: Text(description),
-            ),
-          ],
-        ),
-      ),
-    ));
+          ),
+        ));
   }
 }
