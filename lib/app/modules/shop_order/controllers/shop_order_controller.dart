@@ -24,7 +24,7 @@ class ShopOrderController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    shopId = Get.arguments ?? 1; // Nhận shopId từ routing
+    shopId = Get.arguments ?? 1; //shopid
     fetchAll();
   }
 

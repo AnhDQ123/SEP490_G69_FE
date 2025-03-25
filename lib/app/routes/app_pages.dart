@@ -20,7 +20,7 @@ part 'app_routes.dart';
 class AppPages {
   AppPages._();
 
-  static const INITIAL = Routes.VOUCHER_LIST;
+  static const INITIAL = Routes.SHOP_ORDER;
 
   static final routes = [
     GetPage(

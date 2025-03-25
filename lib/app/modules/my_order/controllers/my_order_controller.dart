@@ -29,7 +29,7 @@ class MyOrderController extends GetxController {
   Future<void> loadOrders() async {
     try {
       isLoading.value = true;
-      int ownerId = 34;
+      int ownerId = 31;
 
       // Gọi API cho từng trạng thái và assign vào các danh sách tương ứng
       pendingOrders.assignAll(await _orderService.fetchOrdersByOwnerAndStatus(id: ownerId, status: "PENDING"));
