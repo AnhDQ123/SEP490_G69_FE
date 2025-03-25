@@ -5,7 +5,7 @@ import 'package:http_parser/http_parser.dart';
 import '../models/order.dart';
 
 class ShipperService {
-  final String baseUrl = "http://192.168.1.15:8080/api";
+  final String baseUrl = "http://192.168.1.11:8080/api";
 
   Future<ApiResponse> registerShipper({
     required int userId, // ✅ Thêm userId vào API request
