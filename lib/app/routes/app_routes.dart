@@ -23,6 +23,7 @@ abstract class Routes {
   static const PASSWORD_VERIFICATION = _Paths.PASSWORD_VERIFICATION;
   static const USER_INFO = _Paths.USER_INFO;
   static const SPLASH_SCREEN = _Paths.SPLASH_SCREEN;
+  static const CHECKOUT = _Paths.CHECKOUT;
 }
 
 abstract class _Paths {
@@ -47,4 +48,5 @@ abstract class _Paths {
   static const PASSWORD_VERIFICATION = '/password-verification';
   static const USER_INFO = '/user-info';
   static const SPLASH_SCREEN = '/splash-screen';
+  static const CHECKOUT = '/checkout';
 }

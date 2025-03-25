@@ -38,6 +38,10 @@ import '../modules/product_detail/bindings/product_detail_binding.dart';
 import '../modules/product_detail/views/product_detail_view.dart';
 import '../modules/product_selection/bindings/product_selection_binding.dart';
 import '../modules/product_selection/views/product_selection_view.dart';
+import '../modules/checkout/bindings/checkout_binding.dart';
+import '../modules/checkout/bindings/checkout_binding.dart';
+import '../modules/checkout/views/checkout_view.dart';
+import '../modules/checkout/views/checkout_view.dart';
 
 part 'app_routes.dart';
 
@@ -129,8 +133,13 @@ class AppPages {
     ),
     GetPage(
       name: _Paths.CART,
-      page: () => const CartView(),
+      page: () => CartView(),
       binding: CartBinding(),
+    ),
+    GetPage(
+      name: _Paths.CHECKOUT,
+      page: () => CheckoutView(),
+      binding: CheckoutBinding(),
     ),
   ];
 }

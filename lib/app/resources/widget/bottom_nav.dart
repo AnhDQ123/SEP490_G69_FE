@@ -45,7 +45,7 @@ class _BottomNavState extends State<BottomNav> {
         Get.put(CartController());
       }
       Get.bottomSheet(
-        const CartView(),
+        CartView(),
         isScrollControlled: true,
       );
     } else {

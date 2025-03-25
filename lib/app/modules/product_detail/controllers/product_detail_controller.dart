@@ -3,9 +3,10 @@ import 'package:ffb_fe_flutter/app/models/product.dart';
 import 'package:ffb_fe_flutter/app/models/extra_option.dart';
 import 'package:ffb_fe_flutter/app/service/product_detail_service.dart';
 import 'package:ffb_fe_flutter/app/service/cart_api_service.dart';
-
-
-import '../../../models/cartDTO.dart';
+import '../../../base/base_common.dart';
+import '../../../models/cart.dart';
+import '../../../models/cart_item.dart';
+import '../../../models/cart_item_option.dart';
 
 class ProductDetailController extends GetxController {
   var _product = Rxn<Product>();
@@ -21,6 +22,9 @@ class ProductDetailController extends GetxController {
 
   final ProductDetailApiService apiService = ProductDetailApiService();
   final CartApiService cartApiService = CartApiService(); // Thêm service giỏ hàng
+  final int parsedUserId = int.tryParse(BaseCommon.instance.userId ?? '') ?? 0;
+  final isAddingToCart = false.obs;
+
 
   // Getter trả về sản phẩm hiện tại, nếu null thì trả về đối tượng mẫu
   Product get currentProduct => _product.value ??
@@ -43,6 +47,8 @@ class ProductDetailController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    final userId = BaseCommon.instance.userId;
+    print("👤 [ProductDetail] Đang đăng nhập với userId: $userId");
     fetchProductData();
 
     // Các dữ liệu mẫu cho menuProducts, drinkProducts, reviews...
@@ -198,57 +204,89 @@ class ProductDetailController extends GetxController {
   }
 
   /// Cập nhật hàm addToCartWithOptions để gọi API
-  void addToCartWithOptions() async {
-    // Tính tổng tiền: giá sản phẩm (bao gồm option size) * số lượng + tổng tiền của extra options
-    final double totalPrice = currentPrice * quantity.value + totalExtraPrice;
-
-    // Xây dựng danh sách CartItemOptionDTO từ extraOptions được chọn
-    List<CartItemOptionDTO> cartItemOptionDTOList = extraOptions
-        .where((option) => option.selected)
-        .map((option) => CartItemOptionDTO(
-      optionId: int.tryParse(option.id) ?? 0,
-      typeId: 1, // Thay đổi theo logic: 1 hoặc 2 tùy vào loại option
-      optionName: option.name,
-      image: option.imageUrl ?? '',
-      cartItemId: 0, // Backend sẽ gán sau
-      price: option.price,
-      totalPrice: option.price * option.quantity,
-      quantity: option.quantity,
-    ))
-        .toList();
-
-    // Xây dựng CartItemDTO cho sản phẩm hiện tại
-    CartItemDTO cartItemDTO = CartItemDTO(
-      cartId: 0,
-      productId: currentProduct.id,
-      productName: currentProduct.name,
-      image: currentProduct.image,
-      price: currentProduct.defaultPrice,
-      totalPrice: currentPrice * quantity.value,
-      quantity: quantity.value,
-      cartItemOptionDTOList: cartItemOptionDTOList,
-    );
-
-    // Xây dựng đối tượng CartDTO
-    CartDTO cartDTO = CartDTO(
-      id: 0,
-      userId: 2, // Cần thay bằng userId thực tế khi có thông tin người dùng
-      shopId: 0, // Bạn có thể lấy thông tin shop từ currentProduct hoặc logic khác
-      shopName: currentProduct.shop,
-      price: totalPrice,
-      status: "PENDING",
-      cartItemDTOList: [cartItemDTO],
-    );
-
+  Future<void> addToCartWithOptions() async {
     try {
-      bool success = await cartApiService.addToCart(cartDTO);
+      // 🧮 Tính giá
+      final double basePrice = currentProduct.defaultPrice;
+      final int qty = quantity.value;
+      double total = 0.0;
+
+      // ✅ Lấy size đã chọn (typeId = 2)
+      final sizeOptions = currentProduct.foodOptions.where((opt) => opt.typeId == 2).toList();
+      CartItemOptionDTO? selectedSizeOption;
+      if (sizeOptions.isNotEmpty && selectedSizeIndex.value < sizeOptions.length) {
+        final size = sizeOptions[selectedSizeIndex.value];
+        selectedSizeOption = CartItemOptionDTO(
+          optionId: size.id,
+          typeId: 2,
+          optionName: size.name,
+          image: size.image ?? '',
+          cartItemId: 0,
+          price: size.price,
+          totalPrice: size.price * qty,
+          quantity: 1,
+        );
+        total += size.price * qty;
+      }
+
+      // ✅ Lấy extra topping (typeId = 1)
+      final List<CartItemOptionDTO> extraOptionsList = extraOptions
+          .where((opt) => opt.selected)
+          .map((opt) => CartItemOptionDTO(
+        optionId: int.tryParse(opt.id) ?? 0,
+        typeId: 1,
+        optionName: opt.name,
+        image: opt.imageUrl ?? '',
+        cartItemId: 0,
+        price: opt.price,
+        totalPrice: opt.price * opt.quantity,
+        quantity: opt.quantity,
+      ))
+          .toList();
+
+      total += extraOptionsList.fold(0.0, (sum, e) => sum + e.totalPrice);
+
+      // ✅ Tổng tiền = (base + size) * số lượng + topping
+      final double totalPrice = (basePrice * qty) + total;
+
+      // ✅ Gộp tất cả option lại
+      if (selectedSizeOption != null) {
+        extraOptionsList.insert(0, selectedSizeOption);
+      }
+
+      // 🧱 CartItemDTO
+      final cartItem = CartItemDTO(
+        cartId: 0,
+        productId: currentProduct.id,
+        productName: currentProduct.name,
+        image: currentProduct.image,
+        price: basePrice,
+        totalPrice: totalPrice,
+        quantity: qty,
+        cartItemOptionDTOList: extraOptionsList,
+      );
+
+      // 🧱 CartDTO
+      final cart = CartDTO(
+        id: 0,
+        userId: parsedUserId,
+        shopId: 0,
+        shopName: currentProduct.shop,
+        price: totalPrice,
+        status: "PENDING",
+        cartItemDTOList: [cartItem],
+      );
+
+      // 📡 Gửi lên backend
+      bool success = await cartApiService.addToCart(cart);
       if (success) {
-        Get.snackbar("Thành công", "Đã thêm vào giỏ hàng");
+        Get.snackbar("Thành công", "Đã thêm sản phẩm vào giỏ hàng");
       }
     } catch (e) {
-      Get.snackbar("Lỗi", "Không thể thêm vào giỏ hàng: $e");
+      Get.snackbar("Lỗi", "Thêm vào giỏ hàng thất bại: $e");
     }
   }
+
 
   double get totalExtraPrice {
     return extraOptions

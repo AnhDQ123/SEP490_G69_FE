@@ -40,19 +40,6 @@ class ProductDetailApiService {
     }
   }
 
-  // Future<Product> getProductsByShop(String shopId, {int page = 1, int size = 20}) async {
-  //   final uri = Uri.parse("$baseUrl/shop/$shopId").replace(queryParameters: {
-  //     "page": page.toString(),
-  //     "size": size.toString(),
-  //   });
-  //   final response = await http.get(uri);
-  //
-  //   if (response.statusCode == 200 && response.body.isNotEmpty) {
-  //     return Product.fromJson(jsonDecode(response.body));
-  //   } else {
-  //     throw Exception("Failed to load products by shop: ${response.statusCode}");
-  //   }
-  // }
 
   Future<ProductPage> getProductsByShop(String shopId, {int page = 1, int size = 20}) async {
     final uri = Uri.parse('$baseUrl/shop/$shopId').replace(queryParameters: {
