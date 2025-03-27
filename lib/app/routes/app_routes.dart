@@ -11,6 +11,8 @@ abstract class Routes {
   static const ADD_BANNER = _Paths.ADD_BANNER;
   static const PRODUCT_FORM = _Paths.PRODUCT_FORM;
   static const SHOP_REGISTER = _Paths.SHOP_REGISTER;
+  static const PRODUCT_DISCOUNT = _Paths.PRODUCT_DISCOUNT;
+  static const SHOP_DASHBOARD = _Paths.SHOP_DASHBOARD;
 }
 
 abstract class _Paths {
@@ -23,4 +25,6 @@ abstract class _Paths {
   static const ADD_BANNER = '/add-banner';
   static const PRODUCT_FORM = '/product-form';
   static const SHOP_REGISTER = '/shop-register';
+  static const PRODUCT_DISCOUNT = '/product-discount';
+  static const SHOP_DASHBOARD = '/shop-dashboard';
 }

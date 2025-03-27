@@ -1,8 +1,11 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import 'package:path/path.dart';
 import 'package:mime/mime.dart';
+import '../models/discount.dart';
+import '../models/product.dart';
 import '../models/shop_profile.dart';
 import 'package:http_parser/http_parser.dart';
 
@@ -179,6 +182,86 @@ class ShopService {
       return {}; // Trả về map rỗng nếu có lỗi trong quá trình gọi API
     }
   }
+
+  Future<List<Product>> fetchProductsByShop(int shopId) async {
+    final response = await http.get(Uri.parse('$baseUrl/product/shop/$shopId'));
+
+    if (response.statusCode == 200) {
+      // Giải mã dữ liệu UTF-8
+      final decodedBody = utf8.decode(response.bodyBytes);
+      final jsonData = json.decode(decodedBody);
+
+      final List<dynamic> productList = jsonData['content'];
+
+      return productList.map((item) {
+        // Parse discount như List<Discount>
+        List<Discount> discountList = [];
+        if (item['discount'] != null) {
+          discountList = (item['discount'] as List).map((discountItem) {
+            return Discount.fromJson(discountItem);
+          }).toList();
+        }
+
+        return Product(
+          id: item['id'] ?? 0,
+          name: item['name'] ?? '',
+          manufacturer: item['manufacturer'] ?? '',
+          supplier: item['supplier'] ?? '',
+          quantity: item['quantity'] ?? 0,
+          category: item['category'] ?? '',
+          discount: discountList,  // Truyền discountList đã được parse
+          image: item['image'] ?? '',
+          description: item['description'] ?? '', // Cập nhật mô tả từ dữ liệu nếu có
+          rate: (item['rate'] as num?)?.toDouble() ?? 0.0,  // Nếu có rate
+          shop: item['shopName'] ?? '',
+          defaultPrice: (item['defaultPrice'] as num?)?.toDouble() ?? 0.0, // Nếu có defaultPrice
+          foodOptions: [],   // Không có foodOption nên để rỗng
+        );
+      }).toList();
+    } else {
+      throw Exception('Không thể tải danh sách sản phẩm');
+    }
+  }
+
+  // Add discount for a product
+  Future<ApiResponse> addDiscount({
+    required Discount discount,
+    required int productId,
+  }) async {
+    try {
+      var uri = Uri.parse('$baseUrl/discount/add?productId=$productId'); // Create Uri here directly
+      var request = http.Request('POST', uri);
+
+      // Convert startDate and endDate to ISO 8601 format (including 'T')
+      var startDateTimeFormatted = DateFormat('yyyy-MM-dd HH:mm:ss').parse(discount.startDate);
+      var endDateTimeFormatted = DateFormat('yyyy-MM-dd HH:mm:ss').parse(discount.endDate);
+
+      var body = jsonEncode({
+        'amount': discount.amount/100,
+        'startDate': startDateTimeFormatted.toIso8601String(),  // Convert to ISO 8601 string
+        'endDate': endDateTimeFormatted.toIso8601String(),     // Convert to ISO 8601 string
+      });
+
+      request.body = body;
+      request.headers['Content-Type'] = 'application/json';
+
+      final response = await request.send();
+      final responseBody = await response.stream.bytesToString();
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return ApiResponse(success: true, message: "Discount added successfully!");
+      } else {
+        print("Error: ${response.statusCode} - ${responseBody}");
+        return ApiResponse(success: false, message: "Failed to add discount.");
+      }
+    } catch (e) {
+      print("Error while adding discount: $e");
+      return ApiResponse(success: false, message: "An error occurred while adding the discount.");
+    }
+  }
+
+
+
 }
 
 class ApiResponse {

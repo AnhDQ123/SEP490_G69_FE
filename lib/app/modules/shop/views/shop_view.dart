@@ -99,7 +99,7 @@ class ShopView extends GetView<ShopController> {
         child: Column(
           children: [
             ListTile(
-              title: Text('Đơn hàng của tôi', style: TextStyle(fontWeight: FontWeight.bold)),
+              title: Text('Đơn hàng trong tháng', style: TextStyle(fontWeight: FontWeight.bold)),
               trailing: TextButton(onPressed: () {}, child: Text('Xem thêm >')),
             ),
             Obx(() {
@@ -156,8 +156,8 @@ class ShopView extends GetView<ShopController> {
       childAspectRatio: 2.5, // Điều chỉnh tỉ lệ để tránh overflow
       children: [
         _buildGridItem(Icons.category, 'Sản phẩm', () => Get.toNamed(Routes.PRODUCT_LIST_SHOP)),
-        _buildGridItem(Icons.pie_chart, 'Thống kê', () {}),
-        _buildGridItem(Icons.percent, 'Giảm giá', () {}),
+        _buildGridItem(Icons.pie_chart, 'Thống kê', () => Get.toNamed(Routes.SHOP_DASHBOARD)),
+        _buildGridItem(Icons.percent, 'Giảm giá', () => Get.toNamed(Routes.PRODUCT_DISCOUNT)),
         _buildGridItem(Icons.description, 'Báo cáo', () {}),
         _buildGridItem(Icons.local_offer, 'Voucher', () {}),
         _buildGridItem(Icons.campaign, 'Banner', () => Get.toNamed(Routes.ADD_BANNER)),
