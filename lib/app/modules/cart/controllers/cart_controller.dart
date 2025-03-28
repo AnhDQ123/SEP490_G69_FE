@@ -1,5 +1,3 @@
-// 📦 FILE: cart_controller.dart
-
 import 'package:ffb_fe_flutter/app/service/cart_api_service.dart';
 import 'package:get/get.dart';
 import '../../../base/base_common.dart';
@@ -34,9 +32,9 @@ class CartController extends GetxController {
           .where((opt) => opt.typeId == 2) // Lấy các size
           .map((opt) => CartItemOptionDTO(
         optionId: opt.id,
-        typeId: opt.typeId,
+        typeId: opt.typeId ?? 0,
         optionName: opt.name,
-        image: opt.image,
+        image: opt.image?.path ?? '',
         price: opt.price ?? 0.0,
         totalPrice: opt.price ?? 0.0,
         quantity: 1,
@@ -49,9 +47,9 @@ class CartController extends GetxController {
           .where((opt) => opt.typeId == 1) // Lấy các topping
           .map((opt) => CartItemOptionDTO(
         optionId: opt.id,
-        typeId: opt.typeId,
+        typeId: opt.typeId ?? 0,
         optionName: opt.name,
-        image: opt.image,
+        image: opt.image?.path ?? '',
         price: opt.price ?? 0.0,
         totalPrice: opt.price ?? 0.0,
         quantity: 1,

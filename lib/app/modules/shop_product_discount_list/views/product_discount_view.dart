@@ -1,3 +1,4 @@
+import 'package:ffb_fe_flutter/app/models/product_discount.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -45,7 +46,7 @@ class ProductDiscountView extends StatelessWidget {
     );
   }
 
-  Widget _buildDiscountProductTable(BuildContext context, List<Product> products) {
+  Widget _buildDiscountProductTable(BuildContext context, List<ProductDiscount> products) {
     return SingleChildScrollView(  // Cho phép kéo ngang
       scrollDirection: Axis.horizontal,
       child: DataTable(
@@ -105,7 +106,7 @@ class ProductDiscountView extends StatelessWidget {
     );
   }
 
-  Widget _buildNoDiscountProductTable(BuildContext context, List<Product> products) {
+  Widget _buildNoDiscountProductTable(BuildContext context, List<ProductDiscount> products) {
     return SingleChildScrollView(  // Cho phép kéo ngang
       scrollDirection: Axis.horizontal,
       child: DataTable(

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:ffb_fe_flutter/app/models/product_discount.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:path/path.dart';
@@ -183,7 +184,7 @@ class ShopService {
     }
   }
 
-  Future<List<Product>> fetchProductsByShop(int shopId) async {
+  Future<List<ProductDiscount>> fetchProductsByShop(int shopId) async {
     final response = await http.get(Uri.parse('$baseUrl/product/shop/$shopId'));
 
     if (response.statusCode == 200) {
@@ -202,14 +203,14 @@ class ShopService {
           }).toList();
         }
 
-        return Product(
+        return ProductDiscount(
           id: item['id'] ?? 0,
           name: item['name'] ?? '',
           manufacturer: item['manufacturer'] ?? '',
           supplier: item['supplier'] ?? '',
           quantity: item['quantity'] ?? 0,
           category: item['category'] ?? '',
-          discount: discountList,  // Truyền discountList đã được parse
+          discount: item['discount'],  // Truyền discountList đã được parse
           image: item['image'] ?? '',
           description: item['description'] ?? '', // Cập nhật mô tả từ dữ liệu nếu có
           rate: (item['rate'] as num?)?.toDouble() ?? 0.0,  // Nếu có rate

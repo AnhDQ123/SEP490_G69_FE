@@ -25,7 +25,7 @@ class CartItemOptionDTO {
     return CartItemOptionDTO(
       id: json['id'],
       optionId: json['optionId'],
-      typeId: json['typeId'],
+      typeId: json['typeId'] ?? 0,
       optionName: json['optionName'] ?? '',
       image: json['image'] ?? '',
       cartItemId: json['cartItemId'],

@@ -1,3 +1,4 @@
+import 'package:ffb_fe_flutter/app/models/product_discount.dart';
 import 'package:get/get.dart';
 import '../../../models/discount.dart';
 import '../../../models/product.dart';
@@ -5,10 +6,10 @@ import '../../../service/shop_service.dart';
 
 class ProductDiscountController extends GetxController {
   // Danh sách sản phẩm đang có giảm giá
-  var discountProducts = <Product>[].obs;
+  var discountProducts = <ProductDiscount>[].obs;
 
   // Danh sách sản phẩm chưa có giảm giá
-  var noDiscountProducts = <Product>[].obs;
+  var noDiscountProducts = <ProductDiscount>[].obs;
 
   final ShopService shopService = ShopService();  // Khởi tạo ShopService để gọi API
 
@@ -43,7 +44,7 @@ class ProductDiscountController extends GetxController {
   // Phương thức tạo giảm giá cho sản phẩ
 
   // Hàm kiểm tra xem có giảm giá đang áp dụng hay không
-  bool isDiscountActive(Product product) {
+  bool isDiscountActive(ProductDiscount product) {
     return product.discount.any((discount) => discount.status == 'ACTIVE');
   }
 }
