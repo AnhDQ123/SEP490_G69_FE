@@ -1,43 +1,27 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
-import 'app/models/shop_profile.dart';
 import 'app/routes/app_pages.dart';
 import 'app/service/shop_service.dart';
+import 'app/base/base_common.dart';
 
-// void main() {
-//   runApp(MyApp());
-// }
-//
-// class MyApp extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return GetMaterialApp(
-//       theme: ThemeData(useMaterial3: true),
-//       debugShowCheckedModeBanner: false,
-//       title: 'Shopkeeper App',
-//       initialRoute: Routes.SHOP_REGISTER, // Điều hướng tới trang SHOP
-//       getPages: AppPages.routes, // Định tuyến sử dụng GetX
-//     );
-//   }
-// }
-
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized(); // Đảm bảo Flutter đã khởi tạo trước khi chạy
-  runApp(MyApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await BaseCommon.instance.init(); // ⬅ load accessToken và userId
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      theme: ThemeData(useMaterial3: true),
+      title: 'Demo HomePage',
       debugShowCheckedModeBanner: false,
-      title: 'Shopkeeper App',
-      initialRoute: Routes.SHOP, // Điều hướng tới trang SHOP
-      getPages: AppPages.routes, // Định tuyến sử dụng GetX
+      initialRoute: AppPages.INITIAL,
+      getPages: AppPages.routes,
     );
   }
 }

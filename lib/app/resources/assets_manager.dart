@@ -3,9 +3,10 @@ class ImageAssets {
 
   static String image1 =  '$baseImage/images';
   static String welcomeBoard3 = '$baseImage/ridemate_logo.png';
-  static String welcome1 = '$baseImage/welcome_1.png';
-  static String welcome2 = '$baseImage/welcome_2.png';
-  static String welcome3 = '$baseImage/welcome_3.png';
+  static String banner1 = '$baseImage/banner1.avif';
+  static String banner2 = '$baseImage/banner2.avif';
+  static String banner3 = '$baseImage/banner3.avif';
+
 
 }
 
