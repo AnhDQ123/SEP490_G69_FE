@@ -14,10 +14,15 @@ class CheckOutController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    // orderId = Get.arguments as int?;
-    orderId = 21; // 👈 Gán cứng tại đây để test
-    fetchOrder();
+    final passedOrder = Get.arguments as Order?;
+    if (passedOrder != null) {
+      order.value = passedOrder;
+      orderId = passedOrder.id;
+    } else {
+      errorMessage.value = "Không có dữ liệu đơn hàng được truyền sang.";
+    }
   }
+
 
   /// 🔁 Gọi từng đơn theo ID vì API không hỗ trợ list
   Future<void> fetchOrder() async {

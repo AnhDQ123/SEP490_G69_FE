@@ -1,8 +1,6 @@
 import 'package:ffb_fe_flutter/app/models/product.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
-
 import '../../../base/base_common.dart';
 import '../../../service/home_api_service.dart';
 
@@ -29,7 +27,7 @@ class HomeController extends GetxController {
     super.onInit();
     final userId = BaseCommon.instance.userId;
     print('🆔 User đang đăng nhập có ID: $userId');
-    fetchCategories();
+    fetchCategories(page: 0, size: 20);
     fetchAllProducts();
     fetchPopularProducts();
     fetchFreshProducts();
@@ -37,15 +35,17 @@ class HomeController extends GetxController {
   }
 
   //call api category
-  void fetchCategories() async {
+  // Cập nhật phương thức fetchCategories với các tham số phân trang
+  void fetchCategories({String? name, int page = 0, int size = 20}) async {
     try {
-      final data = await _apiService.fetchCategories();
+      final data = await _apiService.fetchCategories(name: name, page: page, size: size);
       print('API categories data: $data');
       categoryList.value = data;
     } catch (e) {
       print('Lỗi khi fetch categories: $e');
     }
   }
+
 
   //API để lấy danh sách sản phẩm
   void fetchAllProducts() async {
@@ -69,23 +69,37 @@ class HomeController extends GetxController {
 
   //API lấy sản phẩm chợ tươi sống (getFresh)
   void fetchFreshProducts() async {
+    final userId = BaseCommon.instance.userId;
+
+    // Chuyển userId từ String? thành int
+    int userIdInt = int.tryParse(userId ?? '') ?? 0;
+
     try {
-      final data = await _apiService.fetchFreshProducts();
+      final data = await _apiService.fetchFreshProducts(userId: userIdInt, top: 10);
       freshProductList.value = data;
     } catch (e) {
       print('Lỗi khi fetch sản phẩm chợ tươi sống: $e');
     }
   }
 
+
+
   //API lấy sản phẩm đồ ăn (getCooked)
   void fetchCookedProducts() async {
+    final userId = BaseCommon.instance.userId;
+
+    // Chuyển userId từ String? thành int
+    int userIdInt = int.tryParse(userId ?? '') ?? 0;
+
     try {
-      final data = await _apiService.fetchCookedProducts();
+      final data = await _apiService.fetchCookedProducts(userId: userIdInt, top: 10);  // Gọi API với userId đã chuyển thành int
       cookedProductList.value = data;
     } catch (e) {
       print('Lỗi khi fetch sản phẩm đồ ăn: $e');
     }
   }
+
+
 
   //(0) cookedProductList,
   //(1) freshProductList.

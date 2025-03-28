@@ -1,11 +1,13 @@
 // 📦 FILE: cart_controller.dart
 
 import 'package:ffb_fe_flutter/app/service/cart_api_service.dart';
+import 'package:ffb_fe_flutter/app/service/order_service.dart';
 import 'package:get/get.dart';
 import '../../../base/base_common.dart';
 import '../../../models/cart.dart';
 import '../../../models/cart_item.dart';
 import '../../../models/cart_item_option.dart';
+import '../../../models/order.dart';
 import '../../../models/product.dart';
 import '../../../routes/app_pages.dart';
 import '../../../service/product_detail_service.dart';
@@ -68,8 +70,6 @@ class CartController extends GetxController {
       isLoadingOptions(false);
     }
   }
-
-
 
 
   void updateSize(int shopId, int productId, CartItemOptionDTO newSize) {
@@ -264,14 +264,59 @@ class CartController extends GetxController {
     carts.refresh();
   }
 
-  void proceedToCheckout() {
+  // void proceedToCheckout() {
+  //   bool hasSelectedProduct = selectedItems.values.any((products) => products.isNotEmpty);
+  //   if (!hasSelectedProduct) {
+  //     Get.snackbar("Thông báo", "Vui lòng chọn ít nhất một sản phẩm để thanh toán", snackPosition: SnackPosition.BOTTOM);
+  //     return;
+  //   }
+  //   Get.toNamed(Routes.CHECK_OUT,
+  //       arguments: carts.where((shop) => selectedItems[shop.shopId]?.isNotEmpty ?? false).toList());
+  // }
+
+  Future<void> proceedToCheckout() async {
     bool hasSelectedProduct = selectedItems.values.any((products) => products.isNotEmpty);
+
+    print("🔥 Debugging Proceed to Checkout:");
+    print("Selected Items: $selectedItems");
+
     if (!hasSelectedProduct) {
-      Get.snackbar("Thông báo", "Vui lòng chọn ít nhất một sản phẩm để thanh toán", snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar("Thông báo", "Vui lòng chọn ít nhất một sản phẩm để thanh toán",
+          snackPosition: SnackPosition.BOTTOM);
       return;
     }
-    Get.toNamed(Routes.CHECKOUT,
-        arguments: carts.where((shop) => selectedItems[shop.shopId]?.isNotEmpty ?? false).toList());
+
+    // Lọc danh sách giỏ hàng đã chọn
+    List<CartDTO> selectedCarts =
+    carts.where((shop) => selectedItems[shop.shopId]?.isNotEmpty ?? false).toList();
+
+    if (selectedCarts.isEmpty) {
+      Get.snackbar("Thông báo", "Không có sản phẩm được chọn",
+          snackPosition: SnackPosition.BOTTOM);
+      return;
+    }
+
+    try {
+      // 🧾 Tạo Order từ dữ liệu giỏ hàng
+      Order newOrder = selectedCarts
+          .map((cart) => cart.toOrder(
+        shipMethodId: 1,
+        paymentMethodId: 1,
+      ))
+          .first;
+
+      print("📦 Đang gửi Order: ${newOrder.toJson()}");
+
+      // ✅ Gọi API để lưu đơn hàng – chỉ 1 lần
+      await OrderService().createOrder(newOrder);
+
+      // ✅ Truyền lại `newOrder` (đầy đủ items) sang CheckOutView
+      Get.toNamed(Routes.CHECK_OUT, arguments: newOrder);
+    } catch (e) {
+      print("❌ Lỗi trong việc tạo đơn hàng: $e");
+      Get.snackbar("Lỗi", "Không thể tạo đơn hàng, vui lòng thử lại",
+          snackPosition: SnackPosition.BOTTOM);
+    }
   }
 
 

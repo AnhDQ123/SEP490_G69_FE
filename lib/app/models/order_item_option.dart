@@ -21,14 +21,14 @@ class OrderItemOption {
 
   factory OrderItemOption.fromJson(Map<String, dynamic> json) {
     return OrderItemOption(
-      id: json['id'] as int,
-      orderItemId: json['orderItemId'] as int,
-      optionId: json['optionId'] as int,
-      typeId: json['typeId'] as int,
-      optionName: json['optionName'] as String, // Parse optionName từ JSON
-      price: (json['price'] as num).toDouble(),
+      id: (json['id'] as int?) ?? 0,
+      orderItemId: (json['orderItemId'] as int?) ?? 0,
+      optionId: (json['optionId'] as int?) ?? 0,
+      typeId: (json['typeId'] as int?) ?? 0,
+      optionName: json['optionName'] as String , // Parse optionName từ JSON
+      price: (json['price'] as num).toDouble()  ?? 0.0,
       total: (json['total'] as num?)?.toDouble() ?? 0.0,
-      quantity: json['quantity'] as int,
+      quantity: (json['quantity'] as int?) ?? 0,
     );
   }
 

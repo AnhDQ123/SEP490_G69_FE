@@ -56,7 +56,7 @@ class Order {
           .toList() ?? [],
       status: json['status'] ?? 'UNKNOWN',
       reason: json['reason'] ?? '',
-      shopId: json['shopId'] as int,           // ✅ Parse
+      shopId: (json['shopId'] as int?) ?? 0,
       image: json['image'] as String?,          // ✅ Parse
     );
   }

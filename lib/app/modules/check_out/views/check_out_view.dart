@@ -85,8 +85,8 @@ class CheckOutView extends GetView<CheckOutController> {
                   ? null
                   : () async {
                 final order = controller.order.value!;
-                await controller.placeOrder(order);
-                Get.toNamed('/my-order', arguments: order);
+                // await controller.placeOrder(order);
+                Get.toNamed('/qr-payment', arguments: order);
               },
               child: controller.isLoading.value
                   ? const CircularProgressIndicator(color: Colors.white)

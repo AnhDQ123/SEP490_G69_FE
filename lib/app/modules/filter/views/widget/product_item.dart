@@ -1,24 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import '../../../../models/product.dart';
 import '../../../../resources/util_common.dart';
 
 class ProductItem extends StatelessWidget {
-  final Map<String, dynamic> item;
+  final Product item;
   const ProductItem({Key? key, required this.item}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final double originalPrice =
-        double.tryParse(item['defaultPrice']?.toString() ?? '0') ?? 0;
-    final discount = (item['discount'] ?? 0); // discount là số thập phân, ví dụ 0.12 => 12%
+    final double originalPrice = item.defaultPrice;
+    final double discount = item.discount;
     final bool hasDiscount = discount > 0;
-    final double finalPrice =
-    hasDiscount ? originalPrice * (1 - discount) : originalPrice;
+    final double finalPrice = hasDiscount ? originalPrice * (1 - discount) : originalPrice;
 
     return InkWell(
       onTap: () {
-        Get.toNamed('/product-detail', arguments: item['id']);
+        Get.toNamed('/product-detail', arguments: item.id);
       },
       child: Container(
         decoration: BoxDecoration(
@@ -32,15 +31,13 @@ class ProductItem extends StatelessWidget {
             ),
           ],
         ),
-        // Sử dụng Stack để chồng thêm icon Add to Cart
         child: Stack(
           children: [
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Ảnh sản phẩm với nhãn giảm giá (nếu có)
                 Container(
-                  height: 150, // Kích thước cố định cho tất cả ảnh
+                  height: 150,
                   width: double.infinity,
                   child: Stack(
                     children: [
@@ -49,10 +46,9 @@ class ProductItem extends StatelessWidget {
                           topLeft: Radius.circular(8),
                           topRight: Radius.circular(8),
                         ),
-                        child: item['image'] != null &&
-                            item['image'].toString().isNotEmpty
+                        child: item.image.isNotEmpty
                             ? Image.network(
-                          item['image'],
+                          item.image,
                           width: double.infinity,
                           height: 150,
                           fit: BoxFit.cover,
@@ -61,8 +57,7 @@ class ProductItem extends StatelessWidget {
                           height: 150,
                           width: double.infinity,
                           color: Colors.grey.shade200,
-                          child:
-                          const Icon(Icons.image, color: Colors.grey),
+                          child: const Icon(Icons.image, color: Colors.grey),
                         ),
                       ),
                       if (hasDiscount)
@@ -70,8 +65,7 @@ class ProductItem extends StatelessWidget {
                           top: 8,
                           left: 8,
                           child: Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 6, vertical: 2),
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                             decoration: BoxDecoration(
                               color: Colors.red,
                               borderRadius: BorderRadius.circular(4),
@@ -90,26 +84,22 @@ class ProductItem extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 6),
-                // Tên sản phẩm
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8),
                   child: Text(
-                    item['name'] ?? '',
-                    style: const TextStyle(
-                        fontSize: 12, fontWeight: FontWeight.w500),
+                    item.name,
+                    style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                // Thông tin shop và icon verify ngay bên cạnh
                 Padding(
-                  padding:
-                  const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                   child: Row(
                     children: [
                       Flexible(
                         child: Text(
-                          'Shop: ${item['shop'] ?? 'Không xác định'}',
+                          'Shop: ${item.shop.isNotEmpty ? item.shop : 'Không xác định'}',
                           style: const TextStyle(
                             fontSize: 10,
                             color: Color.fromRGBO(212, 163, 115, 1),
@@ -123,11 +113,8 @@ class ProductItem extends StatelessWidget {
                     ],
                   ),
                 ),
-                // Giá sản phẩm với vị trí đổi chỗ:
-                // Giá cũ (nếu có giảm giá) hiển thị đầu tiên, sau đó là giá mới
                 Padding(
-                  padding:
-                  const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                   child: Row(
                     children: [
                       if (hasDiscount)
@@ -154,7 +141,6 @@ class ProductItem extends StatelessWidget {
                 const SizedBox(height: 8),
               ],
             ),
-            // ICON ADD TO CART ở góc dưới bên phải
             Positioned(
               bottom: 8,
               right: 8,
@@ -174,15 +160,13 @@ class ProductItem extends StatelessWidget {
                   ],
                 ),
                 child: IconButton(
-                  icon: const Icon(Icons.add_shopping_cart,
-                      color: Colors.white, size: 14),
+                  icon: const Icon(Icons.add_shopping_cart, color: Colors.white, size: 14),
                   padding: EdgeInsets.zero,
                   constraints: const BoxConstraints(),
                   onPressed: () {
-                    // Xử lý thêm sản phẩm vào giỏ hàng
                     Get.snackbar(
                       "Thành công!",
-                      "${item['name']} đã được thêm vào giỏ hàng.",
+                      "${item.name} đã được thêm vào giỏ hàng.",
                       backgroundColor: Colors.green,
                       colorText: Colors.white,
                       snackPosition: SnackPosition.TOP,

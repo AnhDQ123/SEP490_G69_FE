@@ -1,12 +1,12 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
+import '../base/api_base_url.dart';
 import '../models/order.dart';
 import '../models/return_order.dart';
 
 class OrderService {
-  final String baseUrl = 'http://192.168.1.11:8080/api/order';
-
+  final String baseUrl = ApiBaseUrl.baseUrl + '/api/order';
   /// 🔁 Lấy đơn hàng theo ID duy nhất
   Future<Order?> fetchOrderById(int id) async {
     try {
@@ -104,15 +104,33 @@ class OrderService {
 
       if (response.statusCode == 200 && response.body.isNotEmpty) {
         final List<dynamic> jsonList = json.decode(response.body);
-        return jsonList.map((e) => Order.fromJson(e)).toList();
+        print("📜 Response from server: $jsonList");
+
+        if (jsonList.isNotEmpty) {
+          var responseBody = jsonList[0];
+          int? orderId = responseBody['orderId']; // Chắc chắn rằng orderId không phải là null
+
+          if (orderId == null) {
+            throw Exception('Invalid orderId returned from server');
+          }
+
+          // Tạo Order và trả lại
+          return [Order.fromJson(responseBody)];
+        } else {
+          throw Exception('Order creation failed - empty response');
+        }
       } else {
-        throw Exception('Không thể tạo đơn hàng');
+        throw Exception('Unable to create order');
       }
+
     } catch (e) {
-      print("❌ Lỗi createOrder: $e");
-      return [];
+      print("❌ Error in createOrder: $e");
+      rethrow;
     }
   }
+
+
+
 
   /// 🛑 Hủy đơn hàng
   Future<void> cancelOrder(int id) async {
@@ -272,6 +290,5 @@ class OrderService {
       rethrow;
     }
   }
-
-
 }
+

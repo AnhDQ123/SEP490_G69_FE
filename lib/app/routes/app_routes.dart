@@ -31,6 +31,8 @@ abstract class Routes {
   static const RETURN_ORDER_DETAIL_PAGE = _Paths.RETURN_ORDER_DETAIL_PAGE;
   static const VOUCHER_LIST = _Paths.VOUCHER_LIST;
   static const ADD_VOUCHER = _Paths.ADD_VOUCHER;
+  static const QR_PAYMENT = _Paths.QR_PAYMENT;
+  static const SEARCH_SCREEN = _Paths.SEARCH_SCREEN;
 }
 
 abstract class _Paths {
@@ -63,4 +65,6 @@ abstract class _Paths {
   static const RETURN_ORDER_DETAIL_PAGE = '/return-order-detail-page';
   static const VOUCHER_LIST = '/voucher-list';
   static const ADD_VOUCHER = '/add-voucher';
+  static const QR_PAYMENT = '/qr-payment';
+  static const SEARCH_SCREEN = '/search-screen';
 }

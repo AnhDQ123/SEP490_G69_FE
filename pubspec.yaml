@@ -48,6 +48,7 @@ dependencies:
   universal_platform: ^1.1.0
   shared_preferences: ^2.5.2
   fl_chart:
+  qr_flutter:
 
   get:
   get_cli:

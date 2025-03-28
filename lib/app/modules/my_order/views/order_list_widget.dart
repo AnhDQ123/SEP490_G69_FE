@@ -5,8 +5,6 @@ import 'package:get/get_core/src/get_main.dart';
 import 'package:intl/intl.dart';
 import '../../../models/order.dart';
 import '../../../models/order_item_option.dart';
-import '../../recommended_products/controllers/recommended_products_controller.dart';
-import '../../recommended_products/views/recommend_with_products.dart';
 
 typedef ActionWidgetBuilder = Widget Function(Order order, double total);
 
@@ -299,13 +297,7 @@ class OrderListWidget extends StatelessWidget {
           );
         } else {
           if (isShopView) return const SizedBox(); // ❌ Không hiển thị ở shop
-
-          if (!Get.isRegistered<RecommendedProductsController>()) {
-            Get.put(RecommendedProductsController());
-          }
-          return const RecommendWithProducts();
         }
-
       },
     );
   }
