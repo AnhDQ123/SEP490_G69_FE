@@ -1,50 +1,126 @@
-import 'package:ffb_fe_flutter/app/models/product_discount.dart';
 import 'package:get/get.dart';
+import 'package:ffb_fe_flutter/app/models/product_discount.dart';
 import '../../../models/discount.dart';
-import '../../../models/product.dart';
 import '../../../service/shop_service.dart';
 
-class ProductDiscountController extends GetxController {
-  // Danh sách sản phẩm đang có giảm giá
-  var discountProducts = <ProductDiscount>[].obs;
+enum SortType {
+  none,
+  priceAsc,
+  priceDesc,
+  quantityAsc,
+  quantityDesc,
+}
 
-  // Danh sách sản phẩm chưa có giảm giá
+class ProductDiscountController extends GetxController {
+  // Danh sách gốc
+  List<ProductDiscount> originalActiveProducts = [];
+  List<ProductDiscount> originalScheduledProducts = [];
+  List<ProductDiscount> originalNoDiscountProducts = [];
+
+  // Danh sách hiển thị
+  var activeDiscountProducts = <ProductDiscount>[].obs;
+  var scheduledDiscountProducts = <ProductDiscount>[].obs;
   var noDiscountProducts = <ProductDiscount>[].obs;
 
-  final ShopService shopService = ShopService();  // Khởi tạo ShopService để gọi API
+  // Sắp xếp
+  var sortType = SortType.none.obs;
+
+  final ShopService shopService = ShopService();
 
   @override
   void onInit() {
     super.onInit();
-    // Gọi API để tải sản phẩm khi controller khởi tạo
     fetchProducts();
   }
 
-  // Gọi API để lấy sản phẩm theo shopId
   Future<void> fetchProducts() async {
     try {
-      final products = await shopService.fetchProductsByShop(1); // 1 là shopId, thay đổi theo nhu cầu
-      // Phân loại sản phẩm theo có giảm giá hay không
-      for (var product in products) {
-        // Kiểm tra xem sản phẩm có đợt giảm giá nào có trạng thái "ACTIVE" không
-        bool hasActiveDiscount = product.discount.any((discount) => discount.status == 'ACTIVE');
+      final products = await shopService.fetchProductsDiscountByShop(1);
 
-        if (hasActiveDiscount) {
-          discountProducts.add(product);  // Thêm vào danh sách sản phẩm có giảm giá
-        } else {
-          noDiscountProducts.add(product);  // Thêm vào danh sách sản phẩm không có giảm giá
+      originalActiveProducts.clear();
+      originalScheduledProducts.clear();
+      originalNoDiscountProducts.clear();
+
+      final now = DateTime.now();
+
+      for (var product in products) {
+        final activeDiscounts = product.discount.where((d) => d.status == 'ACTIVE').toList();
+
+        if (activeDiscounts.isEmpty) {
+          originalNoDiscountProducts.add(product);
+          continue;
         }
+
+        bool added = false;
+        for (var d in activeDiscounts) {
+          final start = DateTime.tryParse(d.startDate);
+          final end = DateTime.tryParse(d.endDate);
+          if (start == null || end == null) continue;
+
+          if (now.isAfter(end)) {
+            continue;
+          } else if (now.isBefore(start)) {
+            originalScheduledProducts.add(product);
+            added = true;
+            break;
+          } else {
+            originalActiveProducts.add(product);
+            added = true;
+            break;
+          }
+        }
+
+        if (!added) originalNoDiscountProducts.add(product);
       }
+
+      // Cập nhật danh sách hiển thị ban đầu
+      activeDiscountProducts.value = [...originalActiveProducts];
+      scheduledDiscountProducts.value = [...originalScheduledProducts];
+      noDiscountProducts.value = [...originalNoDiscountProducts];
+
+      applySort();
     } catch (e) {
       print('Lỗi khi tải sản phẩm: $e');
     }
   }
 
+  void applySort() {
+    void sortList(List<ProductDiscount> list) {
+      switch (sortType.value) {
+        case SortType.priceAsc:
+          list.sort((a, b) => a.defaultPrice.compareTo(b.defaultPrice));
+          break;
+        case SortType.priceDesc:
+          list.sort((a, b) => b.defaultPrice.compareTo(a.defaultPrice));
+          break;
+        case SortType.quantityAsc:
+          list.sort((a, b) => a.quantity.compareTo(b.quantity));
+          break;
+        case SortType.quantityDesc:
+          list.sort((a, b) => b.quantity.compareTo(a.quantity));
+          break;
+        case SortType.none:
+        default:
+          break;
+      }
+    }
 
-  // Phương thức tạo giảm giá cho sản phẩ
+    sortList(activeDiscountProducts);
+    sortList(scheduledDiscountProducts);
+    sortList(noDiscountProducts);
+  }
 
-  // Hàm kiểm tra xem có giảm giá đang áp dụng hay không
-  bool isDiscountActive(ProductDiscount product) {
-    return product.discount.any((discount) => discount.status == 'ACTIVE');
+  Future<void> deleteDiscount(ProductDiscount product, Discount discount) async {
+    try {
+      final result = await shopService.deleteDiscount(discount.id);
+      if (result.success) {
+        Get.snackbar("Thành công", "Đã huỷ giảm giá");
+        await fetchProducts();
+      } else {
+        Get.snackbar("Thất bại", result.message);
+      }
+    } catch (e) {
+      Get.snackbar("Lỗi", "Không thể xoá: $e");
+    }
   }
 }

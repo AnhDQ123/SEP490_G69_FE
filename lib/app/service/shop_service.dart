@@ -11,6 +11,7 @@ import '../models/shop_profile.dart';
 import 'package:http_parser/http_parser.dart';
 
 import '../models/bank.dart';
+import '../models/voucher.dart';
 
 class ShopService {
   final String baseUrl = "http://10.0.2.2:8080/api";
@@ -42,6 +43,7 @@ class ShopService {
     required String citizenIDNumber,
     required DateTime citizenIDExpiredDate,
     required String userId,
+    required File? backgroundImage,
     required File? logo,
     required String openTime,
     required String closeTime,
@@ -76,6 +78,13 @@ class ShopService {
       request.files.add(await http.MultipartFile.fromPath(
         'logo',
         logo.path,
+        contentType: MediaType('image', 'jpeg'),
+      ));
+    }
+    if (backgroundImage != null) {
+      request.files.add(await http.MultipartFile.fromPath(
+        'background',
+        backgroundImage.path,
         contentType: MediaType('image', 'jpeg'),
       ));
     }
@@ -184,7 +193,7 @@ class ShopService {
     }
   }
 
-  Future<List<ProductDiscount>> fetchProductsByShop(int shopId) async {
+  Future<List<ProductDiscount>> fetchProductsDiscountByShop(int shopId) async {
     final response = await http.get(Uri.parse('$baseUrl/product/shop/$shopId'));
 
     if (response.statusCode == 200) {
@@ -193,6 +202,9 @@ class ShopService {
       final jsonData = json.decode(decodedBody);
 
       final List<dynamic> productList = jsonData['content'];
+
+      // In log danh sách sản phẩm raw JSON để kiểm tra
+      print('Danh sách sản phẩm (raw JSON): $productList');
 
       return productList.map((item) {
         // Parse discount như List<Discount>
@@ -203,6 +215,9 @@ class ShopService {
           }).toList();
         }
 
+        // In log từng sản phẩm sau khi parse
+        print('Đang xử lý sản phẩm: ${item['name']}');
+
         return ProductDiscount(
           id: item['id'] ?? 0,
           name: item['name'] ?? '',
@@ -210,19 +225,20 @@ class ShopService {
           supplier: item['supplier'] ?? '',
           quantity: item['quantity'] ?? 0,
           category: item['category'] ?? '',
-          discount: item['discount'],  // Truyền discountList đã được parse
+          discount: discountList,  // Truyền discountList đã được parse đúng kiểu
           image: item['image'] ?? '',
-          description: item['description'] ?? '', // Cập nhật mô tả từ dữ liệu nếu có
-          rate: (item['rate'] as num?)?.toDouble() ?? 0.0,  // Nếu có rate
+          description: item['description'] ?? '',
+          rate: (item['rate'] as num?)?.toDouble() ?? 0.0,
           shop: item['shopName'] ?? '',
-          defaultPrice: (item['defaultPrice'] as num?)?.toDouble() ?? 0.0, // Nếu có defaultPrice
-          foodOptions: [],   // Không có foodOption nên để rỗng
+          defaultPrice: (item['defaultPrice'] as num?)?.toDouble() ?? 0.0,
+          foodOptions: [],
         );
       }).toList();
     } else {
       throw Exception('Không thể tải danh sách sản phẩm');
     }
   }
+
 
   // Add discount for a product
   Future<ApiResponse> addDiscount({
@@ -261,7 +277,80 @@ class ShopService {
     }
   }
 
+  Future<void> updateDiscountToProduct(int productId, Discount discount) async {
+    final url = Uri.parse('$baseUrl/discount/add?productId=$productId');
 
+    final body = jsonEncode({
+      'id': discount.id,
+      'amount': discount.amount,
+      'startDate': discount.startDate, // phải là yyyy-MM-ddTHH:mm:ss
+      'endDate': discount.endDate,
+      'status': discount.status,
+    });
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: body,
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Cập nhật giảm giá thất bại');
+    }
+  }
+
+  Future<ApiResponse> deleteDiscount(int discountId) async {
+    try {
+      final response = await http.delete(Uri.parse('$baseUrl/discount/$discountId'));
+
+      if (response.statusCode == 200) {
+        return ApiResponse(success: true, message: "Huỷ thành công");
+      } else {
+        return ApiResponse(success: false, message: "Xoá thất bại (${response.statusCode})");
+      }
+    } catch (e) {
+      return ApiResponse(success: false, message: "Lỗi khi xoá: $e");
+    }
+  }
+
+  Future<List<Voucher>> fetchVouchersByShop(int shopId) async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/vouchers/shop/$shopId'),  // API route mới cho voucher theo shop
+    );
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = json.decode(response.body);
+
+      // In ra dữ liệu nhận được từ API
+      print('Received data: $data');
+
+      // Chuyển đổi dữ liệu thành danh sách Voucher
+      List<Voucher> vouchers = data.map((item) => Voucher.fromJson(item)).toList();
+
+      // In ra thông tin các Voucher sau khi chuyển đổi
+      for (var voucher in vouchers) {
+        print('Voucher: ${voucher.toString()}');  // In chi tiết từng voucher
+      }
+
+      return vouchers;
+    } else {
+      throw Exception('Failed to load vouchers');
+    }
+  }
+
+  Future<ApiResponse> deleteVoucher(int voucherId) async {
+    try {
+      final response = await http.delete(Uri.parse('$baseUrl/vouchers/$voucherId'));
+
+      if (response.statusCode == 200) {
+        return ApiResponse(success: true, message: "Huỷ thành công");
+      } else {
+        return ApiResponse(success: false, message: "Xoá thất bại (${response.statusCode})");
+      }
+    } catch (e) {
+      return ApiResponse(success: false, message: "Lỗi khi xoá: $e");
+    }
+  }
 
 }
 

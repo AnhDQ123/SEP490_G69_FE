@@ -26,8 +26,19 @@ class Step3 extends StatelessWidget {
             onCameraPick: () => controller.pickImageFromCamera(controller.logo),
             onRemove: () => controller.removeImage(controller.logo),
           ),
+
           SizedBox(height: 12),
 
+          // Background image uploader
+          buildBackgroundUploader(
+            imageController: controller.backgroundImage,
+            onGalleryPick: () =>
+                controller.pickImageFromGallery(controller.backgroundImage),
+            onCameraPick: () =>
+                controller.pickImageFromCamera(controller.backgroundImage),
+            onRemove: () => controller.removeImage(controller.backgroundImage),
+          ),
+          SizedBox(height: 12),
           // Tên cửa hàng
           buildTextField(controller.shopName,
               label: "Tên cửa hàng", isRequired: true),
@@ -116,41 +127,38 @@ class Step3 extends StatelessWidget {
     );
   }
 
-  Widget buildTextField(RxString controllerValue,
-      {String label = "", bool isRequired = false}) {
+  Widget buildTextField(RxString controllerValue, {String label = "", bool isRequired = false}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         RichText(
           text: TextSpan(
             text: label,
-            style: TextStyle(
-                fontSize: 14, fontWeight: FontWeight.bold, color: Colors.black),
+            style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.black),
             children: isRequired
                 ? [
-                    TextSpan(
-                      text: " *",
-                      style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.red),
-                    ),
-                  ]
+              TextSpan(
+                text: " *",
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.red),
+              ),
+            ]
                 : [],
           ),
         ),
         SizedBox(height: 4),
-        TextField(
+        Obx(() => TextField(
+          controller: TextEditingController(text: controllerValue.value),
           onChanged: (value) => controllerValue.value = value,
           decoration: InputDecoration(
             border: OutlineInputBorder(),
             contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           ),
-        ),
+        )),
         SizedBox(height: 8),
       ],
     );
   }
+
 
   Widget _buildPhoneNumberField(RxString controllerValue, {String label = ""}) {
     return Column(
@@ -160,9 +168,7 @@ class Step3 extends StatelessWidget {
           text: TextSpan(
               text: label,
               style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black),
+                  fontSize: 14, fontWeight: FontWeight.bold, color: Colors.black),
               children: [
                 TextSpan(
                   text: " *",
@@ -174,7 +180,8 @@ class Step3 extends StatelessWidget {
               ]),
         ),
         SizedBox(height: 4),
-        TextField(
+        Obx(() => TextField(
+          controller: TextEditingController(text: controllerValue.value), // Sử dụng TextEditingController để đảm bảo giá trị được hiển thị
           keyboardType: TextInputType.number,
           inputFormatters: [
             FilteringTextInputFormatter.digitsOnly, // Chỉ cho phép nhập số
@@ -185,11 +192,12 @@ class Step3 extends StatelessWidget {
             border: OutlineInputBorder(),
             contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           ),
-        ),
+        )),
         SizedBox(height: 8),
       ],
     );
   }
+
 
   Widget buildLogoUploader({
     required Rxn<File> imageController,
@@ -299,4 +307,103 @@ class Step3 extends StatelessWidget {
       ],
     );
   }
+
+  Widget buildBackgroundUploader({
+    required Rxn<File> imageController,
+    required Function() onGalleryPick,
+    required Function() onCameraPick,
+    required Function() onRemove,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center, // Căn giữa nội dung
+      children: [
+        Text(
+            "Ảnh bìa",
+            style: TextStyle(
+                fontSize: 14, fontWeight: FontWeight.bold, color: Colors.black),
+          ),
+        SizedBox(height: 8),
+        Center(
+          // Căn giữa toàn bộ khung ảnh nền
+          child: Obx(() => GestureDetector(
+            onTap: () {
+              Get.bottomSheet(
+                Container(
+                  padding: EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      ListTile(
+                        leading: Icon(Icons.camera_alt),
+                        title: Text("Chụp ảnh"),
+                        onTap: () {
+                          onCameraPick();
+                          Get.back();
+                        },
+                      ),
+                      ListTile(
+                        leading: Icon(Icons.photo_library),
+                        title: Text("Chọn từ thư viện"),
+                        onTap: () {
+                          onGalleryPick();
+                          Get.back();
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+            child: Stack(
+              alignment: Alignment.center, // Căn giữa icon xoá
+              children: [
+                Container(
+                  width: double.infinity, // Mở rộng ảnh nền hết chiều ngang
+                  height: 200, // Bạn có thể điều chỉnh chiều cao phù hợp với thiết kế
+                  decoration: BoxDecoration(
+                    shape: BoxShape.rectangle,
+                    border: Border.all(color: Colors.grey),
+                  ),
+                  child: imageController.value == null
+                      ? Icon(Icons.add_a_photo,
+                      size: 40, color: Colors.grey)
+                      : ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Image.file(
+                      imageController.value!,
+                      width: double.infinity,
+                      height: double.infinity,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+                if (imageController.value != null)
+                  Positioned(
+                    top: 2,
+                    right: 2,
+                    child: GestureDetector(
+                      onTap: onRemove,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.red,
+                          shape: BoxShape.circle,
+                        ),
+                        padding: EdgeInsets.all(4),
+                        child: Icon(Icons.close,
+                            size: 16, color: Colors.white),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          )),
+        ),
+      ],
+    );
+  }
+
 }

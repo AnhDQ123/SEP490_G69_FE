@@ -16,7 +16,6 @@ abstract class Routes {
   static const FILTER = _Paths.FILTER;
   static const PRODUCT_LIST_SHOP = _Paths.PRODUCT_LIST_SHOP;
   static const ADD_PRODUCT = _Paths.ADD_PRODUCT;
-  static const ADD_DISCOUNT = _Paths.ADD_DISCOUNT;
   static const EDIT_PRODUCT = _Paths.EDIT_PRODUCT;
   static const ADD_BANNER = _Paths.ADD_BANNER;
   static const PRODUCT_FORM = _Paths.PRODUCT_FORM;
@@ -32,6 +31,10 @@ abstract class Routes {
   static const USER_INFO = _Paths.USER_INFO;
   static const SPLASH_SCREEN = _Paths.SPLASH_SCREEN;
   static const CHECKOUT = _Paths.CHECKOUT;
+  static const SHOP_ADD_DISCOUNT = _Paths.SHOP_ADD_DISCOUNT;
+  static const SHOP_VOUCHER_LIST = _Paths.SHOP_VOUCHER_LIST;
+  static const SHOP_ADD_VOUCHER = _Paths.SHOP_ADD_VOUCHER;
+  static const SHOP_VOUCHER_ADD = _Paths.SHOP_VOUCHER_ADD;
 }
 
 abstract class _Paths {
@@ -49,7 +52,6 @@ abstract class _Paths {
   static const SHOP = '/shop';
   static const PRODUCT_LIST_SHOP = '/product-list-shop';
   static const ADD_PRODUCT = '/add-product';
-  static const ADD_DISCOUNT = '/add-discount';
   static const EDIT_PRODUCT = '/edit-product';
   static const ADD_BANNER = '/add-banner';
   static const PRODUCT_FORM = '/product-form';
@@ -65,4 +67,8 @@ abstract class _Paths {
   static const SHOP_REGISTER = '/shop-register';
   static const PRODUCT_DISCOUNT = '/product-discount';
   static const SHOP_DASHBOARD = '/shop-dashboard';
+  static const SHOP_ADD_DISCOUNT = '/shop-add-discount';
+  static const SHOP_VOUCHER_LIST = '/shop-voucher-list';
+  static const SHOP_ADD_VOUCHER = '/shop-add-voucher';
+  static const SHOP_VOUCHER_ADD = '/shop-voucher-add';
 }

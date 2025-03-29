@@ -36,13 +36,15 @@ class ShopRegisterController extends GetxController {
   var isTermsAccepted = false.obs;
 
   // Step 3 - Thông tin cửa hàng
-  var logo = Rxn<File>(); // Thay đổi từ ImageProvider thành File
+  var logo = Rxn<File>();
+  var backgroundImage = Rxn<File>();
   var shopName = ''.obs;
   var address = ''.obs;
   var phoneNumber = ''.obs;
   var description = ''.obs;
   var openTime = Rxn<TimeOfDay>();
   var closeTime = Rxn<TimeOfDay>();
+
 
   String formatTime(TimeOfDay? time) {
     if (time == null) return "";
@@ -105,7 +107,6 @@ class ShopRegisterController extends GetxController {
             issuedDate.value != null &&
             registrationCertificateImage.value != null &&
             taxCode.value.isNotEmpty &&
-            productImage.value != null &&
             safetyPolicyImage.value != null;
       default:
         return true;
@@ -135,6 +136,7 @@ class ShopRegisterController extends GetxController {
         sellType: selectedService.value ?? "COOKED",
         //Step 2 không có input
         //Step 3
+        backgroundImage: backgroundImage.value,
         logo: logo.value,
         name: shopName.value,
         openTime: formatTime(openTime.value),
