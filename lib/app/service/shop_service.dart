@@ -55,7 +55,7 @@ class ShopService {
     required String selectedBankBin,
     required String bankInfo,
   }) async {
-    var uri = Uri.parse('$baseUrl/shop/register');
+    var uri = Uri.parse('$baseUrl/shops/register');
     var request = http.MultipartRequest('POST', uri);
 
     // Thêm dữ liệu dạng text vào request

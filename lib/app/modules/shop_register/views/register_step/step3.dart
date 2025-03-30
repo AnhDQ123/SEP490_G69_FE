@@ -17,17 +17,7 @@ class Step3 extends StatelessWidget {
             "Thông tin cơ bản",
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
-          SizedBox(height: 12),
-
-          buildLogoUploader(
-            imageController: controller.logo,
-            onGalleryPick: () =>
-                controller.pickImageFromGallery(controller.logo),
-            onCameraPick: () => controller.pickImageFromCamera(controller.logo),
-            onRemove: () => controller.removeImage(controller.logo),
-          ),
-
-          SizedBox(height: 12),
+          const SizedBox(height: 12),
 
           // Background image uploader
           buildBackgroundUploader(
@@ -38,7 +28,16 @@ class Step3 extends StatelessWidget {
                 controller.pickImageFromCamera(controller.backgroundImage),
             onRemove: () => controller.removeImage(controller.backgroundImage),
           ),
-          SizedBox(height: 12),
+          const SizedBox(height: 12),
+          buildLogoUploader(
+            imageController: controller.logo,
+            onGalleryPick: () =>
+                controller.pickImageFromGallery(controller.logo),
+            onCameraPick: () => controller.pickImageFromCamera(controller.logo),
+            onRemove: () => controller.removeImage(controller.logo),
+          ),
+
+          const SizedBox(height: 12),
           // Tên cửa hàng
           buildTextField(controller.shopName,
               label: "Tên cửa hàng", isRequired: true),
@@ -128,6 +127,9 @@ class Step3 extends StatelessWidget {
   }
 
   Widget buildTextField(RxString controllerValue, {String label = "", bool isRequired = false}) {
+    TextEditingController textController = TextEditingController(text: controllerValue.value);
+    textController.selection = TextSelection.collapsed(offset: textController.text.length); // Giữ vị trí con trỏ cuối cùng
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -146,57 +148,57 @@ class Step3 extends StatelessWidget {
           ),
         ),
         SizedBox(height: 4),
-        Obx(() => TextField(
-          controller: TextEditingController(text: controllerValue.value),
+        TextField(
+          controller: textController,
           onChanged: (value) => controllerValue.value = value,
           decoration: InputDecoration(
             border: OutlineInputBorder(),
             contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           ),
-        )),
+        ),
         SizedBox(height: 8),
       ],
     );
   }
 
-
   Widget _buildPhoneNumberField(RxString controllerValue, {String label = ""}) {
+    TextEditingController textController = TextEditingController(text: controllerValue.value);
+    textController.selection = TextSelection.collapsed(offset: textController.text.length);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         RichText(
           text: TextSpan(
-              text: label,
-              style: TextStyle(
-                  fontSize: 14, fontWeight: FontWeight.bold, color: Colors.black),
-              children: [
-                TextSpan(
-                  text: " *",
-                  style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.red),
-                ),
-              ]),
+            text: label,
+            style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.black),
+            children: [
+              TextSpan(
+                text: " *",
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.red),
+              ),
+            ],
+          ),
         ),
         SizedBox(height: 4),
-        Obx(() => TextField(
-          controller: TextEditingController(text: controllerValue.value), // Sử dụng TextEditingController để đảm bảo giá trị được hiển thị
+        TextField(
+          controller: textController,
           keyboardType: TextInputType.number,
           inputFormatters: [
-            FilteringTextInputFormatter.digitsOnly, // Chỉ cho phép nhập số
-            LengthLimitingTextInputFormatter(10), // Giới hạn độ dài 10 số
+            FilteringTextInputFormatter.digitsOnly,
+            LengthLimitingTextInputFormatter(10),
           ],
           onChanged: (value) => controllerValue.value = value,
           decoration: InputDecoration(
             border: OutlineInputBorder(),
             contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           ),
-        )),
+        ),
         SizedBox(height: 8),
       ],
     );
   }
+
 
 
   Widget buildLogoUploader({
