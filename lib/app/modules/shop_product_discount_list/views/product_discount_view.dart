@@ -18,7 +18,7 @@ class ProductDiscountView extends StatelessWidget {
           IconButton(
             icon: Icon(Icons.sort),
             onPressed: _showSortBottomSheet,
-          )
+          ),
         ],
       ),
       body: SingleChildScrollView(
@@ -50,6 +50,13 @@ class ProductDiscountView extends StatelessWidget {
   }
 
   Widget _buildDiscountTable(List<ProductDiscount> products) {
+    if (products.isEmpty) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        child: Center(child: Text("Không có sản phẩm trong danh sách này")),
+      );
+    }
+
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: DataTable(
@@ -76,12 +83,13 @@ class ProductDiscountView extends StatelessWidget {
               children: [
                 IconButton(
                   icon: Icon(Icons.edit),
-                  onPressed: () {
-                    Get.toNamed(Routes.SHOP_ADD_DISCOUNT, arguments: {
+                  onPressed: () async {
+                    await Get.toNamed(Routes.SHOP_ADD_DISCOUNT, arguments: {
                       'product': product,
                       'isEdit': true,
                       'discount': discount,
                     });
+                    controller.fetchProducts();
                   },
                 ),
                 IconButton(
@@ -97,18 +105,28 @@ class ProductDiscountView extends StatelessWidget {
   }
 
   Widget _buildNoDiscountTable(List<ProductDiscount> products) {
+    if (products.isEmpty) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        child: Center(child: Text("Không có sản phẩm trong danh sách này")),
+      );
+    }
+
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: DataTable(
         columnSpacing: 12,
+
         columns: [
           DataColumn(label: Text("Ảnh")),
           DataColumn(label: Text("Tên")),
           DataColumn(label: Text("Giá")),
-          DataColumn(label: Text("Tồn kho")),
+          DataColumn(label: Text("SL còn lại")),
           DataColumn(label: Text("Hành động")),
         ],
+
         rows: products.map((product) {
+          print(" - ${product.name}: ${product.defaultPrice} - ${product.quantity}");
           return DataRow(cells: [
             DataCell(Image.network(product.image, width: 50, height: 50, fit: BoxFit.cover)),
             DataCell(Text(product.name)),
@@ -155,7 +173,7 @@ class ProductDiscountView extends StatelessWidget {
       SortType.quantityDesc: "Tồn kho giảm dần",
     };
 
-    SortType tempSort = controller.sortType.value;
+    final tempSort = controller.sortType.value.obs; // 👈 tạo Rx tạm
 
     Get.bottomSheet(
       Container(
@@ -169,11 +187,11 @@ class ProductDiscountView extends StatelessWidget {
           children: [
             Text("Sắp xếp sản phẩm", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             SizedBox(height: 10),
-            DropdownButton<SortType>(
+            Obx(() => DropdownButton<SortType>(
               isExpanded: true,
-              value: tempSort,
+              value: tempSort.value,
               onChanged: (val) {
-                if (val != null) tempSort = val;
+                if (val != null) tempSort.value = val;
               },
               items: sortOptions.entries.map((entry) {
                 return DropdownMenuItem<SortType>(
@@ -181,29 +199,43 @@ class ProductDiscountView extends StatelessWidget {
                   child: Text(entry.value),
                 );
               }).toList(),
-            ),
+            )),
             SizedBox(height: 10),
             Row(
               children: [
                 Expanded(
+                  child: OutlinedButton(
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: Colors.deepPurple,
+                      side: BorderSide(color: Colors.deepPurple),
+                      padding: EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(24),
+                      ),
+                      textStyle: TextStyle(fontWeight: FontWeight.w500),
+                    ),
+                    onPressed: () => Get.back(),
+                    child: Text("Huỷ"),
+                  ),
+                ),
+                SizedBox(width: 12),
+                Expanded(
                   child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.deepPurple,
+                      foregroundColor: Colors.white,
+                      padding: EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(24),
+                      ),
+                      textStyle: TextStyle(fontWeight: FontWeight.w500),
+                    ),
                     onPressed: () {
-                      controller.sortType.value = tempSort;
+                      controller.sortType.value = tempSort.value;
                       controller.applySort();
                       Get.back();
                     },
                     child: Text("Áp dụng"),
-                  ),
-                ),
-                SizedBox(width: 10),
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: () {
-                      controller.sortType.value = SortType.none;
-                      controller.applySort();
-                      Get.back();
-                    },
-                    child: Text("Mặc định"),
                   ),
                 ),
               ],
@@ -213,6 +245,7 @@ class ProductDiscountView extends StatelessWidget {
       ),
     );
   }
+
 
   String formatCurrency(double amount) {
     final format = NumberFormat("#,##0", "vi_VN");

@@ -37,4 +37,6 @@ class ShopController extends GetxController {
       orderCounts.value = result; // Cập nhật giá trị vào RxMap
     }
   }
+
+
 }

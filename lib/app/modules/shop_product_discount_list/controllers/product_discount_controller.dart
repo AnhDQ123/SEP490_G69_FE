@@ -13,17 +13,17 @@ enum SortType {
 
 class ProductDiscountController extends GetxController {
   // Danh sách gốc
-  List<ProductDiscount> originalActiveProducts = [];
-  List<ProductDiscount> originalScheduledProducts = [];
-  List<ProductDiscount> originalNoDiscountProducts = [];
+  final List<ProductDiscount> _originalActiveProducts = [];
+  final List<ProductDiscount> _originalScheduledProducts = [];
+  final List<ProductDiscount> _originalNoDiscountProducts = [];
 
   // Danh sách hiển thị
-  var activeDiscountProducts = <ProductDiscount>[].obs;
-  var scheduledDiscountProducts = <ProductDiscount>[].obs;
-  var noDiscountProducts = <ProductDiscount>[].obs;
+  final activeDiscountProducts = <ProductDiscount>[].obs;
+  final scheduledDiscountProducts = <ProductDiscount>[].obs;
+  final noDiscountProducts = <ProductDiscount>[].obs;
 
   // Sắp xếp
-  var sortType = SortType.none.obs;
+  final sortType = SortType.none.obs;
 
   final ShopService shopService = ShopService();
 
@@ -37,55 +37,58 @@ class ProductDiscountController extends GetxController {
     try {
       final products = await shopService.fetchProductsDiscountByShop(1);
 
-      originalActiveProducts.clear();
-      originalScheduledProducts.clear();
-      originalNoDiscountProducts.clear();
-
-      final now = DateTime.now();
+      _originalActiveProducts.clear();
+      _originalScheduledProducts.clear();
+      _originalNoDiscountProducts.clear();
 
       for (var product in products) {
-        final activeDiscounts = product.discount.where((d) => d.status == 'ACTIVE').toList();
+        final discounts = product.discount;
 
-        if (activeDiscounts.isEmpty) {
-          originalNoDiscountProducts.add(product);
+        if (discounts.isEmpty) {
+          _originalNoDiscountProducts.add(product);
           continue;
         }
 
         bool added = false;
-        for (var d in activeDiscounts) {
-          final start = DateTime.tryParse(d.startDate);
-          final end = DateTime.tryParse(d.endDate);
-          if (start == null || end == null) continue;
 
-          if (now.isAfter(end)) {
-            continue;
-          } else if (now.isBefore(start)) {
-            originalScheduledProducts.add(product);
-            added = true;
-            break;
-          } else {
-            originalActiveProducts.add(product);
-            added = true;
-            break;
+        for (var d in discounts) {
+          switch (d.status) {
+            case 'ACTIVE':
+              _originalActiveProducts.add(product);
+              added = true;
+              break;
+            case 'PENDING':
+              _originalScheduledProducts.add(product);
+              added = true;
+              break;
+            case 'INACTIVE':
+              break; // không thêm
           }
+
+          if (added) break; // chỉ thêm 1 lần nếu đã phân loại
         }
 
-        if (!added) originalNoDiscountProducts.add(product);
+        if (!added) {
+          // Nếu tất cả đều là INACTIVE → xem như chưa có giảm giá
+          _originalNoDiscountProducts.add(product);
+        }
       }
 
-      // Cập nhật danh sách hiển thị ban đầu
-      activeDiscountProducts.value = [...originalActiveProducts];
-      scheduledDiscountProducts.value = [...originalScheduledProducts];
-      noDiscountProducts.value = [...originalNoDiscountProducts];
+      // Cập nhật danh sách hiển thị
+      activeDiscountProducts.value = [..._originalActiveProducts];
+      scheduledDiscountProducts.value = [..._originalScheduledProducts];
+      noDiscountProducts.value = [..._originalNoDiscountProducts];
 
       applySort();
     } catch (e) {
-      print('Lỗi khi tải sản phẩm: $e');
+      print('❌ Lỗi khi tải sản phẩm: $e');
     }
   }
 
   void applySort() {
-    void sortList(List<ProductDiscount> list) {
+    print("📦 Applying sort: ${sortType.value}");
+    List<ProductDiscount> sortList(List<ProductDiscount> source) {
+      final list = [...source]; // clone mới để không ảnh hưởng list gốc
       switch (sortType.value) {
         case SortType.priceAsc:
           list.sort((a, b) => a.defaultPrice.compareTo(b.defaultPrice));
@@ -100,22 +103,23 @@ class ProductDiscountController extends GetxController {
           list.sort((a, b) => b.quantity.compareTo(a.quantity));
           break;
         case SortType.none:
-        default:
           break;
       }
+      return list;
     }
 
-    sortList(activeDiscountProducts);
-    sortList(scheduledDiscountProducts);
-    sortList(noDiscountProducts);
+    activeDiscountProducts.value = sortList(_originalActiveProducts);
+    scheduledDiscountProducts.value = sortList(_originalScheduledProducts);
+    noDiscountProducts.value = sortList(_originalNoDiscountProducts);
   }
+
 
   Future<void> deleteDiscount(ProductDiscount product, Discount discount) async {
     try {
       final result = await shopService.deleteDiscount(discount.id);
       if (result.success) {
         Get.snackbar("Thành công", "Đã huỷ giảm giá");
-        await fetchProducts();
+        await fetchProducts(); // Refresh sau khi xoá
       } else {
         Get.snackbar("Thất bại", result.message);
       }

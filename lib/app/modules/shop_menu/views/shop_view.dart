@@ -97,9 +97,17 @@ class ShopView extends GetView<ShopController> {
                 ),
               ),
               TextButton(
-                onPressed: () => Get.toNamed(Routes.SHOP_DETAIL, arguments: shop),
+                onPressed: () async {
+                  final result = await Get.toNamed(Routes.SHOP_DETAIL, arguments: controller.shopInfo.value);
+
+                  if (result == true) {
+                    // Nếu từ SHOP_DETAIL trả về true (đã cập nhật thành công)
+                    controller.fetchShopInfo(controller.shopId); // Reload lại shopInfo
+                  }
+                },
                 child: Text('Chỉnh sửa'),
-              ),
+              )
+
             ],
           ),
         ),

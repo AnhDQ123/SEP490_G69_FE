@@ -13,44 +13,56 @@ class ShopAddDiscountController extends GetxController {
 
   double currentProductPrice = 0;
 
+  /// Đặt ngày mặc định là hôm nay
   void setDefaultToday() {
-    final today = DateFormat('yyyy-MM-dd').format(DateTime.now());
+    final today = _formatDate(DateTime.now());
     startDateController.text = today;
     endDateController.text = today;
   }
 
+  /// Hàm chọn ngày
   void pickDate({required bool isStart}) async {
+    FocusScope.of(Get.context!).unfocus(); // Ẩn bàn phím
+
+    final initial = isStart
+        ? DateTime.now()
+        : DateTime.tryParse(startDateController.text) ?? DateTime.now();
+
+    final first = isStart
+        ? DateTime.now()
+        : DateTime.tryParse(startDateController.text) ?? DateTime.now();
+
     final picked = await showDatePicker(
       context: Get.context!,
-      initialDate: DateTime.now(),
-      firstDate: DateTime.now(),
+      initialDate: initial,
+      firstDate: first,
       lastDate: DateTime(2100),
     );
+
     if (picked != null) {
-      final formatted = DateFormat('yyyy-MM-dd').format(picked);
+      final formatted = _formatDate(picked);
       if (isStart) {
         startDateController.text = formatted;
+
+        // Reset end date nếu nhỏ hơn start
+        final end = DateTime.tryParse(endDateController.text);
+        if (end != null && picked.isAfter(end)) {
+          endDateController.text = formatted;
+        }
       } else {
         endDateController.text = formatted;
       }
     }
   }
 
+  /// Clamp phần trăm giảm từ 0-100 và cập nhật giá sau khi giảm
   void clampDiscountValue() {
     final text = discountPercentController.text;
     final value = int.tryParse(text);
 
     if (value == null) return;
 
-    int clamped = value;
-
-    if (value > 100) {
-      clamped = 100;
-    } else if (value < 0) {
-      clamped = 0;
-    }
-
-    // Nếu đã khác thì cập nhật lại controller
+    final clamped = value.clamp(0, 100);
     if (clamped.toString() != text) {
       discountPercentController.text = clamped.toString();
       discountPercentController.selection = TextSelection.fromPosition(
@@ -58,9 +70,8 @@ class ShopAddDiscountController extends GetxController {
       );
     }
 
-    updateDiscountPrice(currentProductPrice); // Cập nhật giá sau khi giảm
+    updateDiscountPrice(currentProductPrice);
   }
-
 
   void updateDiscountPrice(double originalPrice) {
     final percent = double.tryParse(discountPercentController.text);
@@ -74,11 +85,12 @@ class ShopAddDiscountController extends GetxController {
 
   void loadDiscountToForm(Discount discount) {
     discountPercentController.text = (discount.amount * 100).toStringAsFixed(0);
-    startDateController.text = discount.startDate.substring(0, 10);
-    endDateController.text = discount.endDate.substring(0, 10);
+    startDateController.text = _formatDateString(discount.startDate);
+    endDateController.text = _formatDateString(discount.endDate);
     updateDiscountPrice(currentProductPrice);
   }
 
+  /// Validate các trường và logic ngày tháng
   bool validateFields() {
     if (discountPercentController.text.isEmpty ||
         startDateController.text.isEmpty ||
@@ -93,6 +105,19 @@ class ShopAddDiscountController extends GetxController {
       return false;
     }
 
+    final start = DateTime.tryParse(startDateController.text);
+    final end = DateTime.tryParse(endDateController.text);
+
+    if (start == null || end == null) {
+      Get.snackbar('Lỗi', 'Ngày không hợp lệ');
+      return false;
+    }
+
+    if (end.isBefore(start)) {
+      Get.snackbar('Lỗi', 'Ngày kết thúc không được trước ngày bắt đầu');
+      return false;
+    }
+
     return true;
   }
 
@@ -101,9 +126,9 @@ class ShopAddDiscountController extends GetxController {
 
     final discount = Discount(
       id: 0,
-      amount: double.parse(discountPercentController.text),
-      startDate: startDateController.text + " 00:00:00",
-      endDate: endDateController.text + " 23:59:59",
+      amount: double.parse(discountPercentController.text) / 100,
+      startDate: startDateController.text,
+      endDate: endDateController.text,
       status: 'ACTIVE',
     );
 
@@ -113,36 +138,40 @@ class ShopAddDiscountController extends GetxController {
     );
 
     if (result.success) {
-      // 👇 Đảm bảo context vẫn còn hoạt động
-      if (Get.context != null) {
-        Navigator.of(Get.context!).pop(); // THAY CHO Get.back()
-        await Future.delayed(Duration(milliseconds: 200));
-        Get.snackbar('Thành công', result.message);
-      }
+      Get.back(result: true); // ✅ Trả về thành công
+      Get.snackbar('Thành công', result.message);
     } else {
       Get.snackbar('Thất bại', result.message);
     }
   }
-
-
 
   Future<void> updateDiscount(ProductDiscount product, Discount oldDiscount) async {
     if (!validateFields()) return;
 
     final discount = Discount(
       id: oldDiscount.id,
-      amount: (double.parse(discountPercentController.text) / 100),
-      startDate: startDateController.text + "T00:00:00",
-      endDate: endDateController.text + "T23:59:59",
+      amount: double.parse(discountPercentController.text) / 100,
+      startDate: startDateController.text,
+      endDate: endDateController.text,
       status: 'ACTIVE',
     );
 
     try {
-      await ShopService().updateDiscountToProduct(product.id, discount);
-      Get.back();
+      final result = await ShopService().updateDiscountToProduct(product.id, discount);
+      Get.back(result: true); // ✅ Trả về thành công
       Get.snackbar('Thành công', 'Đã cập nhật giảm giá');
     } catch (e) {
       Get.snackbar('Lỗi', 'Không thể cập nhật giảm giá');
+    }
+  }
+
+  String _formatDate(DateTime dt) => DateFormat('yyyy-MM-dd').format(dt);
+
+  String _formatDateString(String dateStr) {
+    try {
+      return _formatDate(DateTime.parse(dateStr));
+    } catch (_) {
+      return dateStr;
     }
   }
 }

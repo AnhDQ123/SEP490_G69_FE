@@ -61,6 +61,29 @@ class ShopProfile {
       owner: Owner.fromJson(json['owner']),
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'description': description,
+      'logo': logo,
+      'backgroundImage': backgroundImage,
+      'menu': menu,
+      'phone': phone,
+      'openTime': openTime,
+      'closeTime': closeTime,
+      'registrationCertificate': registrationCertificate,
+      'foodSafetyCertificate': foodSafetyCertificate,
+      'address': address,
+      'isActive': isActive,
+      'rate': rate,
+      'viewCount': viewCount,
+      'isShipping': isShipping,
+      'isOpening': isOpening,
+      'owner': owner.toJson(),
+    };
+  }
 }
 
 class Owner {
@@ -83,6 +106,15 @@ class Owner {
       phone: json['phone'],
       profile: Profile.fromJson(json['profile']),
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'username': username,
+      'email': email,
+      'phone': phone,
+      'profile': profile.toJson(),
+    };
   }
 }
 
@@ -130,5 +162,22 @@ class Profile {
       citizenIDExpiredDate: json['citizenIDExpiredDate'],
       drivingLicenseExpiredDate: json['drivingLicenseExpiredDate'],
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'avatar': avatar,
+      'taxCode': taxCode,
+      'citizenIDNumber': citizenIDNumber,
+      'citizenIDCardFront': citizenIDCardFront,
+      'citizenIDCardBack': citizenIDCardBack,
+      'drivingLicenseFront': drivingLicenseFront,
+      'drivingLicenseBack': drivingLicenseBack,
+      'judicialRecord': judicialRecord,
+      'citizenIDExpiredDate': citizenIDExpiredDate,
+      'drivingLicenseExpiredDate': drivingLicenseExpiredDate,
+    };
   }
 }

@@ -1,32 +1,41 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/shop_detail_controller.dart';
-import 'dart:io';
 
 class ShopDetailView extends GetView<ShopDetailController> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('Chỉnh sửa thông tin')),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(16),
-        child: Column(
-          children: [
-            _buildCoverImagePicker(),
-            SizedBox(height: 16),
-            _buildLogoPicker(),
-            _buildTextField('Tên cửa hàng', controller.nameController),
-            _buildTimeRow('Giờ hoạt động'),
-            _buildTextField('Mô tả', controller.descriptionController, maxLines: 4),
-            _buildTextField('Địa chỉ', controller.addressController),
-            _buildDisabledField('Số điện thoại', controller.shop.phone),
-            _buildDisabledField('Email', controller.shop.owner.email),
-            SizedBox(height: 20),
-            _buildActionButtons(),
-          ],
+    return Obx(() => Stack(
+      children: [
+        Scaffold(
+          appBar: AppBar(title: Text('Chỉnh sửa thông tin')),
+          body: SingleChildScrollView(
+            padding: EdgeInsets.all(16),
+            child: Column(
+              children: [
+                _buildCoverImagePicker(),
+                SizedBox(height: 16),
+                _buildLogoPicker(),
+                _buildTextField('Tên cửa hàng', controller.nameController),
+                _buildTimeRow('Giờ hoạt động'),
+                _buildTextField('Mô tả', controller.descriptionController, maxLines: 4),
+                _buildTextField('Địa chỉ', controller.addressController),
+                _buildDisabledField('Số điện thoại', controller.shop.phone),
+                _buildDisabledField('Email', controller.shop.owner.email),
+                SizedBox(height: 20),
+                _buildActionButtons(),
+              ],
+            ),
+          ),
         ),
-      ),
-    );
+        if (controller.isLoading.value)
+          Container(
+            color: Colors.black26,
+            child: Center(child: CircularProgressIndicator()),
+          ),
+      ],
+    ));
   }
 
   Widget _buildCoverImagePicker() {
@@ -144,7 +153,9 @@ class ShopDetailView extends GetView<ShopDetailController> {
   }
 
   Future<void> _selectTime(bool isOpenTime) async {
-    final current = isOpenTime ? controller.openTime.value : controller.closeTime.value;
+    final current = isOpenTime
+        ? controller.openTime.value
+        : controller.closeTime.value;
 
     final picked = await showTimePicker(
       context: Get.context!,
@@ -160,11 +171,12 @@ class ShopDetailView extends GetView<ShopDetailController> {
     }
   }
 
-  Widget _buildTextField(String label, TextEditingController controller, {int maxLines = 1}) {
+  Widget _buildTextField(String label, TextEditingController textController,
+      {int maxLines = 1}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: TextField(
-        controller: controller,
+        controller: textController,
         maxLines: maxLines,
         decoration: InputDecoration(
           labelText: label,

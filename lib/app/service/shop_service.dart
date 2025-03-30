@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:ffb_fe_flutter/app/models/product_discount.dart';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:path/path.dart';
@@ -185,6 +186,82 @@ class ShopService {
     }
   }
 
+  Future<void> updateShop({
+    required int shopId,
+    required String name,
+    required String description,
+    required String phone,
+    required String address,
+    required TimeOfDay openTime,
+    required TimeOfDay closeTime,
+    String? taxCode,
+    String? citizenIDNumber,
+    String? accountNumber,
+    String? bankCode,
+    String? citizenIDExpiredDate, // định dạng yyyy-MM-dd
+    File? logoFile,
+    File? backgroundFile,
+    File? menuFile,
+    File? citizenIDFront,
+    File? citizenIDBack,
+    File? registrationCert,
+    File? foodSafetyCert,
+  }) async {
+    var uri = Uri.parse('$baseUrl/shops/$shopId');
+    var request = http.MultipartRequest('PUT', uri);
+
+    // ⏰ Convert TimeOfDay -> HH:mm:ss
+    String formatTime(TimeOfDay t) =>
+        "${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}:00";
+
+    // 📝 Add form fields
+    request.fields.addAll({
+      'name': name,
+      'description': description,
+      'phone': phone,
+      'address': address,
+      'openTime': formatTime(openTime),
+      'closeTime': formatTime(closeTime),
+      'taxCode': taxCode ?? '',
+      'citizenIDNumber': citizenIDNumber ?? '',
+      'accountNumber': accountNumber ?? '',
+      'bankCode': bankCode ?? '',
+      'citizenIDExpiredDate': citizenIDExpiredDate ?? '',
+    });
+
+    // 📎 Helper to attach file
+    Future<void> attachFile(String fieldName, File? file) async {
+      if (file != null) {
+        request.files.add(await http.MultipartFile.fromPath(
+          fieldName,
+          file.path,
+          contentType: MediaType('image', 'jpeg'), // tùy định dạng
+        ));
+      }
+    }
+
+    await attachFile('logo', logoFile);
+    await attachFile('background', backgroundFile);
+    await attachFile('menu', menuFile);
+    await attachFile('citizenIDFront', citizenIDFront);
+    await attachFile('citizenIDBack', citizenIDBack);
+    await attachFile('registrationCert', registrationCert);
+    await attachFile('foodSafetyCert', foodSafetyCert);
+
+    // 📤 Gửi request
+    var streamedResponse = await request.send();
+    var response = await http.Response.fromStream(streamedResponse);
+
+    if (response.statusCode == 200) {
+      print("✅ Cập nhật shop thành công!");
+    } else {
+      print("❌ Lỗi cập nhật shop: ${response.statusCode}");
+      print("💥 Body: ${response.body}");
+      throw Exception("Cập nhật thất bại");
+    }
+  }
+
+
   Future<Map<String, int>> fetchOrderCounts(int shopId) async {
     try {
       final response =
@@ -269,19 +346,18 @@ class ShopService {
     }
   }
 
-  Future<ApiResponse> addDiscount({required Discount discount, required int productId,}) async {
+  Future<ApiResponse> addDiscount({
+    required Discount discount,
+    required int productId,
+  }) async {
     try {
-      var uri = Uri.parse('$baseUrl/discount/add?productId=$productId'); // Create Uri here directly
-      var request = http.Request('POST', uri);
+      final uri = Uri.parse('$baseUrl/discount/add?productId=$productId');
+      final request = http.Request('POST', uri);
 
-      // Convert startDate and endDate to ISO 8601 format (including 'T')
-      var startDateTimeFormatted = DateFormat('yyyy-MM-dd HH:mm:ss').parse(discount.startDate);
-      var endDateTimeFormatted = DateFormat('yyyy-MM-dd HH:mm:ss').parse(discount.endDate);
-
-      var body = jsonEncode({
-        'amount': discount.amount/100,
-        'startDate': startDateTimeFormatted.toIso8601String(),  // Convert to ISO 8601 string
-        'endDate': endDateTimeFormatted.toIso8601String(),     // Convert to ISO 8601 string
+      final body = jsonEncode({
+        'amount': discount.amount,  // Đã chia 100 trong controller rồi
+        'startDate': discount.startDate, // Định dạng yyyy-MM-dd
+        'endDate': discount.endDate,
       });
 
       request.body = body;
@@ -293,11 +369,11 @@ class ShopService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         return ApiResponse(success: true, message: "Discount added successfully!");
       } else {
-        print("Error: ${response.statusCode} - ${responseBody}");
+        print("❌ Error: ${response.statusCode} - $responseBody");
         return ApiResponse(success: false, message: "Failed to add discount.");
       }
     } catch (e) {
-      print("Error while adding discount: $e");
+      print("❌ Exception while adding discount: $e");
       return ApiResponse(success: false, message: "An error occurred while adding the discount.");
     }
   }
