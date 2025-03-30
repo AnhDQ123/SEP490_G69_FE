@@ -33,8 +33,8 @@ abstract class Routes {
   static const CHECKOUT = _Paths.CHECKOUT;
   static const SHOP_ADD_DISCOUNT = _Paths.SHOP_ADD_DISCOUNT;
   static const SHOP_VOUCHER_LIST = _Paths.SHOP_VOUCHER_LIST;
-  static const SHOP_ADD_VOUCHER = _Paths.SHOP_ADD_VOUCHER;
   static const SHOP_VOUCHER_ADD = _Paths.SHOP_VOUCHER_ADD;
+  static const SHOP_DETAIL = _Paths.SHOP_DETAIL;
 }
 
 abstract class _Paths {
@@ -69,6 +69,6 @@ abstract class _Paths {
   static const SHOP_DASHBOARD = '/shop-dashboard';
   static const SHOP_ADD_DISCOUNT = '/shop-add-discount';
   static const SHOP_VOUCHER_LIST = '/shop-voucher-list';
-  static const SHOP_ADD_VOUCHER = '/shop-add-voucher';
   static const SHOP_VOUCHER_ADD = '/shop-voucher-add';
+  static const SHOP_DETAIL = '/shop-detail';
 }

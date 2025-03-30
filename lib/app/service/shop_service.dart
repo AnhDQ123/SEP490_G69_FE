@@ -51,7 +51,7 @@ class ShopService {
     required File? citizenIDBack,
     required File? registrationCert,
     required File? foodSafetyCert,
-    required List<File> menu,
+    required File? menu,
     required String selectedBankBin,
     required String bankInfo,
   }) async {
@@ -117,11 +117,10 @@ class ShopService {
       ));
     }
 
-    // Upload danh sách ảnh menu
-    for (var image in menu) {
+    if (menu != null) {
       request.files.add(await http.MultipartFile.fromPath(
         'menu',
-        image.path,
+        menu.path,
         contentType: MediaType('image', 'jpeg'),
       ));
     }
@@ -152,6 +151,37 @@ class ShopService {
       print("❌ Lỗi khi gửi request: $e"); // ✅ In lỗi chi tiết lên console
       return ApiResponse(
           success: false, message: "Lỗi khi kết nối tới server.");
+    }
+  }
+
+  Future<ShopProfile> fetchShopProfile(int shopId) async {
+    final url = Uri.parse('$baseUrl/shops/$shopId');
+    print('👉 Đang gọi API: $url');
+
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      // ✅ Giải mã UTF-8 thủ công
+      final decodedBody = utf8.decode(response.bodyBytes);
+      final data = json.decode(decodedBody);
+
+      print('✅ Dữ liệu JSON nhận được: $data');
+
+      final shop = ShopProfile.fromJson(data);
+
+      print('🔍 Thông tin cửa hàng:');
+      print('📌 Tên: ${shop.name}');
+      print('📍 Địa chỉ: ${shop.address}');
+      print('📞 SĐT: ${shop.phone}');
+      print('🕖 Giờ mở cửa: ${shop.openTime} - ${shop.closeTime}');
+      print('🚚 Giao hàng: ${shop.isShipping ? "Có" : "Không"}');
+      print('👤 Chủ shop: ${shop.owner.profile.name} (${shop.owner.email})');
+      print('⭐ Đánh giá: ${shop.rate} | Lượt xem: ${shop.viewCount}');
+
+      return shop;
+    } else {
+      print('❌ Lỗi khi gọi API: ${response.statusCode}');
+      throw Exception('Không thể tải dữ liệu cửa hàng');
     }
   }
 
@@ -239,12 +269,7 @@ class ShopService {
     }
   }
 
-
-  // Add discount for a product
-  Future<ApiResponse> addDiscount({
-    required Discount discount,
-    required int productId,
-  }) async {
+  Future<ApiResponse> addDiscount({required Discount discount, required int productId,}) async {
     try {
       var uri = Uri.parse('$baseUrl/discount/add?productId=$productId'); // Create Uri here directly
       var request = http.Request('POST', uri);
@@ -336,6 +361,11 @@ class ShopService {
     } else {
       throw Exception('Failed to load vouchers');
     }
+  }
+
+  Future<ApiResponse> addVoucher(Voucher voucher) async {
+    // ...
+    return ApiResponse(success: true, message: "Voucher added successfully");
   }
 
   Future<ApiResponse> deleteVoucher(int voucherId) async {

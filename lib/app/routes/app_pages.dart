@@ -12,6 +12,8 @@ import '../modules/shop_add_discount/bindings/shop_add_discount_binding.dart';
 import '../modules/shop_add_discount/views/shop_add_discount_view.dart';
 import '../modules/shop_dashboard/bindings/shop_dashboard_binding.dart';
 import '../modules/shop_dashboard/views/shop_dashboard_view.dart';
+import '../modules/shop_detail/bindings/shop_detail_binding.dart';
+import '../modules/shop_detail/views/shop_detail_view.dart';
 import '../modules/shop_menu/bindings/shop_binding.dart';
 import '../modules/shop_menu/views/shop_view.dart';
 import '../modules/shop_product_discount_list/bindings/product_discount_binding.dart';
@@ -36,7 +38,7 @@ part 'app_routes.dart';
 class AppPages {
   AppPages._();
 
-  static const INITIAL = Routes.SHOP_REGISTER;
+  static const INITIAL = Routes.SHOP;
 
   static final routes = [
     GetPage(
@@ -109,10 +111,15 @@ class AppPages {
       page: () => ShopVoucherListView(),
       binding: ShopVoucherListBinding(),
     ),
-    // GetPage(
-    //   name: _Paths.SHOP_VOUCHER_ADD,
-    //   page: () => ShopVoucherAddView(),
-    //   binding: ShopVoucherAddBinding(),
-    // ),
+    GetPage(
+      name: _Paths.SHOP_VOUCHER_ADD,
+      page: () => ShopVoucherAddView(),
+      binding: ShopVoucherAddBinding(),
+    ),
+    GetPage(
+      name: _Paths.SHOP_DETAIL,
+      page: () => ShopDetailView(),
+      binding: ShopDetailBinding(),
+    ),
   ];
 }

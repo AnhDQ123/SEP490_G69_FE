@@ -9,7 +9,6 @@ class Voucher {
   final String startDate;
   final String endDate;
   final int maxUsagePerCustomer;
-  final bool isStackable;
   final String status;
   final int shopId;  // shopId cần thiết cho phân biệt voucher của cửa hàng
 
@@ -24,7 +23,6 @@ class Voucher {
     required this.startDate,
     required this.endDate,
     required this.maxUsagePerCustomer,
-    required this.isStackable,
     required this.status,
     required this.shopId,
   });
@@ -41,7 +39,6 @@ class Voucher {
       startDate: json['start_date'] ?? '',
       endDate: json['end_date'] ?? '',
       maxUsagePerCustomer: json['max_usage_per_customer'] ?? 0,
-      isStackable: json['is_stackable'] ?? false,
       status: json['status'] ?? '',
       shopId: json['shop_id'] ?? 0,
     );

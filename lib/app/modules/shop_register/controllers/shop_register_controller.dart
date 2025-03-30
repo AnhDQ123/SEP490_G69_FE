@@ -152,7 +152,7 @@ class ShopRegisterController extends GetxController {
 
         registrationCert: registrationCertificateImage.value,
         foodSafetyCert: safetyPolicyImage.value,
-        menu: productImage.value != null ? [productImage.value!] : [],
+        menu: productImage.value,
         taxCode: taxCode.value,
         selectedBankBin: selectedBankBin.value,
         bankInfo: bankInfo.value,

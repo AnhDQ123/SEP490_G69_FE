@@ -1,186 +1,210 @@
-import 'dart:io';
-import 'package:ffb_fe_flutter/app/modules/shop_detail/controllers/shop_detail_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'edit_form.dart';
+import '../controllers/shop_detail_controller.dart';
+import 'dart:io';
 
 class ShopDetailView extends GetView<ShopDetailController> {
-  const ShopDetailView({Key? key}) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Chi tiết cửa hàng'),
-        centerTitle: true,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.edit),
-            onPressed: () {
-              // Mở dialog chỉnh sửa
-              _showEditDialog(context);
-            },
-          ),
-        ],
-      ),
+      appBar: AppBar(title: Text('Chỉnh sửa thông tin')),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        // Đặt crossAxisAlignment.stretch để con trong Column mở rộng toàn bộ width
+        padding: EdgeInsets.all(16),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Card cho ảnh bìa
-            Card(
-              elevation: 3,
-              margin: const EdgeInsets.only(bottom: 16),
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Ảnh bìa',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Obx(() {
-                      final coverPath = controller.coverImagePath.value;
-                      if (coverPath == null) {
-                        return Container(
-                          height: 120,
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                            color: Colors.grey[300],
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: const Icon(
-                            Icons.image,
-                            size: 50,
-                            color: Colors.grey,
-                          ),
-                        );
-                      } else {
-                        return ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: Image.file(
-                            File(coverPath),
-                            fit: BoxFit.cover,
-                            height: 120,
-                            width: double.infinity,
-                          ),
-                        );
-                      }
-                    }),
-                  ],
-                ),
+            _buildCoverImagePicker(),
+            SizedBox(height: 16),
+            _buildLogoPicker(),
+            _buildTextField('Tên cửa hàng', controller.nameController),
+            _buildTimeRow('Giờ hoạt động'),
+            _buildTextField('Mô tả', controller.descriptionController, maxLines: 4),
+            _buildTextField('Địa chỉ', controller.addressController),
+            _buildDisabledField('Số điện thoại', controller.shop.phone),
+            _buildDisabledField('Email', controller.shop.owner.email),
+            SizedBox(height: 20),
+            _buildActionButtons(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCoverImagePicker() {
+    return Obx(() {
+      final file = controller.coverImage.value;
+      return Stack(
+        children: [
+          Container(
+            height: 180,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: file != null
+                    ? FileImage(file)
+                    : NetworkImage(controller.shop.backgroundImage) as ImageProvider,
+                fit: BoxFit.cover,
               ),
             ),
-            // Card cho logo cửa hàng
-            Card(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-                side: BorderSide(color: Colors.grey.shade300),
+          ),
+          Positioned(
+            top: 12,
+            right: 12,
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.black45,
+                borderRadius: BorderRadius.circular(16),
               ),
-              margin: const EdgeInsets.only(bottom: 16),
-              elevation: 0,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              child: InkWell(
+                onTap: controller.pickCoverImage,
                 child: Row(
                   children: [
-                    const Text(
-                      'Logo cửa hàng',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
-                    ),
-                    const Spacer(),
-                    Obx(() {
-                      final logoPath = controller.logoImagePath.value;
-                      return Stack(
-                        clipBehavior: Clip.none,
-                        children: [
-                          CircleAvatar(
-                            radius: 32,
-                            backgroundColor: Colors.grey.shade200,
-                            child: logoPath == null
-                                ? Icon(
-                              Icons.store,
-                              size: 32,
-                              color: Colors.grey.shade600,
-                            )
-                                : ClipOval(
-                              child: Image.file(
-                                File(logoPath),
-                                fit: BoxFit.cover,
-                                width: 64,
-                                height: 64,
-                              ),
-                            ),
-                          ),
-                        ],
-                      );
-                    }),
+                    Icon(Icons.edit, size: 14, color: Colors.white),
+                    SizedBox(width: 4),
+                    Text('Chỉnh sửa', style: TextStyle(color: Colors.white, fontSize: 12)),
                   ],
                 ),
               ),
             ),
-            // Các card thông tin khác
-            _buildReadOnlyCard('Tên cửa hàng', controller.storeName),
-            _buildReadOnlyCard('Giờ hoạt động', controller.operatingHours),
-            _buildReadOnlyCard('Mô tả', controller.description),
-            _buildReadOnlyCard('Địa chỉ', controller.address),
-            _buildReadOnlyCard('Số điện thoại', controller.phone),
-            _buildReadOnlyCard('Email', controller.email),
-          ],
-        ),
-      ),
-    );
+          ),
+        ],
+      );
+    });
   }
 
-  /// Hàm hiển thị card với text read-only (mỗi card sẽ có chiều rộng đầy đủ)
-  Widget _buildReadOnlyCard(String title, RxString value) {
-    return Card(
-      elevation: 3,
-      margin: const EdgeInsets.only(bottom: 16),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+  Widget _buildLogoPicker() {
+    return Obx(() {
+      final file = controller.logoImage.value;
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        child: Row(
           children: [
-            Text(
-              title,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
+            CircleAvatar(
+              radius: 40,
+              backgroundImage: file != null
+                  ? FileImage(file)
+                  : NetworkImage(controller.shop.logo),
+              backgroundColor: Colors.grey[200],
+            ),
+            SizedBox(width: 16),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Logo cửa hàng', style: TextStyle(fontSize: 16)),
+                TextButton.icon(
+                  onPressed: controller.pickLogoImage,
+                  icon: Icon(Icons.edit, size: 16),
+                  label: Text('Chỉnh sửa'),
+                ),
+              ],
+            ),
+          ],
+        ),
+      );
+    });
+  }
+
+  Widget _buildTimeRow(String label) {
+    return Obx(() {
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        child: Row(
+          children: [
+            Expanded(
+              child: GestureDetector(
+                onTap: () => _selectTime(true),
+                child: AbsorbPointer(
+                  child: TextField(
+                    controller: TextEditingController(
+                      text: controller.openTime.value.format(Get.context!),
+                    ),
+                    decoration: InputDecoration(labelText: '$label từ'),
+                  ),
+                ),
               ),
             ),
-            const SizedBox(height: 8),
-            Obx(() {
-              return Text(
-                value.value,
-                style: const TextStyle(fontSize: 16),
-              );
-            }),
+            SizedBox(width: 10),
+            Expanded(
+              child: GestureDetector(
+                onTap: () => _selectTime(false),
+                child: AbsorbPointer(
+                  child: TextField(
+                    controller: TextEditingController(
+                      text: controller.closeTime.value.format(Get.context!),
+                    ),
+                    decoration: InputDecoration(labelText: 'đến'),
+                  ),
+                ),
+              ),
+            ),
           ],
+        ),
+      );
+    });
+  }
+
+  Future<void> _selectTime(bool isOpenTime) async {
+    final current = isOpenTime ? controller.openTime.value : controller.closeTime.value;
+
+    final picked = await showTimePicker(
+      context: Get.context!,
+      initialTime: current,
+    );
+
+    if (picked != null) {
+      if (isOpenTime) {
+        controller.openTime.value = picked;
+      } else {
+        controller.closeTime.value = picked;
+      }
+    }
+  }
+
+  Widget _buildTextField(String label, TextEditingController controller, {int maxLines = 1}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: TextField(
+        controller: controller,
+        maxLines: maxLines,
+        decoration: InputDecoration(
+          labelText: label,
+          border: OutlineInputBorder(),
         ),
       ),
     );
   }
 
-  /// Khi bấm vào nút Edit, mở dialog chỉnh sửa
-  void _showEditDialog(BuildContext context) {
-    Get.dialog(
-      AlertDialog(
-        title: const Text('Chỉnh sửa thông tin'),
-        content: SingleChildScrollView(
-          child: EditForm(),
+  Widget _buildDisabledField(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: TextField(
+        enabled: false,
+        controller: TextEditingController(text: value),
+        decoration: InputDecoration(
+          labelText: label,
+          border: OutlineInputBorder(),
         ),
       ),
-      barrierDismissible: false,
+    );
+  }
+
+  Widget _buildActionButtons() {
+    return Row(
+      children: [
+        Expanded(
+          child: OutlinedButton(
+            onPressed: () => Get.back(),
+            child: Text('Huỷ bỏ'),
+          ),
+        ),
+        SizedBox(width: 10),
+        Expanded(
+          child: ElevatedButton(
+            onPressed: controller.onSave,
+            child: Text('Xác nhận'),
+          ),
+        ),
+      ],
     );
   }
 }

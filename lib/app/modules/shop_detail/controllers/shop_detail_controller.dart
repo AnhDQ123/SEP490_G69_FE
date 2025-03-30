@@ -1,41 +1,70 @@
+import 'dart:io';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'dart:io';
+
+import '../../../models/shop_profile.dart';
 
 class ShopDetailController extends GetxController {
-  // Thông tin text
-  final storeName = 'Cơm rang Minh Nhật'.obs;
-  final operatingHours = '7:00 - 22:00'.obs;
-  final description = 'Cơm ngon mỗi ngày!'.obs;
-  final address = '70 Trần Hưng Đạo, Smart City, Hà Nội, Việt Nam'.obs;
-  final phone = '******469'.obs;
-  final email = 'n*****@gmail.com'.obs;
+  late ShopProfile shop;
 
-  // Đường dẫn ảnh bìa và logo (RxnString cho phép null)
-  final coverImagePath = RxnString();
-  final logoImagePath = RxnString();
+  final nameController = TextEditingController();
+  final descriptionController = TextEditingController();
+  final addressController = TextEditingController();
 
-  // Hàm chọn ảnh bìa
-  Future<void> pickCoverImage(ImageSource source) async {
-    final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: source);
-    if (pickedFile != null) {
-      coverImagePath.value = pickedFile.path;
+  final Rx<File?> coverImage = Rx<File?>(null);
+  final Rx<File?> logoImage = Rx<File?>(null);
+
+  final Rx<TimeOfDay> openTime = Rx<TimeOfDay>(TimeOfDay(hour: 7, minute: 0));
+  final Rx<TimeOfDay> closeTime = Rx<TimeOfDay>(TimeOfDay(hour: 22, minute: 0));
+
+  @override
+  void onInit() {
+    super.onInit();
+    shop = Get.arguments as ShopProfile;
+
+    nameController.text = shop.name;
+    descriptionController.text = shop.description ?? '';
+    addressController.text = shop.address;
+
+    openTime.value = _parseTime(shop.openTime);
+    closeTime.value = _parseTime(shop.closeTime);
+  }
+
+  TimeOfDay _parseTime(String time) {
+    final parts = time.split(':');
+    return TimeOfDay(hour: int.parse(parts[0]), minute: int.parse(parts[1]));
+  }
+
+  Future<void> pickCoverImage() async {
+    final picked = await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (picked != null) {
+      coverImage.value = File(picked.path);
     }
   }
 
-  // Hàm chọn logo
-  Future<void> pickLogoImage(ImageSource source) async {
-    final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: source);
-    if (pickedFile != null) {
-      logoImagePath.value = pickedFile.path;
+  Future<void> pickLogoImage() async {
+    final picked = await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (picked != null) {
+      logoImage.value = File(picked.path);
     }
   }
 
-  // Hàm lưu thông tin (gửi API hoặc xử lý tuỳ ý)
-  void saveStoreInfo() {
-    // ...
-    // Thực hiện lưu dữ liệu lên server, local, v.v.
+  void onSave() {
+    print('✅ Lưu thông tin...');
+    print('Tên: ${nameController.text}');
+    print('Giờ mở: ${openTime.value.format(Get.context!)}');
+    print('Giờ đóng: ${closeTime.value.format(Get.context!)}');
+    print('Logo mới: ${logoImage.value?.path}');
+    print('Ảnh bìa mới: ${coverImage.value?.path}');
+    // TODO: gửi lên server
+  }
+
+  @override
+  void onClose() {
+    nameController.dispose();
+    descriptionController.dispose();
+    addressController.dispose();
+    super.onClose();
   }
 }

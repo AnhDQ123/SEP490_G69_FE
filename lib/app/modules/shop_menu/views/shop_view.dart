@@ -35,44 +35,76 @@ class ShopView extends GetView<ShopController> {
   }
 
   Widget _buildShopHeader() {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Row(
-          children: [
-            CircleAvatar(
-              backgroundColor: Colors.grey,
-              child: Icon(Icons.store, color: Colors.white),
-            ),
-            SizedBox(width: 10),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Cơm rang Minh Nhật',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                    overflow: TextOverflow.ellipsis, // Tránh tràn chữ
-                  ),
-                  Row(
-                    children: [
-                      ...List.generate(4, (index) => Icon(Icons.star, color: Colors.amber, size: 18)),
-                      Icon(Icons.star_half, color: Colors.amber, size: 18),
-                      SizedBox(width: 5),
-                      Text('8.5 (50+)', style: TextStyle(color: Colors.grey)),
-                    ],
-                  ),
-                ],
+    return Obx(() {
+      final shop = controller.shopInfo.value;
+
+      if (shop == null) {
+        return Center(child: CircularProgressIndicator());
+      }
+
+      return Card(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            children: [
+              CircleAvatar(
+                radius: 36,
+                backgroundImage: NetworkImage(shop.logo),
+                backgroundColor: Colors.grey[200],
               ),
-            ),
-            TextButton(
-              onPressed: () {},
-              child: Text('Chỉnh sửa'),
-            ),
-          ],
+              SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      shop.name,
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    SizedBox(height: 4),
+                    (shop.rate == 0)
+                        ? Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Chưa có đánh giá',
+                          style: TextStyle(color: Colors.grey),
+                        ),
+                        Text(
+                          '${shop.viewCount} lượt xem',
+                          style: TextStyle(color: Colors.grey, fontSize: 12),
+                        ),
+                      ],
+                    )
+                        : Row(
+                      children: [
+                        ...List.generate(
+                          shop.rate.floor(),
+                              (index) => Icon(Icons.star, color: Colors.amber, size: 18),
+                        ),
+                        if (shop.rate - shop.rate.floor() >= 0.5)
+                          Icon(Icons.star_half, color: Colors.amber, size: 18),
+                        SizedBox(width: 5),
+                        Text(
+                          '${shop.rate.toString()} (${shop.viewCount} lượt xem)',
+                          style: TextStyle(color: Colors.grey),
+                        ),
+                      ],
+                    )
+
+                  ],
+                ),
+              ),
+              TextButton(
+                onPressed: () => Get.toNamed(Routes.SHOP_DETAIL, arguments: shop),
+                child: Text('Chỉnh sửa'),
+              ),
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    });
   }
 
   Widget _buildToggleButtons() {
