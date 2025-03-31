@@ -13,6 +13,7 @@ class ImageDTO {
     required this.typeId,
   });
 
+  // Phương thức từ JSON
   factory ImageDTO.fromJson(Map<String, dynamic> json) {
     return ImageDTO(
       url: json['url'] ?? '',
@@ -21,5 +22,16 @@ class ImageDTO {
       id: json['id'] ?? 0,
       typeId: json['typeId'] ?? 0,
     );
+  }
+
+  // Phương thức chuyển đối tượng thành JSON
+  Map<String, dynamic> toJson() {
+    return {
+      'url': url,
+      'relatedId': relatedId,
+      'ownerId': ownerId,
+      'id': id,
+      'typeId': typeId,
+    };
   }
 }

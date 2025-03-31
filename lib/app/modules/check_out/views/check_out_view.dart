@@ -81,13 +81,29 @@ class CheckOutView extends GetView<CheckOutController> {
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
+              // onPressed: controller.isLoading.value || controller.order.value == null
+              //     ? null
+              //     : () async {
+              //   final order = controller.order.value!;
+              //   // await controller.placeOrder(order);
+              //   Get.toNamed('/qr-payment', arguments: order);
+              // },
+              // onPressed: controller.isLoading.value || controller.order.value == null
+              //     ? null
+              //     : () async {
+              //   final newOrder = await controller.placeOrder(controller.order.value!);
+              //   if (newOrder != null) {
+              //     Get.toNamed('/qr-payment', arguments: newOrder); // ✅ truyền đúng order đã có ID
+              //   }
+              // },
               onPressed: controller.isLoading.value || controller.order.value == null
                   ? null
-                  : () async {
+                  : () {
                 final order = controller.order.value!;
-                // await controller.placeOrder(order);
-                Get.toNamed('/qr-payment', arguments: order);
+                Get.toNamed('/qr-payment', arguments: order); // ✅ dùng lại order đã có sẵn
               },
+
+
               child: controller.isLoading.value
                   ? const CircularProgressIndicator(color: Colors.white)
                   : const Text("Đặt hàng", style: TextStyle(fontSize: 16)),

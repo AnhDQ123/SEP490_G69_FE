@@ -26,7 +26,7 @@ class HomeApiService extends GetConnect {
     } else {
       // Truy cập vào phần 'content' của response để lấy danh sách category
       final Map<String, dynamic> data = response.body;
-      final List<dynamic> rawData = data['content'];  // Truy cập 'content' chứa danh sách category
+      final List<dynamic> rawData = data['content'];
 
       // Map mỗi phần tử JSON thành đối tượng Category
       return rawData.map((json) => Category.fromJson(json)).toList();

@@ -19,6 +19,9 @@ class Order {
   final int shopId;      // ✅ Thêm
   final String? image;    // ✅ Thêm
 
+  final String? paymentProof;
+
+
   Order({
     required this.id,
     required this.shopName,
@@ -36,6 +39,8 @@ class Order {
     this.reason,
     required this.shopId,       // ✅ Gán vào constructor
     this.image,        // ✅ Gán vào constructor
+    this.paymentProof,
+
   });
 
   factory Order.fromJson(Map<String, dynamic> json) {
@@ -58,6 +63,8 @@ class Order {
       reason: json['reason'] ?? '',
       shopId: (json['shopId'] as int?) ?? 0,
       image: json['image'] as String?,          // ✅ Parse
+      paymentProof: json['paymentProof'] as String?,
+
     );
   }
 
@@ -79,6 +86,8 @@ class Order {
       'reason': reason,
       'shopId': shopId,         // ✅ Xuất ra JSON nếu cần
       'image': image,           // ✅ Xuất ra JSON nếu cần
+      'paymentProof': paymentProof,
+
     };
   }
 }
