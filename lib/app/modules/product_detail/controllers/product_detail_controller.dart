@@ -37,15 +37,7 @@ class ProductDetailController extends GetxController {
         quantity: 0,
         category: '',
         // discount: 0.0,
-        discount: [
-          Discount(
-            id: 1,
-            amount: 0.12,
-            startDate: DateTime.now(),
-            endDate: DateTime.now().add(Duration(days: 7)),
-            status: "ACTIVE",
-          ),
-        ],
+        discount: 0.0,  // Giảm giá là một giá trị double
         image: '',
         description: '',
         rate: 0.0,
@@ -71,16 +63,7 @@ class ProductDetailController extends GetxController {
         quantity: 1,
         category: '',         // Giá trị mặc định
         // discount: 0.12,        // Giá trị mặc định
-        discount: [
-          Discount(
-            id: 1,
-            amount: 0.12,
-            startDate: DateTime.now(),
-            endDate: DateTime.now().add(Duration(days: 7)),
-            status: "ACTIVE",
-          ),
-        ],
-
+        discount: 0.0,  // Giảm giá là một giá trị double
         image: 'https://images.squarespace-cdn.com/content/v1/53883795e4b016c956b8d243/1551438228969-H0FPV1FO3W5B0QL328AS/chup-anh-thuc-an-1.jpg',
         description: '',      // Giá trị mặc định
         rate: 5,
@@ -96,16 +79,7 @@ class ProductDetailController extends GetxController {
         quantity: 1,
         category: '',
         // discount: 0.12,
-        discount: [
-          Discount(
-            id: 1,
-            amount: 0.12,
-            startDate: DateTime.now(),
-            endDate: DateTime.now().add(Duration(days: 7)),
-            status: "ACTIVE",
-          ),
-        ],
-
+        discount: 0.0,  // Giảm giá là một giá trị double
         image: 'https://images.squarespace-cdn.com/content/v1/53883795e4b016c956b8d243/1551438228969-H0FPV1FO3W5B0QL328AS/chup-anh-thuc-an-1.jpg',
         description: '',
         rate: 5,
@@ -124,16 +98,7 @@ class ProductDetailController extends GetxController {
         quantity: 1,
         category: '',
         // discount: 0.12,
-        discount: [
-          Discount(
-            id: 1,
-            amount: 0.12,
-            startDate: DateTime.now(),
-            endDate: DateTime.now().add(Duration(days: 7)),
-            status: "ACTIVE",
-          ),
-        ],
-
+        discount: 0.0,  // Giảm giá là một giá trị double
         image: 'https://images.squarespace-cdn.com/content/v1/53883795e4b016c956b8d243/1551438228969-H0FPV1FO3W5B0QL328AS/chup-anh-thuc-an-1.jpg',
         description: '',
         rate: 5,
@@ -149,16 +114,7 @@ class ProductDetailController extends GetxController {
         quantity: 1,
         category: '',
         // discount: 0.12,
-        discount: [
-          Discount(
-            id: 1,
-            amount: 0.12,
-            startDate: DateTime.now(),
-            endDate: DateTime.now().add(Duration(days: 7)),
-            status: "ACTIVE",
-          ),
-        ],
-
+        discount: 0.0,  // Giảm giá là một giá trị double
         image: 'https://images.squarespace-cdn.com/content/v1/53883795e4b016c956b8d243/1551438228969-H0FPV1FO3W5B0QL328AS/chup-anh-thuc-an-1.jpg',
         description: '',
         rate: 5,

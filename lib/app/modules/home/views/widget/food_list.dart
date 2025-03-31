@@ -29,10 +29,9 @@ class FoodList extends StatelessWidget {
     // final double discount = product.discount;
     // final double newPrice = product.defaultPrice * (1 - discount);
     // Lấy giảm giá đầu tiên nếu có, hoặc mặc định 0
-    final double discountValue = product.discount.isNotEmpty
-        ? product.discount.first.amount
+    final double discountValue = product.discount > 0
+        ? product.discount
         : 0.0;
-
     final double newPrice = product.defaultPrice * (1 - discountValue);
 
 

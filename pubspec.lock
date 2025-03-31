@@ -705,7 +705,7 @@ packages:
       sha256: "801fd0b26f14a4a58ccb09d5892c3fbdeff209594300a542492cf13fba9d247a"
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.0"
+    version: "1.0.6"
   modal_bottom_sheet:
     dependency: "direct main"
     description:
@@ -721,7 +721,7 @@ packages:
       sha256: "5f5f15add4eeb6c7dcf9172314232657c6b1d002a45cca0ba46d955497645d5a"
       url: "https://pub.dev"
     source: hosted
-    version: "0.7.1"
+    version: "0.6.0"
   package_config:
     dependency: transitive
     description:

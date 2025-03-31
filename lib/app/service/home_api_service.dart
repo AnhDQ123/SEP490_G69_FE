@@ -50,9 +50,13 @@ class HomeApiService extends GetConnect {
       return Future.error('Error fetching popular products: ${response.statusText}');
     } else {
       final List<dynamic> rawData = response.body;
+      print('Dữ liệu trả về từ API: $rawData');  // In ra để kiểm tra trường discount
       return rawData.map((json) => Product.fromJson(json)).toList();
     }
   }
+
+
+
 
   Future<List<Product>> fetchFreshProducts({required int userId, int top = 10}) async {
     final response = await get('/api/product/getFresh/$userId?top=$top');

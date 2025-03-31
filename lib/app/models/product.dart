@@ -42,11 +42,15 @@ class Product {
       supplier: json['supplier'] ?? '',
       quantity: json['quantity'] ?? 0,
       category: json['category'] ?? '',
-      discount: json['discount'] ?? 0.0,
+      discount: (json['discount'] is List && (json['discount'] as List).isEmpty)  // Kiểm tra nếu discount là danh sách rỗng
+          ? 0.0  // Nếu là danh sách rỗng, gán discount là 0.0
+          : (json['discount'] is num)  // Nếu discount là kiểu num, chuyển thành double
+          ? (json['discount'] as num).toDouble()
+          : 0.0,  // Nếu không phải num, gán giá trị mặc định là 0.0
       image: json['image'] ?? '',
       description: json['description'] ?? '',
       rate: (json['rate'] as num?)?.toDouble() ?? 0.0,
-      shop: json['shop'] ?? json['shopName'] ?? json['supplier'] ?? '',
+      shop: json['shopName'] ?? json['supplier'] ?? '',
       defaultPrice: (json['defaultPrice'] as num?)?.toDouble() ?? 0.0,
       foodOptions: json['foodOption'] != null
           ? (json['foodOption'] as List)
@@ -55,6 +59,8 @@ class Product {
           : [],
     );
   }
+
+
 
   Map<String, dynamic> toJson() {
     return {

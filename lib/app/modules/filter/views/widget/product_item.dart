@@ -14,9 +14,8 @@ class ProductItem extends StatelessWidget {
     // final double discount = item.discount;
     // final bool hasDiscount = discount > 0;
     // final double finalPrice = hasDiscount ? originalPrice * (1 - discount) : originalPrice;
-    final double discount = item.discount.isNotEmpty
-        ? item.discount.first.amount
-        : 0.0;
+    final double discount = item.discount > 0 ? item.discount : 0.0;
+
 
     final bool hasDiscount = discount > 0;
     final double finalPrice = hasDiscount ? originalPrice * (1 - discount) : originalPrice;

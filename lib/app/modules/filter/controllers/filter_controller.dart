@@ -214,15 +214,21 @@ class FilterController extends GetxController {
     }
   }
 
-  // Gọi API lấy sản phẩm bán chạy (Popular)
+  // API lấy sản phẩm bán chạy (Popular)
   void fetchPopularProducts() async {
     try {
       final result = await _homeApiService.fetchPopularProducts();
+
+      // Kiểm tra dữ liệu trả về
+      print('📦 Loaded popular products: $result');
+
+      // Chuyển đổi dữ liệu trả về thành List<Product>
       products.assignAll(result.map((e) => Product.fromJson(e as Map<String, dynamic>)).toList());
     } catch (e) {
       Get.snackbar('Lỗi', 'Không thể tải sản phẩm bán chạy: $e');
     }
   }
+
 
   // Phương thức xoá filter: đặt filterCategory rỗng và lấy toàn bộ sản phẩm
   void removeCategoryFilter() async {

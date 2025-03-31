@@ -30,14 +30,14 @@ class UserViewShopDetailController extends GetxController {
   Future<void> fetchShopDetails(int shopId) async {
     try {
       isLoading(true);  // Bắt đầu loading
-      final shopData = await shopService.getShopById(shopId);  // Gọi API
+      final shopData = await shopService.fetchShopProfile(shopId);  // Gọi API
       // Cập nhật các thông tin shop sau khi lấy được dữ liệu
       shopName.value = shopData.name;
-      shopDescription.value = shopData.description;
+      shopDescription.value = shopData.description ?? '';
       shopRate.value = shopData.rate;
       shopLogo.value = shopData.logo;
       shopBackgroundImage.value = shopData.backgroundImage;
-      menuImage.value = shopData.menu;
+      menuImage.value = shopData.menu ?? '';
     } catch (e) {
       print('Error: $e');
     } finally {

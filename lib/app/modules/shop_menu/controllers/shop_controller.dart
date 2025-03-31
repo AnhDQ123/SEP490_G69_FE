@@ -9,7 +9,7 @@ class ShopController extends GetxController {
 
   var orderCounts = <String, int>{}.obs; // RxMap để lưu số lượng đơn
 
-  int shopId = 1;
+  int shopId = 8;
   var shopInfo = Rx<ShopProfile?>(null);
 
 

@@ -18,6 +18,16 @@ class ShopRegisterController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+
+    // Lấy `userId` từ `arguments` khi trang này được mở
+    var arguments = Get.arguments;
+    if (arguments != null && arguments['userId'] != null) {
+      userId.value = arguments['userId'].toString();
+      print("userId received: ${userId.value}");
+    } else {
+      print("userId not provided in arguments.");
+    }
+
     fetchBanks();
   }
 
@@ -63,6 +73,8 @@ class ShopRegisterController extends GetxController {
   var issuedDate = Rxn<DateTime>();
   var taxCode = ''.obs;
   var bankInfo = ''.obs;
+
+  var userId = ''.obs;
 
   final ImagePicker picker = ImagePicker();
 
@@ -131,7 +143,7 @@ class ShopRegisterController extends GetxController {
 
     try {
       var response = await ShopService().registerShop(
-        userId: "1",
+        userId: userId.value,  // Truyền `userId` động vào API
         //Step 1
         sellType: selectedService.value ?? "COOKED",
         //Step 2 không có input

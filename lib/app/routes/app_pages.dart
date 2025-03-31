@@ -56,10 +56,6 @@ import '../modules/user_profile/setting_logout/bindings/setting_logout_binding.d
 import '../modules/user_profile/setting_logout/views/setting_logout_view.dart';
 import '../modules/my_order/bindings/my_order_binding.dart';
 import '../modules/my_order/views/my_order_view.dart';
-import '../modules/productForm/bindings/product_form_binding.dart';
-import '../modules/productForm/views/product_form_view.dart';
-import '../modules/productListShop/bindings/product_list_shop_binding.dart';
-import '../modules/productListShop/views/product_list_shop_view.dart';
 import '../modules/product_detail/bindings/product_detail_binding.dart';
 import '../modules/product_detail/views/product_detail_view.dart';
 import '../modules/product_selection/bindings/product_selection_binding.dart';
@@ -98,7 +94,7 @@ part 'app_routes.dart';
 class AppPages {
   AppPages._();
 
-  static const INITIAL = Routes.LOGIN;
+  static const INITIAL = Routes.SHOP;
 
   static final routes = [
     GetPage(
