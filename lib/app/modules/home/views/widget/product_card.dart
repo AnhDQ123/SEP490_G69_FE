@@ -18,13 +18,17 @@ class ProductCard extends StatelessWidget {
   }) : super(key: key);
 
   String getFullImageUrl(String? imagePath) {
-    if (imagePath == null || imagePath.isEmpty) return "";
+    if (imagePath == null || imagePath.isEmpty) {
+      // Nếu không có imagePath, trả về URL mặc định hoặc URL hình ảnh mặc định
+      return "https://images.immediate.co.uk/production/volatile/sites/30/2020/08/chorizo-mozarella-gnocchi-bake-cropped-9ab73a3.jpg";
+    }
     if (imagePath.startsWith("http")) {
       return imagePath;
     } else {
       return "https://your-server-domain.com" + imagePath;
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
