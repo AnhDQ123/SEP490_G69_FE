@@ -31,16 +31,17 @@ class Voucher {
     return Voucher(
       id: json['voucher_id'] ?? 0,
       code: json['code'] ?? '',
-      discountType: json['discount_type'] ?? '',
-      discountValue: (json['discount_value'] as num?)?.toDouble() ?? 0.0,
-      minOrderValue: (json['min_order_value'] as num?)?.toDouble() ?? 0.0,
-      totalVouchers: json['total_vouchers'] ?? 0,
-      usedVouchers: json['used_vouchers'] ?? 0,
-      startDate: json['start_date'] ?? '',
-      endDate: json['end_date'] ?? '',
-      maxUsagePerCustomer: json['max_usage_per_customer'] ?? 0,
+      discountType: json['discountType'] ?? '',
+      discountValue: (json['discountValue'] as num?)?.toDouble() ?? 0.0,
+      minOrderValue: (json['minOrderValue'] as num?)?.toDouble() ?? 0.0,
+      totalVouchers: json['totalVouchers'] ?? 0,
+      usedVouchers: json['usedVouchers'] ?? 0,
+      startDate: json['startDate'] ?? '',
+      endDate: json['endDate'] ?? '',
+      maxUsagePerCustomer: json['maxUsagePerCustomer'] ?? 1,
       status: json['status'] ?? '',
-      shopId: json['shop_id'] ?? 0,
+      shopId: json['shopId'] ?? 0,
     );
   }
+
 }

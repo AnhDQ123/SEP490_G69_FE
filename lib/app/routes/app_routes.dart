@@ -35,6 +35,7 @@ abstract class Routes {
   static const SHOP_VOUCHER_LIST = _Paths.SHOP_VOUCHER_LIST;
   static const SHOP_VOUCHER_ADD = _Paths.SHOP_VOUCHER_ADD;
   static const SHOP_DETAIL = _Paths.SHOP_DETAIL;
+  static const SHOP_PRODUCT_LIST = _Paths.SHOP_PRODUCT_LIST;
 }
 
 abstract class _Paths {
@@ -71,4 +72,5 @@ abstract class _Paths {
   static const SHOP_VOUCHER_LIST = '/shop-voucher-list';
   static const SHOP_VOUCHER_ADD = '/shop-voucher-add';
   static const SHOP_DETAIL = '/shop-detail';
+  static const SHOP_PRODUCT_LIST = '/shop-product-list';
 }

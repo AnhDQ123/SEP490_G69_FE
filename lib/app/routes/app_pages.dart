@@ -18,6 +18,8 @@ import '../modules/shop_menu/bindings/shop_binding.dart';
 import '../modules/shop_menu/views/shop_view.dart';
 import '../modules/shop_product_discount_list/bindings/product_discount_binding.dart';
 import '../modules/shop_product_discount_list/views/product_discount_view.dart';
+import '../modules/shop_product_list/bindings/shop_product_list_binding.dart';
+import '../modules/shop_product_list/views/shop_product_list_view.dart';
 import '../modules/shop_register/bindings/shop_register_binding.dart';
 import '../modules/shop_register/views/shop_register_view.dart';
 import '../modules/shop_voucher_add/bindings/shop_voucher_add_binding.dart';
@@ -120,6 +122,11 @@ class AppPages {
       name: _Paths.SHOP_DETAIL,
       page: () => ShopDetailView(),
       binding: ShopDetailBinding(),
+    ),
+    GetPage(
+      name: _Paths.SHOP_PRODUCT_LIST,
+      page: () => ShopProductListView(),
+      binding: ShopProductListBinding(),
     ),
   ];
 }

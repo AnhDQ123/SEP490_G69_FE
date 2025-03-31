@@ -195,7 +195,7 @@ class ShopView extends GetView<ShopController> {
       crossAxisCount: 2,
       childAspectRatio: 2.5, // Điều chỉnh tỉ lệ để tránh overflow
       children: [
-        _buildGridItem(Icons.category, 'Sản phẩm', () => Get.toNamed(Routes.PRODUCT_LIST_SHOP)),
+        _buildGridItem(Icons.category, 'Sản phẩm', () => Get.toNamed(Routes.SHOP_PRODUCT_LIST)),
         _buildGridItem(Icons.pie_chart, 'Thống kê', () => Get.toNamed(Routes.SHOP_DASHBOARD)),
         _buildGridItem(Icons.percent, 'Giảm giá', () => Get.toNamed(Routes.PRODUCT_DISCOUNT)),
         _buildGridItem(Icons.description, 'Báo cáo', () {}),

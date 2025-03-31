@@ -300,7 +300,7 @@ class ShopService {
     }
   }
 
-  Future<List<ProductDiscount>> fetchProductsDiscountByShop(int shopId) async {
+  Future<List<ProductDiscount>> fetchProductsByShop(int shopId) async {
     final response = await http.get(Uri.parse('$baseUrl/product/shop/$shopId'));
 
     if (response.statusCode == 200) {
@@ -323,7 +323,7 @@ class ShopService {
         }
 
         // In log từng sản phẩm sau khi parse
-        print('Đang xử lý sản phẩm: ${item['name']}');
+        print('Đang xử lý sản phẩm: ${item['name']} - Trạng thái: ${item['status']}');
 
         return ProductDiscount(
           id: item['id'] ?? 0,
@@ -332,6 +332,7 @@ class ShopService {
           supplier: item['supplier'] ?? '',
           quantity: item['quantity'] ?? 0,
           category: item['category'] ?? '',
+          status: item['status'] ?? '',
           discount: discountList,  // Truyền discountList đã được parse đúng kiểu
           image: item['image'] ?? '',
           description: item['description'] ?? '',
@@ -346,10 +347,9 @@ class ShopService {
     }
   }
 
-  Future<ApiResponse> addDiscount({
-    required Discount discount,
-    required int productId,
-  }) async {
+
+  ///Discount
+  Future<ApiResponse> addDiscount({required Discount discount,required int productId}) async {
     try {
       final uri = Uri.parse('$baseUrl/discount/add?productId=$productId');
       final request = http.Request('POST', uri);
@@ -414,6 +414,8 @@ class ShopService {
     }
   }
 
+
+  ///Voucher
   Future<List<Voucher>> fetchVouchersByShop(int shopId) async {
     final response = await http.get(
       Uri.parse('$baseUrl/vouchers/shop/$shopId'),  // API route mới cho voucher theo shop
@@ -440,23 +442,88 @@ class ShopService {
   }
 
   Future<ApiResponse> addVoucher(Voucher voucher) async {
-    // ...
-    return ApiResponse(success: true, message: "Voucher added successfully");
-  }
-
-  Future<ApiResponse> deleteVoucher(int voucherId) async {
     try {
-      final response = await http.delete(Uri.parse('$baseUrl/vouchers/$voucherId'));
+      final uri = Uri.parse('$baseUrl/vouchers');
+
+      final body = jsonEncode({
+        'code': voucher.code,
+        'discountType': voucher.discountType,
+        'discountValue': voucher.discountValue,
+        'minOrderValue': voucher.minOrderValue,
+        'totalVouchers': voucher.totalVouchers,
+        'usedVouchers': voucher.usedVouchers,
+        'startDate': voucher.startDate,
+        'endDate': voucher.endDate,
+        'status': voucher.status,
+        'maxUsagePerCustomer': voucher.maxUsagePerCustomer,
+        'shopId': voucher.shopId,
+      });
+
+      final response = await http.post(
+        uri,
+        body: body,
+        headers: {'Content-Type': 'application/json'},
+      );
 
       if (response.statusCode == 200) {
-        return ApiResponse(success: true, message: "Huỷ thành công");
+        return ApiResponse(success: true, message: 'Voucher đã được tạo');
       } else {
-        return ApiResponse(success: false, message: "Xoá thất bại (${response.statusCode})");
+        return ApiResponse(success: false, message: 'Tạo thất bại: ${response.body}');
       }
     } catch (e) {
-      return ApiResponse(success: false, message: "Lỗi khi xoá: $e");
+      return ApiResponse(success: false, message: 'Lỗi: $e');
     }
   }
+
+  Future<ApiResponse> updateVoucher(String code, Voucher voucher) async {
+    try {
+      final uri = Uri.parse('$baseUrl/vouchers/$code');
+
+      final body = jsonEncode({
+        'code': voucher.code,
+        'discountType': voucher.discountType,
+        'discountValue': voucher.discountValue,
+        'minOrderValue': voucher.minOrderValue,
+        'totalVouchers': voucher.totalVouchers,
+        'usedVouchers': voucher.usedVouchers,
+        'startDate': voucher.startDate, // "2025-03-30"
+        'endDate': voucher.endDate,
+        'status': voucher.status,
+        'maxUsagePerCustomer': voucher.maxUsagePerCustomer,
+        // ⚠️ Không cần gửi 'isStackable'
+      });
+
+      final response = await http.put(
+        uri,
+        body: body,
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      if (response.statusCode == 200) {
+        return ApiResponse(success: true, message: 'Voucher đã được cập nhật');
+      } else {
+        return ApiResponse(success: false, message: 'Lỗi: ${response.body}');
+      }
+    } catch (e) {
+      return ApiResponse(success: false, message: 'Lỗi: $e');
+    }
+  }
+
+  Future<ApiResponse> deleteVoucher(String code) async {
+    try {
+      final uri = Uri.parse('$baseUrl/vouchers/$code');
+      final response = await http.delete(uri);
+
+      if (response.statusCode == 204) {
+        return ApiResponse(success: true, message: 'Voucher đã xoá');
+      } else {
+        return ApiResponse(success: false, message: 'Xoá thất bại: ${response.body}');
+      }
+    } catch (e) {
+      return ApiResponse(success: false, message: 'Lỗi: $e');
+    }
+  }
+
 
 }
 

@@ -10,6 +10,7 @@ class ProductDiscount {
   final String supplier;
   int quantity;
   final String category;
+  final String status;
   final List<Discount> discount;  // Danh sách các đợt giảm giá
   final String image;
   final String description;
@@ -25,6 +26,7 @@ class ProductDiscount {
     required this.supplier,
     required this.quantity,
     required this.category,
+    required this.status,
     required this.discount,
     required this.image,
     required this.description,
@@ -42,6 +44,7 @@ class ProductDiscount {
       supplier: json['supplier'] ?? '',
       quantity: json['quantity'] ?? 0,
       category: json['category'] ?? '',
+      status: json['status'] ?? '',
       discount: json['discount'] != null
           ? (json['discount'] as List)
           .map((item) => Discount.fromJson(item))

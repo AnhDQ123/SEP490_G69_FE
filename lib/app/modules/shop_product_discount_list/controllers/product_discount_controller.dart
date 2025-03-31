@@ -35,7 +35,7 @@ class ProductDiscountController extends GetxController {
 
   Future<void> fetchProducts() async {
     try {
-      final products = await shopService.fetchProductsDiscountByShop(1);
+      final products = await shopService.fetchProductsByShop(1);
 
       _originalActiveProducts.clear();
       _originalScheduledProducts.clear();
