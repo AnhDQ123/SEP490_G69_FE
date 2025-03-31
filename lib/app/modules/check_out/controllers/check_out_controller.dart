@@ -47,22 +47,47 @@ class CheckOutController extends GetxController {
 
 
   /// ✅ Đặt hàng
-  Future<void> placeOrder(Order order) async {
+  // Future<void> placeOrder(Order order) async {
+  //   try {
+  //     isLoading.value = true;
+  //     final createdOrders = await orderService.createOrder(order);
+  //     if (createdOrders.isNotEmpty) {
+  //       Get.snackbar('Thành công', 'Đặt hàng thành công!',
+  //           snackPosition: SnackPosition.BOTTOM);
+  //       orders.assignAll(createdOrders);
+  //     } else {
+  //       Get.snackbar('Lỗi', 'Không tạo được đơn hàng',
+  //           snackPosition: SnackPosition.BOTTOM);
+  //     }
+  //   } catch (e) {
+  //     Get.snackbar('Lỗi', e.toString(), snackPosition: SnackPosition.BOTTOM);
+  //   } finally {
+  //     isLoading.value = false;
+  //   }
+  // }
+
+  Future<Order?> placeOrder(Order orderToPlace) async {
     try {
       isLoading.value = true;
-      final createdOrders = await orderService.createOrder(order);
+      final createdOrders = await orderService.createOrder(orderToPlace);
       if (createdOrders.isNotEmpty) {
+        final newOrder = createdOrders.first;
+        order.value = newOrder; // ✅ cập nhật lại order hiện tại
+        orders.assignAll(createdOrders);
         Get.snackbar('Thành công', 'Đặt hàng thành công!',
             snackPosition: SnackPosition.BOTTOM);
-        orders.assignAll(createdOrders);
+        return newOrder; // ✅ trả về đơn đã tạo
       } else {
         Get.snackbar('Lỗi', 'Không tạo được đơn hàng',
             snackPosition: SnackPosition.BOTTOM);
+        return null;
       }
     } catch (e) {
       Get.snackbar('Lỗi', e.toString(), snackPosition: SnackPosition.BOTTOM);
+      return null;
     } finally {
       isLoading.value = false;
     }
   }
+
 }

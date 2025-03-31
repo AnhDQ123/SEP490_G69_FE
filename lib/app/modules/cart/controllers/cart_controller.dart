@@ -10,6 +10,7 @@ import '../../../models/cart_item_option.dart';
 import '../../../models/order.dart';
 import '../../../models/product.dart';
 import '../../../routes/app_pages.dart';
+import '../../../service/notification_service.dart';
 import '../../../service/product_detail_service.dart';
 
 class CartController extends GetxController {
@@ -182,6 +183,16 @@ class CartController extends GetxController {
 
       carts.assignAll(cartData);
 
+      // ✅ Đếm tổng sản phẩm để gửi notification
+      int totalItems = 0;
+      for (var shop in cartData) {
+        totalItems += shop.cartItemDTOList.length;
+      }
+
+      if (totalItems > 0) {
+        await NotificationService.showCartReminderNotification(totalItems);
+      }
+
       for (var shop in carts) {
         for (var item in shop.cartItemDTOList) {
           try {
@@ -207,6 +218,9 @@ class CartController extends GetxController {
       isLoading(false);
       print("✅ Đã kết thúc fetchCart(), đóng loading");
     }
+
+
+
   }
 
   void toggleSelectAll(bool isSelected) {
@@ -308,10 +322,19 @@ class CartController extends GetxController {
       print("📦 Đang gửi Order: ${newOrder.toJson()}");
 
       // ✅ Gọi API để lưu đơn hàng – chỉ 1 lần
-      await OrderService().createOrder(newOrder);
+      // await OrderService().createOrder(newOrder);
+      //
+      // // ✅ Truyền lại `newOrder` (đầy đủ items) sang CheckOutView
+      // Get.toNamed(Routes.CHECK_OUT, arguments: newOrder);
+      final createdOrders = await OrderService().createOrder(newOrder);
 
-      // ✅ Truyền lại `newOrder` (đầy đủ items) sang CheckOutView
-      Get.toNamed(Routes.CHECK_OUT, arguments: newOrder);
+      if (createdOrders.isNotEmpty) {
+        final createdOrder = createdOrders.first;
+        Get.toNamed(Routes.CHECK_OUT, arguments: createdOrder); // dùng đơn đã được gán id từ backend
+      } else {
+        Get.snackbar("Lỗi", "Không tạo được đơn hàng");
+      }
+
     } catch (e) {
       print("❌ Lỗi trong việc tạo đơn hàng: $e");
       Get.snackbar("Lỗi", "Không thể tạo đơn hàng, vui lòng thử lại",

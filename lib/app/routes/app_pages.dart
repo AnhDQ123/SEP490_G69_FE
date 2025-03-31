@@ -42,8 +42,16 @@ import '../modules/return_order_detail_page/bindings/return_order_detail_page_bi
 import '../modules/return_order_detail_page/views/return_order_detail_page_view.dart';
 import '../modules/search_screen/bindings/search_screen_binding.dart';
 import '../modules/search_screen/views/search_screen_view.dart';
+import '../modules/send_report/bindings/send_report_binding.dart';
+import '../modules/send_report/views/send_report_view.dart';
 import '../modules/shop_order/bindings/shop_order_binding.dart';
 import '../modules/shop_order/views/shop_order_view.dart';
+import '../modules/shop_profile/bindings/shop_profile_binding.dart';
+import '../modules/shop_profile/views/shop_profile_view.dart';
+import '../modules/shop_report/bindings/shop_report_binding.dart';
+import '../modules/shop_report/views/shop_report_view.dart';
+import '../modules/shop_report_list/bindings/shop_report_list_binding.dart';
+import '../modules/shop_report_list/views/shop_report_list_view.dart';
 import '../modules/user_profile/change_password/bindings/change_password_binding.dart';
 import '../modules/user_profile/change_password/views/change_password_view.dart';
 import '../modules/user_profile/edit_profile/bindings/edit_profile_binding.dart';
@@ -52,6 +60,8 @@ import '../modules/user_profile/profile/bindings/profile_binding.dart';
 import '../modules/user_profile/profile/views/profile_view.dart';
 import '../modules/user_profile/setting_logout/bindings/setting_logout_binding.dart';
 import '../modules/user_profile/setting_logout/views/setting_logout_view.dart';
+import '../modules/user_view_shop_detail/bindings/user_view_shop_detail_binding.dart';
+import '../modules/user_view_shop_detail/views/user_view_shop_detail_view.dart';
 import '../modules/voucher_list/bindings/voucher_list_binding.dart';
 import '../modules/voucher_list/views/voucher_list_view.dart';
 
@@ -187,6 +197,31 @@ class AppPages {
       name: _Paths.SEARCH_SCREEN,
       page: () => const SearchScreenView(),
       binding: SearchScreenBinding(),
+    ),
+    GetPage(
+      name: _Paths.SHOP_PROFILE,
+      page: () => const ShopProfileView(),
+      binding: ShopProfileBinding(),
+    ),
+    GetPage(
+      name: _Paths.USER_VIEW_SHOP_DETAIL,
+      page: () => const UserViewShopDetailView(),
+      binding: UserViewShopDetailBinding(),
+    ),
+    GetPage(
+      name: _Paths.SHOP_REPORT,
+      page: () => ShopReportView(),
+      binding: ShopReportBinding(),
+    ),
+    GetPage(
+      name: _Paths.SEND_REPORT,
+      page: () => SendReportView(),
+      binding: SendReportBinding(),
+    ),
+    GetPage(
+      name: _Paths.SHOP_REPORT_LIST,
+      page: () =>  ShopReportListView(),
+      binding: ShopReportListBinding(),
     ),
   ];
 }

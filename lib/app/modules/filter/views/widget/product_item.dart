@@ -11,9 +11,16 @@ class ProductItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final double originalPrice = item.defaultPrice;
-    final double discount = item.discount;
+    // final double discount = item.discount;
+    // final bool hasDiscount = discount > 0;
+    // final double finalPrice = hasDiscount ? originalPrice * (1 - discount) : originalPrice;
+    final double discount = item.discount.isNotEmpty
+        ? item.discount.first.amount
+        : 0.0;
+
     final bool hasDiscount = discount > 0;
     final double finalPrice = hasDiscount ? originalPrice * (1 - discount) : originalPrice;
+
 
     return InkWell(
       onTap: () {

@@ -1,6 +1,8 @@
 
 import 'package:ffb_fe_flutter/app/models/food_option_model.dart';
 
+import 'discount.dart';
+
 class Product {
   final int id;
   final String name;
@@ -8,7 +10,8 @@ class Product {
   final String supplier;
   int quantity;
   final String category;
-  final double discount;
+  // final double discount;
+  final List<Discount> discount;
   final String image;
   final String description;
   final double rate;
@@ -40,7 +43,8 @@ class Product {
       supplier: json['supplier'] ?? '',
       quantity: json['quantity'] ?? 0,
       category: json['category'] ?? '',
-      discount: (json['discount'] as num?)?.toDouble() ?? 0.0,
+      // discount: (json['discount'] as num?)?.toDouble() ?? 0.0,
+      discount: (json['discount'] as List?)?.map((e) => Discount.fromJson(e)).toList() ?? [],
       image: json['image'] ?? '',
       description: json['description'] ?? '',
       rate: (json['rate'] as num?)?.toDouble() ?? 0.0,

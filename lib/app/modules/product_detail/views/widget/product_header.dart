@@ -258,14 +258,14 @@ class ProductHeader extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
-                  children: const [
-                    Icon(Icons.format_size, size: 18, color: Color.fromRGBO(212, 163, 115, 1)),
-                    SizedBox(width: 6),
-                    Text(
-                      'Chọn Size:',
-                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-                    ),
-                  ],
+                  // children: const [
+                  //   Icon(Icons.format_size, size: 18, color: Color.fromRGBO(212, 163, 115, 1)),
+                  //   SizedBox(width: 6),
+                  //   // Text(
+                  //   //   'Chọn Size:',
+                  //   //   style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                  //   // ),
+                  // ],
                 ),
                 const SizedBox(height: 4),
                 Wrap(

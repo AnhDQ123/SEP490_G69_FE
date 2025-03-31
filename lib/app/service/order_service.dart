@@ -87,6 +87,48 @@ class OrderService {
   }
 
   /// 🛒 Tạo đơn hàng mới
+  // Future<List<Order>> createOrder(Order order) async {
+  //   try {
+  //     final url = Uri.parse('$baseUrl/add');
+  //     final body = jsonEncode(order.toJson());
+  //
+  //     final response = await http.post(
+  //       url,
+  //       headers: {'Content-Type': 'application/json'},
+  //       body: body,
+  //     );
+  //
+  //     print("🔥 [POST] $url");
+  //     print("🔥 STATUS: ${response.statusCode}");
+  //     print("🔥 BODY: ${response.body}");
+  //
+  //     if (response.statusCode == 200 && response.body.isNotEmpty) {
+  //       final List<dynamic> jsonList = json.decode(response.body);
+  //       print("📜 Response from server: $jsonList");
+  //
+  //       if (jsonList.isNotEmpty) {
+  //         var responseBody = jsonList[0];
+  //         int? orderId = responseBody['orderId']; // Chắc chắn rằng orderId không phải là null
+  //
+  //         if (orderId == null) {
+  //           throw Exception('Invalid orderId returned from server');
+  //         }
+  //
+  //         // Tạo Order và trả lại
+  //         return [Order.fromJson(responseBody)];
+  //       } else {
+  //         throw Exception('Order creation failed - empty response');
+  //       }
+  //     } else {
+  //       throw Exception('Unable to create order');
+  //     }
+  //
+  //   } catch (e) {
+  //     print("❌ Error in createOrder: $e");
+  //     rethrow;
+  //   }
+  // }
+
   Future<List<Order>> createOrder(Order order) async {
     try {
       final url = Uri.parse('$baseUrl/add');
@@ -108,27 +150,46 @@ class OrderService {
 
         if (jsonList.isNotEmpty) {
           var responseBody = jsonList[0];
-          int? orderId = responseBody['orderId']; // Chắc chắn rằng orderId không phải là null
+          int? orderId = responseBody['orderId'];
 
           if (orderId == null) {
             throw Exception('Invalid orderId returned from server');
           }
 
-          // Tạo Order và trả lại
-          return [Order.fromJson(responseBody)];
+          // ✅ Ghép lại thông tin đơn hàng gốc
+          Order mergedOrder = Order(
+            id: orderId,
+            shopId: order.shopId,
+            shopName: order.shopName,
+            ownerId: order.ownerId,
+            shipperId: order.shipperId,
+            shipMethodId: order.shipMethodId,
+            paymentMethodId: order.paymentMethodId,
+            voucherId: order.voucherId,
+            voucherAmount: order.voucherAmount,
+            address: order.address,
+            total: (responseBody['total'] as num?)?.toDouble() ?? order.total,
+            createdAt: DateTime.now(),
+            status: responseBody['status'] ?? order.status,
+            items: order.items,
+            image: order.image,
+            reason: order.reason,
+          );
+
+          print("✅ Order sau khi ghép: ${mergedOrder.toJson()}");
+
+          return [mergedOrder];
         } else {
           throw Exception('Order creation failed - empty response');
         }
       } else {
         throw Exception('Unable to create order');
       }
-
     } catch (e) {
       print("❌ Error in createOrder: $e");
       rethrow;
     }
   }
-
 
 
 
@@ -290,5 +351,54 @@ class OrderService {
       rethrow;
     }
   }
+
+  /// 📱 Tạo mã QR từ đơn hàng và shop
+  Future<String?> generateQrCode(int orderId, int shopId) async {
+    try {
+      final url = Uri.parse('$baseUrl/generateQr/$orderId/$shopId');
+      final response = await http.get(url);
+
+      print("📲 [GET] $url");
+      print("🔥 STATUS: ${response.statusCode}");
+      print("🔥 BODY: ${response.body}");
+
+      if (response.statusCode == 200 && response.body.isNotEmpty) {
+        return response.body;
+      } else {
+        print("⚠️ Không thể tạo QR: ${response.statusCode}");
+        return null;
+      }
+    } catch (e) {
+      print("❌ Lỗi generateQrCode: $e");
+      return null;
+    }
+  }
+
+  /// 📤 Gửi ảnh bằng chứng thanh toán
+  Future<void> uploadPaymentProof(int orderId, File imageFile) async {
+    try {
+      final uri = Uri.parse('$baseUrl/updatePaymentProof/$orderId');
+
+      final request = http.MultipartRequest('POST', uri)
+        ..files.add(await http.MultipartFile.fromPath('paymentProof', imageFile.path));
+
+      final streamedResponse = await request.send();
+      final response = await http.Response.fromStream(streamedResponse);
+
+      print("📤 [POST] $uri");
+      print("🔥 STATUS: ${response.statusCode}");
+      print("🔥 BODY: ${response.body}");
+
+      if (response.statusCode != 200) {
+        throw Exception("❌ Không thể upload bằng chứng thanh toán");
+      }
+    } catch (e) {
+      print("❌ Lỗi uploadPaymentProof: $e");
+      rethrow;
+    }
+  }
+
+
+
 }
 

@@ -33,6 +33,11 @@ abstract class Routes {
   static const ADD_VOUCHER = _Paths.ADD_VOUCHER;
   static const QR_PAYMENT = _Paths.QR_PAYMENT;
   static const SEARCH_SCREEN = _Paths.SEARCH_SCREEN;
+  static const SHOP_PROFILE = _Paths.SHOP_PROFILE;
+  static const USER_VIEW_SHOP_DETAIL = _Paths.USER_VIEW_SHOP_DETAIL;
+  static const SHOP_REPORT = _Paths.SHOP_REPORT;
+  static const SEND_REPORT = _Paths.SEND_REPORT;
+  static const SHOP_REPORT_LIST = _Paths.SHOP_REPORT_LIST;
 }
 
 abstract class _Paths {
@@ -67,4 +72,9 @@ abstract class _Paths {
   static const ADD_VOUCHER = '/add-voucher';
   static const QR_PAYMENT = '/qr-payment';
   static const SEARCH_SCREEN = '/search-screen';
+  static const SHOP_PROFILE = '/shop-profile';
+  static const USER_VIEW_SHOP_DETAIL = '/user-view-shop-detail';
+  static const SHOP_REPORT = '/shop-report';
+  static const SEND_REPORT = '/send-report';
+  static const SHOP_REPORT_LIST = '/shop-report-list';
 }
