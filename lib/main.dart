@@ -5,6 +5,7 @@ import 'package:path_provider/path_provider.dart';
 import 'app/routes/app_pages.dart';
 import 'app/service/shop_service.dart';
 import 'app/base/base_common.dart';
+import 'app/service/notification_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

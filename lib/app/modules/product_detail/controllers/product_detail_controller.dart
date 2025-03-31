@@ -7,6 +7,7 @@ import '../../../base/base_common.dart';
 import '../../../models/cart.dart';
 import '../../../models/cart_item.dart';
 import '../../../models/cart_item_option.dart';
+import '../../../models/discount.dart';
 
 class ProductDetailController extends GetxController {
   var _product = Rxn<Product>();
@@ -35,7 +36,16 @@ class ProductDetailController extends GetxController {
         supplier: '',
         quantity: 0,
         category: '',
-        discount: 0.0,
+        // discount: 0.0,
+        discount: [
+          Discount(
+            id: 1,
+            amount: 0.12,
+            startDate: DateTime.now(),
+            endDate: DateTime.now().add(Duration(days: 7)),
+            status: "ACTIVE",
+          ),
+        ],
         image: '',
         description: '',
         rate: 0.0,
@@ -60,7 +70,17 @@ class ProductDetailController extends GetxController {
         supplier: '',
         quantity: 1,
         category: '',         // Giá trị mặc định
-        discount: 0.12,        // Giá trị mặc định
+        // discount: 0.12,        // Giá trị mặc định
+        discount: [
+          Discount(
+            id: 1,
+            amount: 0.12,
+            startDate: DateTime.now(),
+            endDate: DateTime.now().add(Duration(days: 7)),
+            status: "ACTIVE",
+          ),
+        ],
+
         image: 'https://images.squarespace-cdn.com/content/v1/53883795e4b016c956b8d243/1551438228969-H0FPV1FO3W5B0QL328AS/chup-anh-thuc-an-1.jpg',
         description: '',      // Giá trị mặc định
         rate: 5,
@@ -75,7 +95,17 @@ class ProductDetailController extends GetxController {
         supplier: '',
         quantity: 1,
         category: '',
-        discount: 0.12,
+        // discount: 0.12,
+        discount: [
+          Discount(
+            id: 1,
+            amount: 0.12,
+            startDate: DateTime.now(),
+            endDate: DateTime.now().add(Duration(days: 7)),
+            status: "ACTIVE",
+          ),
+        ],
+
         image: 'https://images.squarespace-cdn.com/content/v1/53883795e4b016c956b8d243/1551438228969-H0FPV1FO3W5B0QL328AS/chup-anh-thuc-an-1.jpg',
         description: '',
         rate: 5,
@@ -93,7 +123,17 @@ class ProductDetailController extends GetxController {
         supplier: '',
         quantity: 1,
         category: '',
-        discount: 0.12,
+        // discount: 0.12,
+        discount: [
+          Discount(
+            id: 1,
+            amount: 0.12,
+            startDate: DateTime.now(),
+            endDate: DateTime.now().add(Duration(days: 7)),
+            status: "ACTIVE",
+          ),
+        ],
+
         image: 'https://images.squarespace-cdn.com/content/v1/53883795e4b016c956b8d243/1551438228969-H0FPV1FO3W5B0QL328AS/chup-anh-thuc-an-1.jpg',
         description: '',
         rate: 5,
@@ -108,7 +148,17 @@ class ProductDetailController extends GetxController {
         supplier: '',
         quantity: 1,
         category: '',
-        discount: 0.12,
+        // discount: 0.12,
+        discount: [
+          Discount(
+            id: 1,
+            amount: 0.12,
+            startDate: DateTime.now(),
+            endDate: DateTime.now().add(Duration(days: 7)),
+            status: "ACTIVE",
+          ),
+        ],
+
         image: 'https://images.squarespace-cdn.com/content/v1/53883795e4b016c956b8d243/1551438228969-H0FPV1FO3W5B0QL328AS/chup-anh-thuc-an-1.jpg',
         description: '',
         rate: 5,
@@ -143,7 +193,7 @@ class ProductDetailController extends GetxController {
   void fetchProductData() async {
     final productIdArg = Get.arguments;
     if (productIdArg == null) {
-      print("Error: Product ID is null. Cannot fetch product data.");
+      print("❌ Error: Product ID is null. Cannot fetch product data.");
       return;
     }
     final String productId = productIdArg.toString();
@@ -152,6 +202,7 @@ class ProductDetailController extends GetxController {
       Product detail = await apiService.getProductDetail(productId);
       _product.value = detail;
 
+      // 🧩 Mapping Extra Options
       extraOptions.assignAll(
         detail.foodOptions
             .where((option) => option.typeId == 1)
@@ -167,12 +218,22 @@ class ProductDetailController extends GetxController {
             .toList(),
       );
 
-      List<Product> similar = await apiService.getSimilarProducts(detail.name);
+      // ✂️ Rút gọn từ khóa để gọi similar
+      final keyword = extractKeyword(detail.name);
+      print("🟢 Gọi API tìm similar với keyword: $keyword");
+      List<Product> similar = await apiService.getSimilarProducts(keyword);
+
+      print("📦 Similar products loaded: ${similar.length}");
+      for (var p in similar) {
+        print("🔍 Product: ${p.name}, price: ${p.defaultPrice}, shop: ${p.shop}");
+      }
+
       similarProducts.assignAll(similar);
     } catch (e) {
-      print("Error fetching product data: $e");
+      print("❌ Error fetching product data: $e");
     }
   }
+
 
   void incrementQuantity() {
     quantity.value++;
@@ -335,4 +396,10 @@ class ProductDetailController extends GetxController {
   void goToShop() {
     print("Đi đến trang Shop");
   }
+
+  String extractKeyword(String fullName) {
+    final words = fullName.trim().split(RegExp(r"\s+"));
+    return words.length > 1 ? "${words[0]} ${words[1]}" : words[0];
+  }
+
 }

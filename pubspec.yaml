@@ -32,6 +32,8 @@ dependencies:
     sdk: flutter
   image_picker: ^1.1.2
   path_provider: ^2.1.5
+  permission_handler: ^11.4.0
+  share_plus:
   fl_chart: ^0.70.2
   url_launcher: ^6.0.10  # Nếu bạn muốn mở PDF từ URL
   flutter_pdfview: ^1.2.1  # Thư viện để hiển thị PDF trong Flutter
@@ -50,6 +52,7 @@ dependencies:
   google_fonts: ^4.0.4
   universal_platform: ^1.1.0
   shared_preferences: ^2.5.2
+  qr_flutter:
 
   get:
   get_cli:
@@ -61,6 +64,7 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
+  flutter_local_notifications: ^19.0.0
 
 dev_dependencies:
   flutter_test:
@@ -87,6 +91,12 @@ dev_dependencies:
 # The following section is specific to Flutter packages.
 flutter:
   assets:
+    - assets/images/banner1.avif
+    - assets/images/banner2.avif
+    - assets/images/banner3.avif
+    - assets/images/placeholder.png
+    - assets/images/logo.png
+    - assets/shop1_logo.png
     - assets/terms_and_conditions.pdf
 
   # The following line ensures that the Material Icons font is

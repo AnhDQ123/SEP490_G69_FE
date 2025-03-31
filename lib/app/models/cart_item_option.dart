@@ -1,3 +1,5 @@
+import 'order_item_option.dart';
+
 class CartItemOptionDTO {
   int? id;
   int optionId;
@@ -48,4 +50,18 @@ class CartItemOptionDTO {
       'quantity': quantity,
     };
   }
+
+  OrderItemOption toOrderItemOption() {
+    return OrderItemOption(
+      id: 0,
+      orderItemId: 0,
+      optionId: optionId,
+      typeId: typeId,
+      optionName: optionName,
+      price: price,
+      total: totalPrice,
+      quantity: quantity,
+    );
+  }
+
 }

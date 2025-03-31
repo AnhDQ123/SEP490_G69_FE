@@ -527,7 +527,7 @@ class CartView extends StatelessWidget {
               side: const BorderSide(color: Colors.black, width: 1.5),
             ),
             child: const Text(
-              "Thanh toán",
+              "Mua hàng",
               style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.bold,

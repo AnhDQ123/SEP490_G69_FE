@@ -4,6 +4,8 @@ import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/foundation.dart';
 
+import '../service/notification_service.dart';
+
 
 class BaseCommon {
   static BaseCommon? _instance;
@@ -95,6 +97,10 @@ class BaseCommon {
     } else {
       log("✅ accessToken hợp lệ: $accessToken");
     }
+
+    // ✅ Gọi init NotificationService ở đây
+    await NotificationService.init();
+    log("✅ NotificationService đã được khởi tạo");
   }
 
   Future<void> changeLocale(String value) async {

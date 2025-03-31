@@ -13,18 +13,25 @@ class HomeApiService extends GetConnect {
   }
 
   /// Lấy danh sách category từ API: GET /api/category
-  Future<List<Category>> fetchCategories() async {
-    final response = await get('/api/category');
+  Future<List<Category>> fetchCategories({String? name, int page = 0, int size = 10}) async {
+    String url = '/api/category?page=$page&size=$size';
+    if (name != null && name.isNotEmpty) {
+      url += '&name=$name';  // Nếu có name, thêm tham số vào URL
+    }
+
+    final response = await get(url);
+
     if (response.status.hasError) {
       return Future.error('Error fetching categories: ${response.statusText}');
     } else {
-      // Ép kiểu về List<dynamic> trước
-      final List<dynamic> rawData = response.body;
+      // Truy cập vào phần 'content' của response để lấy danh sách category
+      final Map<String, dynamic> data = response.body;
+      final List<dynamic> rawData = data['content'];
+
       // Map mỗi phần tử JSON thành đối tượng Category
       return rawData.map((json) => Category.fromJson(json)).toList();
     }
   }
-
 
   Future<List<Product>> fetchAllProducts() async {
     final response = await get('/api/product/all');
@@ -47,8 +54,8 @@ class HomeApiService extends GetConnect {
     }
   }
 
-  Future<List<Product>> fetchFreshProducts() async {
-    final response = await get('/api/product/getFresh');
+  Future<List<Product>> fetchFreshProducts({required int userId, int top = 10}) async {
+    final response = await get('/api/product/getFresh/$userId?top=$top');
     if (response.status.hasError) {
       return Future.error('Error fetching fresh products: ${response.statusText}');
     } else {
@@ -57,8 +64,9 @@ class HomeApiService extends GetConnect {
     }
   }
 
-  Future<List<Product>> fetchCookedProducts() async {
-    final response = await get('/api/product/getCooked');
+
+  Future<List<Product>> fetchCookedProducts({required int userId, int top = 10}) async {
+    final response = await get('/api/product/getCooked/$userId?top=$top');
     if (response.status.hasError) {
       return Future.error('Error fetching cooked products: ${response.statusText}');
     } else {
@@ -66,7 +74,5 @@ class HomeApiService extends GetConnect {
       return rawData.map((json) => Product.fromJson(json)).toList();
     }
   }
-
-
 
 }

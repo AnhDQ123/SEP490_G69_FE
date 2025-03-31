@@ -5,6 +5,8 @@ import '../../../../base/base_common.dart';
 import '../../../../base/base_controller.dart';
 import '../../../../routes/app_pages.dart';
 import '../../../../service/login_service.dart';
+import '../../../../service/notification_service.dart';
+import '../../../cart/controllers/cart_controller.dart';
 
 class LoginController extends BaseController {
   final accountController = TextEditingController();
@@ -28,9 +30,26 @@ class LoginController extends BaseController {
 
       if (token != null && token.isNotEmpty) {
         CustomSnackbar.showSuccess("Đăng nhập thành công!");
-        BaseCommon.instance.saveToken(token);
+        await BaseCommon.instance.saveToken(token);
+
+        // ✅ Gọi CartController và fetchCart để kiểm tra giỏ hàng
+        final cartController = Get.put(CartController());
+        await cartController.fetchCart();
+
+        // ✅ Đếm số sản phẩm
+        int totalItems = 0;
+        for (var shop in cartController.carts) {
+          totalItems += shop.cartItemDTOList.length;
+        }
+
+        if (totalItems > 0) {
+          await NotificationService.showCartReminderNotification(totalItems);
+        }
+
+        // ➡️ Điều hướng sau cùng
         Get.toNamed(Routes.HOME);
-      } else {
+      }
+      else {
         CustomSnackbar.showError("Token không hợp lệ hoặc rỗng.");
       }
     } catch (e) {

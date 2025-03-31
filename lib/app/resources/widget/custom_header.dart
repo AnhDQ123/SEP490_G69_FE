@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../modules/search_screen/views/search_screen_view.dart'; // Import màn hình tìm kiếm
 
 class CustomHeader extends StatelessWidget {
   const CustomHeader({Key? key}) : super(key: key);
@@ -37,13 +38,6 @@ class CustomHeader extends StatelessWidget {
                   margin: const EdgeInsets.only(right: 6),
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.15),
-                        blurRadius: 2,
-                        offset: const Offset(0, 1),
-                      ),
-                    ],
                     image: const DecorationImage(
                       image: AssetImage('assets/images/logo.png'),
                       fit: BoxFit.cover,
@@ -53,75 +47,50 @@ class CustomHeader extends StatelessWidget {
 
                 // 🔹 Thanh tìm kiếm
                 Expanded(
-                  child: Container(
-                    height: 40,
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.05),
-                          blurRadius: 2,
-                          offset: const Offset(0, 1),
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.search, color: Colors.grey, size: 20),
-                        const SizedBox(width: 6),
-                        Expanded(
-                          child: TextField(
-                            decoration: InputDecoration(
-                              hintText: "Tìm kiếm sản phẩm...",
-                              hintStyle: TextStyle(
-                                color: Colors.grey.shade500,
-                                fontSize: 13,
-                              ),
-                              border: InputBorder.none,
-                              isDense: true,
+                  child: GestureDetector(
+                    onTap: () {
+                      // Khi người dùng nhấn vào thanh tìm kiếm, chuyển sang màn hình tìm kiếm
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => SearchScreenView()),
+                      );
+                    },
+                    child: Container(
+                      height: 40,
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.05),
+                            blurRadius: 2,
+                            offset: const Offset(0, 1),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        children: const [
+                          Icon(Icons.search, color: Colors.grey, size: 20),
+                          SizedBox(width: 6),
+                          Expanded(
+                            child: Text(
+                              "Tìm kiếm sản phẩm...",
+                              style: TextStyle(color: Colors.grey, fontSize: 13),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),
 
-                // 🔹 Icon Chat
-                _buildIconButton(Icons.chat_bubble_outline, () {
-                  // TODO: Thêm chức năng chat
-                }),
-
-                // 🔹 Icon Thông báo
-                _buildIconButton(Icons.notifications_none, () {
-                  // TODO: Thêm chức năng thông báo
-                }),
+                // Thêm các nút khác nếu cần
               ],
             ),
           ),
         ),
       ],
-    );
-  }
-
-  // 🔹 Widget riêng để tạo nút icon đẹp hơn
-  Widget _buildIconButton(IconData icon, VoidCallback onTap) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 8),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(20),
-        child: Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: Colors.white.withOpacity(0.2), // Nền nhẹ hơn cho icon
-          ),
-          child: Icon(icon, color: Colors.white, size: 20),
-        ),
-      ),
     );
   }
 }
