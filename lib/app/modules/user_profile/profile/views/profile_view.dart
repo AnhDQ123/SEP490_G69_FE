@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../../resources/widget/bottom_nav.dart';
-import '../../../../resources/widget/order_status_scroll.dart';
+import 'order_status_scroll.dart';
 import 'user_header.dart';
 import '../controllers/profile_controller.dart';
 

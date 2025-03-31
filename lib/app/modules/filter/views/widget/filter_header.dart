@@ -35,36 +35,49 @@ class FilterHeader extends GetView<FilterController> {
           ),
           const SizedBox(width: 12),
           Obx(() {
-            return AnimatedSwitcher(
-              duration: const Duration(milliseconds: 300),
-              child: controller.filterCategory.value.isNotEmpty
-                  ? Chip(
-                key: ValueKey(controller.filterCategory.value),
-                label: Row(
-                  mainAxisSize: MainAxisSize.min,
+            if (controller.isSearch.value) {
+              final keyword = Get.arguments?['searchKeyword'] ?? '';
+              return Expanded( // 👈 Thêm dòng này để tránh tràn ngang
+                child: Row(
                   children: [
-                    Text(
-                      controller.filterCategory.value,
-                      style: const TextStyle(fontSize: 13),
-                    ),
-                    const SizedBox(width: 4),
-                    GestureDetector(
-                      onTap: () {
-                        // Khi bấm nút x, gọi đến removeCategoryFilter()
-                        controller.removeCategoryFilter();
-                      },
-                      child: const Icon(Icons.close, size: 16),
+                    const Icon(Icons.search, size: 18, color: Colors.grey),
+                    const SizedBox(width: 6),
+                    Expanded( // 👈 Và dòng này giúp Text tự co lại nếu quá dài
+                      child: Text(
+                        'Kết quả cho: "$keyword"',
+                        style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
+                        overflow: TextOverflow.ellipsis, // 👈 Không bị lỗi tràn
+                      ),
                     ),
                   ],
                 ),
-                backgroundColor:
-                const Color.fromRGBO(212, 163, 115, 1),
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 8, vertical: 4),
-              )
-                  : const SizedBox.shrink(),
-            );
+              );
+            }
+
+            // Trường hợp có filter category
+            return controller.filterCategory.value.isNotEmpty
+                ? Chip(
+              key: ValueKey(controller.filterCategory.value),
+              label: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    controller.filterCategory.value,
+                    style: const TextStyle(fontSize: 13),
+                  ),
+                  const SizedBox(width: 4),
+                  GestureDetector(
+                    onTap: () => controller.removeCategoryFilter(),
+                    child: const Icon(Icons.close, size: 16),
+                  ),
+                ],
+              ),
+              backgroundColor: const Color.fromRGBO(212, 163, 115, 1),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            )
+                : const SizedBox.shrink();
           }),
+
         ],
       ),
     );

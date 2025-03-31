@@ -6,7 +6,21 @@ import '../../../../models/user_profile.dart';
 class ProfileController extends GetxController {
   var userName = "".obs;
   var avatarUrl = "".obs;
-  var orderStatus = ["Chờ xác nhận", "Đang chuẩn bị", "Đang giao", "Đã giao", "Đã huỷ", "Hoàn tiền"].obs;
+
+  // Cập nhật trạng thái theo enum OrderStatus với tên tiếng Việt
+  var orderStatus = [
+    "Chờ xác nhận",    // PENDING
+    "Đang chuẩn bị",   // PROCESSING
+    "Chờ vận chuyển",  // SHIP_PENDING
+    "Đang giao",       // SHIPPING
+    "Đã giao",         // DELIVERED
+    "Đã huỷ",          // CANCELLED
+    "Đã trả hàng",     // RETURNED
+    "Đơn hàng bị từ chối", // REJECTED
+    "Chờ trả hàng",    // RETURN_PENDING
+    "Trả hàng bị từ chối", // RETURN_REJECTED
+  ].obs;
+
   final UserService _userService = UserService();
 
   @override

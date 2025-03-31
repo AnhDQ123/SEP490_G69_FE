@@ -44,7 +44,7 @@ class Product {
       image: json['image'] ?? '',
       description: json['description'] ?? '',
       rate: (json['rate'] as num?)?.toDouble() ?? 0.0,
-      shop: json['shop'] ?? '',
+      shop: json['shop'] ?? json['shopName'] ?? json['supplier'] ?? '',
       defaultPrice: (json['defaultPrice'] as num?)?.toDouble() ?? 0.0,
       foodOptions: json['foodOption'] != null
           ? (json['foodOption'] as List)
@@ -66,7 +66,7 @@ class Product {
       'image': image,
       'description': description,
       'rate': rate,
-      'shop': shop,
+      'shopName': shop,
       'defaultPrice': defaultPrice,
       'foodOption': foodOptions.map((item) => item.toJson()).toList(),
     };

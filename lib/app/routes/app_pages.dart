@@ -1,5 +1,7 @@
 import 'package:get/get.dart';
 
+import '../modules/add_voucher/bindings/add_voucher_binding.dart';
+import '../modules/add_voucher/views/add_voucher_view.dart';
 import '../modules/auth/forgot_password/bindings/forgot_password_binding.dart';
 import '../modules/auth/forgot_password/views/forgot_password_view.dart';
 import '../modules/auth/login/bindings/login_binding.dart';
@@ -18,18 +20,14 @@ import '../modules/auth/user_info/bindings/user_info_binding.dart';
 import '../modules/auth/user_info/views/user_info_view.dart';
 import '../modules/cart/bindings/cart_binding.dart';
 import '../modules/cart/views/cart_view.dart';
+import '../modules/check_out/bindings/check_out_binding.dart';
+import '../modules/check_out/views/check_out_view.dart';
 import '../modules/filter/bindings/filter_binding.dart';
 import '../modules/filter/views/filter_view.dart';
 import '../modules/home/bindings/home_binding.dart';
 import '../modules/home/views/home_view.dart';
-import '../modules/user_profile/change_password/bindings/change_password_binding.dart';
-import '../modules/user_profile/change_password/views/change_password_view.dart';
-import '../modules/user_profile/edit_profile/bindings/edit_profile_binding.dart';
-import '../modules/user_profile/edit_profile/views/edit_profile_view.dart';
-import '../modules/user_profile/profile/bindings/profile_binding.dart';
-import '../modules/user_profile/profile/views/profile_view.dart';
-import '../modules/user_profile/setting_logout/bindings/setting_logout_binding.dart';
-import '../modules/user_profile/setting_logout/views/setting_logout_view.dart';
+import '../modules/my_order/bindings/my_order_binding.dart';
+import '../modules/my_order/views/my_order_view.dart';
 import '../modules/productForm/bindings/product_form_binding.dart';
 import '../modules/productForm/views/product_form_view.dart';
 import '../modules/productListShop/bindings/product_list_shop_binding.dart';
@@ -38,10 +36,24 @@ import '../modules/product_detail/bindings/product_detail_binding.dart';
 import '../modules/product_detail/views/product_detail_view.dart';
 import '../modules/product_selection/bindings/product_selection_binding.dart';
 import '../modules/product_selection/views/product_selection_view.dart';
-import '../modules/checkout/bindings/checkout_binding.dart';
-import '../modules/checkout/bindings/checkout_binding.dart';
-import '../modules/checkout/views/checkout_view.dart';
-import '../modules/checkout/views/checkout_view.dart';
+import '../modules/qr_payment/bindings/qr_payment_binding.dart';
+import '../modules/qr_payment/views/qr_payment_view.dart';
+import '../modules/return_order_detail_page/bindings/return_order_detail_page_binding.dart';
+import '../modules/return_order_detail_page/views/return_order_detail_page_view.dart';
+import '../modules/search_screen/bindings/search_screen_binding.dart';
+import '../modules/search_screen/views/search_screen_view.dart';
+import '../modules/shop_order/bindings/shop_order_binding.dart';
+import '../modules/shop_order/views/shop_order_view.dart';
+import '../modules/user_profile/change_password/bindings/change_password_binding.dart';
+import '../modules/user_profile/change_password/views/change_password_view.dart';
+import '../modules/user_profile/edit_profile/bindings/edit_profile_binding.dart';
+import '../modules/user_profile/edit_profile/views/edit_profile_view.dart';
+import '../modules/user_profile/profile/bindings/profile_binding.dart';
+import '../modules/user_profile/profile/views/profile_view.dart';
+import '../modules/user_profile/setting_logout/bindings/setting_logout_binding.dart';
+import '../modules/user_profile/setting_logout/views/setting_logout_view.dart';
+import '../modules/voucher_list/bindings/voucher_list_binding.dart';
+import '../modules/voucher_list/views/voucher_list_view.dart';
 
 part 'app_routes.dart';
 
@@ -118,7 +130,7 @@ class AppPages {
     ),
     GetPage(
       name: _Paths.PRODUCT_SELECTION,
-      page: () =>  ProductSelectionView(),
+      page: () => ProductSelectionView(),
       binding: ProductSelectionBinding(),
     ),
     GetPage(
@@ -137,9 +149,44 @@ class AppPages {
       binding: CartBinding(),
     ),
     GetPage(
-      name: _Paths.CHECKOUT,
-      page: () => CheckoutView(),
-      binding: CheckoutBinding(),
+      name: _Paths.MY_ORDER,
+      page: () => const MyOrderView(),
+      binding: MyOrderBinding(),
+    ),
+    GetPage(
+      name: _Paths.CHECK_OUT,
+      page: () => const CheckOutView(),
+      binding: CheckOutBinding(),
+    ),
+    GetPage(
+      name: _Paths.SHOP_ORDER,
+      page: () => const ShopOrderView(),
+      binding: ShopOrderBinding(),
+    ),
+    GetPage(
+      name: _Paths.RETURN_ORDER_DETAIL_PAGE,
+      page: () => const ReturnOrderDetailPageView(),
+      binding: ReturnOrderDetailPageBinding(),
+    ),
+    GetPage(
+      name: _Paths.VOUCHER_LIST,
+      page: () => const VoucherListView(),
+      binding: VoucherListBinding(),
+    ),
+    GetPage(
+      name: _Paths.ADD_VOUCHER,
+      page: () => const AddVoucherView(),
+      binding: AddVoucherBinding(),
+    ),
+    GetPage(
+      name: _Paths.QR_PAYMENT,
+      page: () => const QrPaymentView(),
+      binding: QrPaymentBinding(),
+    ),
+    GetPage(
+      name: _Paths.SEARCH_SCREEN,
+      page: () => const SearchScreenView(),
+      binding: SearchScreenBinding(),
     ),
   ];
 }
