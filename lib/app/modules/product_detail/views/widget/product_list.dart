@@ -34,7 +34,9 @@ class ProductListWidget extends StatelessWidget {
 
           double originalPrice = item.defaultPrice;
           // discount là số thập phân, ví dụ 0.12 tương đương 12%
-          double discountFraction = (item.discount ?? 0).toDouble();
+          // double discountFraction = (item.discount ?? 0).toDouble();
+          double discountFraction = item.discount > 0 ? item.discount : 0.0;
+
           double discountedPrice = originalPrice * (1 - discountFraction);
 
 

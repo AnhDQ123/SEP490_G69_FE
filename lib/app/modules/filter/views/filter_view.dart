@@ -19,14 +19,14 @@ class FilterView extends GetView<FilterController> {
         child: const CustomHeader(),
       ),
       body: Column(
-        children: const [
-          FilterHeader(),
-          TopTabBar(),
-          Expanded(child: ProductList()),
+        children: [
+          const FilterHeader(),  // Hiển thị header
+          const TopTabBar(),  // Hiển thị tab bar
+          Expanded(child: ProductList()),  // Hiển thị danh sách sản phẩm
         ],
       ),
-      // Gọi BottomNav với initialIndex cố định (ví dụ: 1)
-      bottomNavigationBar: const BottomNav(initialIndex: 1),
+      bottomNavigationBar: const BottomNav(initialIndex: 1),  // Navigation bar
     );
   }
 }
+

@@ -26,8 +26,14 @@ class FoodList extends StatelessWidget {
   }
 
   Widget _buildProductCard(BuildContext context, Product product) {
-    final double discount = product.discount; // discount là số thập phân, ví dụ: 0.12 => 12%
-    final double newPrice = product.defaultPrice * (1 - discount);
+    // final double discount = product.discount;
+    // final double newPrice = product.defaultPrice * (1 - discount);
+    // Lấy giảm giá đầu tiên nếu có, hoặc mặc định 0
+    final double discountValue = product.discount > 0
+        ? product.discount
+        : 0.0;
+    final double newPrice = product.defaultPrice * (1 - discountValue);
+
 
     return InkWell(
       onTap: () {
@@ -71,7 +77,7 @@ class FoodList extends StatelessWidget {
                         ),
                       ),
                     ),
-                    if (discount > 0)
+                    if (discountValue > 0)
                       Positioned(
                         top: UtilsReponsive.height(2, context),
                         left: UtilsReponsive.width(2, context),
@@ -83,7 +89,7 @@ class FoodList extends StatelessWidget {
                           ),
                           child: TextConstant.subTile3(
                             context,
-                            text: '-${(discount * 100).toStringAsFixed(0)}%',
+                            text: '-${(discountValue * 100).toStringAsFixed(0)}%',
                             size: 7,
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
@@ -133,7 +139,7 @@ class FoodList extends StatelessWidget {
 
                 Row(
                   children: [
-                    if (discount > 0)
+                    if (discountValue > 0)
                       Text(
                         formatPrice(product.defaultPrice),
                         style: TextConstant.textStyleDefine(

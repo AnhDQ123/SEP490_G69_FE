@@ -13,9 +13,11 @@ import 'package:http_parser/http_parser.dart';
 
 import '../models/bank.dart';
 import '../models/voucher.dart';
+import '../base/api_base_url.dart';
+import '../models/shop.dart';  // Import ApiBaseUrl
 
 class ShopService {
-  final String baseUrl = "http://10.0.2.2:8080/api";
+  final String baseUrl = "http://192.168.1.15:8080/api";
 
   Future<List<Bank>> fetchBanks() async {
     try {
@@ -69,7 +71,7 @@ class ShopService {
     request.fields['citizenIDNumber'] = citizenIDNumber;
     request.fields['citizenIDExpiredDate'] =
         "${citizenIDExpiredDate.year}-${citizenIDExpiredDate.month.toString().padLeft(2, '0')}-${citizenIDExpiredDate.day.toString().padLeft(2, '0')}";
-    request.fields['userId'] = "2";
+    request.fields['userId'] = userId;  // Sử dụng `userId` động ở đây
     request.fields['openTime'] = openTime; // Gửi giờ mở cửa
     request.fields['closeTime'] = closeTime; // Gửi giờ đóng cửa
     request.fields['bankBin'] = selectedBankBin;

@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'cart_item_option.dart';
+import 'order_item.dart';
 
 class CartItemDTO {
   int? id;
@@ -54,4 +55,22 @@ class CartItemDTO {
       cartItemOptionDTOList.map((option) => option.toJson()).toList(),
     };
   }
+
+  OrderItem toOrderItem() {
+    return OrderItem(
+      id: id ?? 0,
+      orderId: 0,
+      productId: productId,
+      dishName: productName,
+      imageUrl: image,
+      price: price,
+      discountId: null,
+      quantity: quantity.value,
+      total: totalPrice,
+      discount: 0.0,
+      createdAt: DateTime.now(),
+      options: cartItemOptionDTOList.map((opt) => opt.toOrderItemOption()).toList(),
+    );
+  }
+
 }

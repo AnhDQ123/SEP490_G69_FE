@@ -134,62 +134,101 @@
 // }
 
 import 'package:get/get.dart';
+import '../../../models/product.dart';
 import '../../../service/filter_api_service.dart';
 import '../../../service/home_api_service.dart';
+import '../../../service/product_detail_service.dart';
+import '../../../service/search_service.dart';
 
 class FilterController extends GetxController {
-  // Sử dụng RxString để cập nhật giá trị filter động
-  final RxString filterCategory = (Get.arguments['categoryName'] as String).obs;
+  final RxString filterCategory = (Get.arguments?['categoryName'] ?? '').toString().obs;
+  final RxBool isSearch = false.obs;  // Biến này sẽ giúp xác định xem người dùng đang tìm kiếm hay lọc theo category
 
-  // Danh sách sản phẩm hiện ra, kiểu Map<String, dynamic>
-  final products = <Map<String, dynamic>>[].obs;
+  final products = <Product>[].obs;
   var selectedTabIndex = 0.obs;
   var bottomNavIndex = 2.obs;
 
-  // Service gọi API
   final FilterApiService _filterApiService = FilterApiService();
   final HomeApiService _homeApiService = HomeApiService();
+  final ProductDetailApiService _productDetailApiService = ProductDetailApiService();
 
   @override
   void onInit() {
     super.onInit();
-    if (filterCategory.value.isNotEmpty) {
-      fetchProductsByCategory(filterCategory.value);
+
+    final keyword = Get.arguments?['searchKeyword'];
+    final category = Get.arguments?['categoryName'];
+
+    if (keyword != null && keyword.toString().isNotEmpty) {
+      print('🔍 Search mode with keyword: $keyword'); // 👈 THÊM LOG
+      isSearch.value = true;
+      fetchSimilarProducts(keyword.toString());
+    } else if (category != null && category.toString().isNotEmpty) {
+      isSearch.value = false;
+      filterCategory.value = category.toString();
+      fetchProductsByCategory(category.toString());
     } else {
+      isSearch.value = false;
       fetchAllProducts();
     }
   }
 
+
+
+
   // Gọi API lọc theo danh mục
   void fetchProductsByCategory(String category) async {
+    isSearch.value = false;  // Đánh dấu là người dùng đang lọc theo danh mục
     try {
       final result = await _filterApiService.fetchProductsByCategory(category);
-      products.assignAll(result);
+      products.assignAll(result.map((p) => Product.fromJson(p)).toList());
     } catch (e) {
       Get.snackbar('Lỗi', 'Không thể tải dữ liệu sản phẩm: $e');
     }
   }
+
+  // Gọi API lấy sản phẩm tương tự (sử dụng từ khóa tìm kiếm)
+  void fetchSimilarProducts(String keyword) async {
+    isSearch.value = true;
+    try {
+      print('📨 Sending keyword to API: "$keyword"');
+      final result = await _productDetailApiService.getSimilarProducts(keyword);
+      products.assignAll(result);  // Vì getSimilarProducts() đã trả về List<Product>
+      print('📦 Loaded similar products: ${products.length}');
+    } catch (e) {
+      Get.snackbar('Lỗi', 'Không thể tải sản phẩm tương tự: $e');
+    }
+  }
+
+
+
 
   // Gọi API lấy toàn bộ sản phẩm
   void fetchAllProducts() async {
+    isSearch.value = false;  // Đánh dấu là người dùng không tìm kiếm
     try {
       final result = await _homeApiService.fetchAllProducts();
-      // Giả sử model Product có phương thức toJson(), chuyển đổi sang Map nếu cần
-      products.assignAll(result.map((p) => p.toJson()).toList());
+      products.assignAll(result.map((e) => Product.fromJson(e as Map<String, dynamic>)).toList());
     } catch (e) {
       Get.snackbar('Lỗi', 'Không thể tải dữ liệu sản phẩm: $e');
     }
   }
 
-  // Gọi API lấy sản phẩm bán chạy (Popular)
+  // API lấy sản phẩm bán chạy (Popular)
   void fetchPopularProducts() async {
     try {
       final result = await _homeApiService.fetchPopularProducts();
-      products.assignAll(result.map((p) => p.toJson()).toList());
+
+      // Kiểm tra dữ liệu trả về
+      print('📦 Loaded popular products: $result');
+
+      // Chuyển đổi dữ liệu trả về thành List<Product>
+      products.assignAll(result.map((e) => Product.fromJson(e as Map<String, dynamic>)).toList());
     } catch (e) {
       Get.snackbar('Lỗi', 'Không thể tải sản phẩm bán chạy: $e');
     }
   }
+
 
   // Phương thức xoá filter: đặt filterCategory rỗng và lấy toàn bộ sản phẩm
   void removeCategoryFilter() async {
@@ -206,13 +245,12 @@ class FilterController extends GetxController {
     selectedTabIndex.value = index;
     if (index == 0) {
       if (filterCategory.value.isNotEmpty) {
-        fetchProductsByCategory(filterCategory.value);
+        fetchProductsByCategory(filterCategory.value);  // Nếu lọc theo danh mục
       } else {
-        fetchAllProducts();
+        fetchAllProducts();  // Nếu không lọc theo danh mục, lấy tất cả sản phẩm
       }
     } else if (index == 1) {
-      // Khi chuyển sang tab "Bán chạy", gọi API lấy sản phẩm bán chạy
-      fetchPopularProducts();
+      fetchPopularProducts();  // Lấy sản phẩm bán chạy
     } else if (index == 2) {
       // Xử lý nếu cần: ví dụ, sắp xếp hoặc lọc theo đánh giá
     } else if (index == 3) {
@@ -236,4 +274,11 @@ class FilterController extends GetxController {
         break;
     }
   }
+
+  void testCall() async {
+    final result = await SearchService().searchProducts("Bánh mì");
+    print("✅ API test: $result");
+  }
+
 }
+
