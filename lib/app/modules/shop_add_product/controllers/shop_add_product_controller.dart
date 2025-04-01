@@ -30,7 +30,8 @@
     var selectedCategory = "".obs;
     Future<void> loadCategories() async {
       try {
-        final fetchedCategories = await CategoryService.fetchCategories();
+        final categoryService = CategoryService();
+        final fetchedCategories = await categoryService.fetchCategories();
         categories.assignAll(fetchedCategories);
       } catch (e) {
         Get.snackbar("Lỗi", "Không thể tải danh mục: $e");
