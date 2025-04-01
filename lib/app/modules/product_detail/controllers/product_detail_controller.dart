@@ -201,6 +201,7 @@ class ProductDetailController extends GetxController {
     try {
       Product detail = await apiService.getProductDetail(productId);
       _product.value = detail;
+      print("Đang hiển thị sản phẩm: ${detail.name}"); // Kiểm tra lại tên sản phẩm
 
       // 🧩 Mapping Extra Options
       extraOptions.assignAll(

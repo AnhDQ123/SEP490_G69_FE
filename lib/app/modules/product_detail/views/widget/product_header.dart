@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../../routes/app_pages.dart';
 import '../../controllers/product_detail_controller.dart';
 import 'review_item.dart';
 import 'package:intl/intl.dart';
@@ -55,10 +56,19 @@ class ProductHeader extends StatelessWidget {
                 tooltip: 'Yêu thích',
               ),
               IconButton(
-                onPressed: controller.reportProduct,
+                onPressed: () {
+                  // Truyền thông tin báo cáo từ chi tiết sản phẩm
+                  print("Đang báo cáo sản phẩm: ${controller.currentProduct.name}");
+                  Get.toNamed(Routes.SEND_REPORT, arguments: {
+                    'reportType': 'Sản phẩm',  // Loại báo cáo (sản phẩm)
+                    'reportItem': controller.currentProduct.name,  // Tên sản phẩm
+                    'relatedId': controller.currentProduct.id,  // ID sản phẩm
+                  });
+                },
                 icon: const Icon(Icons.report),
                 tooltip: 'Báo cáo',
               ),
+
             ],
           ),
         ),
