@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../models/food_option.dart';
+import '../../../resources/util_common.dart';
 import '../controllers/shop_add_product_controller.dart';
 
 class ShopAddProductView extends GetView<ShopAddProductController> {
@@ -486,7 +487,7 @@ class ShopAddProductView extends GetView<ShopAddProductController> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(option.name, style: TextStyle(fontSize: 16)),
-                Text("${option.price.toStringAsFixed(0)} đ", style: TextStyle(fontSize: 14, color: Colors.grey)),
+                Text(UtilCommon.formatMoney(option.price)),
               ],
             ),
           ),

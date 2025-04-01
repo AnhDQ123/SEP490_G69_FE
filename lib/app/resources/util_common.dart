@@ -30,20 +30,21 @@ class UtilCommon {
         NumberFormat.currency(locale: 'vi_VN', symbol: 'đ');
     return formatter.format(amount);
   }
-  static BoxDecoration shadowBox(BuildContext context,{
-    double radiusBorder = 10,
-    Color colorBg = Colors.white,
-    Color colorSd = Colors.grey
-  })=> BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              color: colorBg,
-              boxShadow:  [
-                BoxShadow(
-                  color: colorSd,
-                  spreadRadius: 2,
-                  blurRadius: 2,
-                  offset: Offset(0, 3),
-                ),
-              ],
-            );
+
+  static BoxDecoration shadowBox(BuildContext context,
+          {double radiusBorder = 10,
+          Color colorBg = Colors.white,
+          Color colorSd = Colors.grey}) =>
+      BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        color: colorBg,
+        boxShadow: [
+          BoxShadow(
+            color: colorSd,
+            spreadRadius: 2,
+            blurRadius: 2,
+            offset: Offset(0, 3),
+          ),
+        ],
+      );
 }

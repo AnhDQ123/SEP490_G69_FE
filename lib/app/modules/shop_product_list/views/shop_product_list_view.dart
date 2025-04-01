@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import '../../../resources/util_common.dart';
 import '../../../routes/app_pages.dart';
 import '../controllers/shop_product_list_controller.dart';
 
@@ -126,7 +127,7 @@ class ShopProductListView extends GetView<ShopProductListController> {
             subtitle: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(formatCurrency(product.defaultPrice)),
+                Text(UtilCommon.formatMoney(product.defaultPrice)),
                 Text("Số lượng: ${product.quantity}"),
               ],
             ),
@@ -155,10 +156,6 @@ class ShopProductListView extends GetView<ShopProductListController> {
     );
   }
 
-  String formatCurrency(double amount) {
-    final formatter = NumberFormat("#,##0", "vi_VN");
-    return "${formatter.format(amount)}đ";
-  }
 
   void _showSortDialog() {
     // Các tùy chọn sắp xếp

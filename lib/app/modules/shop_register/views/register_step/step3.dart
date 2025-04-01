@@ -78,7 +78,7 @@ class Step3 extends StatelessWidget {
           text: TextSpan(
             text: label,
             style: TextStyle(
-                fontSize: 14, fontWeight: FontWeight.bold, color: Colors.black),
+                fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
             children: [
               TextSpan(
                 text: " *",
@@ -136,12 +136,12 @@ class Step3 extends StatelessWidget {
         RichText(
           text: TextSpan(
             text: label,
-            style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.black),
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
             children: isRequired
                 ? [
               TextSpan(
                 text: " *",
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.red),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.red),
               ),
             ]
                 : [],
@@ -171,11 +171,11 @@ class Step3 extends StatelessWidget {
         RichText(
           text: TextSpan(
             text: label,
-            style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.black),
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
             children: [
               TextSpan(
                 text: " *",
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.red),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.red),
               ),
             ],
           ),

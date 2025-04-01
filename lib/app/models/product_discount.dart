@@ -12,7 +12,7 @@ class ProductDiscount {
   final String category;
   final String status;
   final List<Discount> discount;  // Danh sách các đợt giảm giá
-  final String image;
+  final dynamic image;
   final String description;
   final double rate;
   final String shop;

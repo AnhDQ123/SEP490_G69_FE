@@ -1,3 +1,4 @@
+import 'package:ffb_fe_flutter/app/resources/util_common.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -130,7 +131,7 @@ class ProductDiscountView extends StatelessWidget {
           return DataRow(cells: [
             DataCell(Image.network(product.image, width: 50, height: 50, fit: BoxFit.cover)),
             DataCell(Text(product.name)),
-            DataCell(Text(formatCurrency(product.defaultPrice))),
+            DataCell(Text(UtilCommon.formatMoney(product.defaultPrice))),
             DataCell(Text("${product.quantity}")),
             DataCell(
               IconButton(
@@ -244,12 +245,6 @@ class ProductDiscountView extends StatelessWidget {
         ),
       ),
     );
-  }
-
-
-  String formatCurrency(double amount) {
-    final format = NumberFormat("#,##0", "vi_VN");
-    return format.format(amount);
   }
 
   String formatDate(String dateStr) {

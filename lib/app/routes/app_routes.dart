@@ -50,6 +50,7 @@ abstract class Routes {
   static const SHOP_REPORT = _Paths.SHOP_REPORT;
   static const SEND_REPORT = _Paths.SEND_REPORT;
   static const SHOP_REPORT_LIST = _Paths.SHOP_REPORT_LIST;
+  static const SHOP_ADD_PRODUCT = _Paths.SHOP_ADD_PRODUCT;
 }
 
 abstract class _Paths {
@@ -101,4 +102,5 @@ abstract class _Paths {
   static const SHOP_VOUCHER_ADD = '/shop-voucher-add';
   static const SHOP_DETAIL = '/shop-detail';
   static const SHOP_PRODUCT_LIST = '/shop-product-list';
+  static const SHOP_ADD_PRODUCT = '/shop-add-product';
 }
