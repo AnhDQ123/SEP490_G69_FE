@@ -30,7 +30,7 @@ class ShopProductListView extends GetView<ShopProductListController> {
             padding: const EdgeInsets.all(12.0),
             child: ElevatedButton(
               onPressed: () {
-                Get.toNamed(Routes.PRODUCT_FORM);
+                Get.toNamed(Routes.SHOP_ADD_PRODUCT);
               },
               child: Text("Thêm sản phẩm mới"),
               style: ElevatedButton.styleFrom(minimumSize: Size.fromHeight(48)),
@@ -136,9 +136,11 @@ class ShopProductListView extends GetView<ShopProductListController> {
                 IconButton(
                   icon: Icon(Icons.edit),
                   onPressed: () {
-                    // TODO: chuyển đến trang chỉnh sửa
+                    // Truyền productId tới màn hình Add Product
+                    Get.toNamed(Routes.SHOP_ADD_PRODUCT, arguments: product.id);
                   },
                 ),
+
                 IconButton(
                   icon: Icon(Icons.delete, color: Colors.red,),
                   onPressed: () {
