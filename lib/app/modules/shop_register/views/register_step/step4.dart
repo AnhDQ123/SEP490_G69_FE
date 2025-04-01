@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../../controllers/shop_register_controller.dart';
 
@@ -29,7 +30,9 @@ class Step4 extends StatelessWidget {
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
             const SizedBox(height: 12),
             buildTextField(controller.idCard,
-                label: "Số CCCD/CMND/Hộ chiếu", isRequired: true),
+                label: "Số CCCD/CMND/Hộ chiếu",
+                isRequired: true,
+                maxLength: 12),
             buildImageUploader(
                 label: "Mặt trước CCCD/CMND",
                 imageController: controller.idCardFrontImage,
@@ -153,7 +156,7 @@ class Step4 extends StatelessWidget {
   }
 
   Widget buildTextField(RxString controllerValue,
-      {String label = "", bool isRequired = false}) {
+      {String label = "", bool isRequired = false, int maxLength = 100}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -177,7 +180,15 @@ class Step4 extends StatelessWidget {
         ),
         SizedBox(height: 4),
         TextField(
+          keyboardType: TextInputType.number,
+          // Đảm bảo bàn phím chỉ hiển thị số
           onChanged: (value) => controllerValue.value = value,
+          inputFormatters: [
+            FilteringTextInputFormatter.digitsOnly,
+            // Chỉ cho phép nhập số
+            LengthLimitingTextInputFormatter(maxLength),
+            // Giới hạn độ dài tối đa
+          ],
           decoration: InputDecoration(
             border: OutlineInputBorder(),
             contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
