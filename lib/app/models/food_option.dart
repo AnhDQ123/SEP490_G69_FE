@@ -5,7 +5,7 @@ class FoodOption {
   final String name;
   final double price;
   final String? description;
-  File? image; // Cho phép cập nhật ảnh
+  dynamic image; // Cho phép cập nhật ảnh
   final int? typeId;
   final String? status;
   final int productId;
