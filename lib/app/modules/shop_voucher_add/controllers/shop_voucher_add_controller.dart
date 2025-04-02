@@ -94,14 +94,30 @@ class ShopVoucherAddController extends GetxController {
   }
 
   Future<void> pickDate(TextEditingController controller) async {
+    DateTime? initialDate = DateTime.now();  // Mặc định ngày hiện tại
+    DateTime? firstDate = DateTime.now();  // Mặc định ngày bắt đầu từ hôm nay
+
+    // Kiểm tra nếu là trường "Ngày kết thúc", cần cho phép chọn từ ngày bắt đầu trở đi
+    if (controller == endDateController) {
+      // Đặt ngày bắt đầu làm ngày tham chiếu cho ngày kết thúc
+      DateTime? startDate = DateTime.tryParse(startDateController.text);
+      if (startDate != null) {
+        initialDate = startDate;  // Ngày kết thúc sẽ bắt đầu từ ngày bắt đầu
+        firstDate = startDate;  // Ngày kết thúc không thể chọn trước ngày bắt đầu
+      }
+    }
+
+    // Hiển thị DatePicker với các điều kiện đã thay đổi
     final picked = await showDatePicker(
       context: Get.context!,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2020),
+      initialDate: initialDate,
+      firstDate: firstDate,
       lastDate: DateTime(2100),
     );
+
     if (picked != null) {
       controller.text = DateFormat('yyyy-MM-dd').format(picked);
     }
   }
+
 }

@@ -14,7 +14,7 @@ class ShopVoucherAddView extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(voucherArg == null ? "Tạo mới Voucher" : "Chỉnh sửa Voucher"),
+        title: Text(voucherArg == null ? "Tạo mã giảm giá" : "Chỉnh sửa mã giảm giá"),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
@@ -54,8 +54,12 @@ class ShopVoucherAddView extends StatelessWidget {
               SizedBox(height: 24),
               ElevatedButton(
                 onPressed: controller.submitVoucher,
-                child: Text(voucherArg == null ? "Tạo mới" : "Cập nhật"),
+                child: Text(voucherArg == null ? "Tạo mã giảm giá" : "Cập nhật mã giảm giá"),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color.fromRGBO(251, 196, 139, 1.0), // Màu nền (ví dụ: màu xanh dương)
+                ),
               )
+
             ],
           ),
         ),
