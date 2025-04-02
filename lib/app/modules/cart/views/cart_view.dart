@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../models/cart_item.dart';
+import '../../../resources/assets_manager.dart';
 import '../controllers/cart_controller.dart';
 import '../../../models/cart.dart';
 import '../../../models/cart_item_option.dart';
@@ -179,14 +180,14 @@ class CartView extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12),
                     child: item.image != null && item.image!.isNotEmpty
                         ? FadeInImage.assetNetwork(
-                      placeholder: 'assets/default_food.png',
+                      placeholder: ImageAssets.defaultFood,
                       image: item.image!,
                       width: 100,
                       height: 100,
                       fit: BoxFit.cover,
                       imageErrorBuilder: (context, error, stackTrace) {
                         return Image.asset(
-                          'assets/default_food.png',
+                          ImageAssets.defaultFood,
                           width: 100,
                           height: 100,
                           fit: BoxFit.cover,
@@ -194,7 +195,7 @@ class CartView extends StatelessWidget {
                       },
                     )
                         : Image.asset(
-                      'assets/default_food.png',
+                      ImageAssets.defaultFood,
                       width: 100,
                       height: 100,
                       fit: BoxFit.cover,
@@ -439,7 +440,7 @@ class CartView extends StatelessWidget {
   }) {
     return Container(
       height: 30,
-      width: 60, // 🔹 Tăng chiều rộng để tránh tràn
+      width: 60,
       decoration: BoxDecoration(
         border: Border.all(color: Colors.grey),
         borderRadius: BorderRadius.circular(6),

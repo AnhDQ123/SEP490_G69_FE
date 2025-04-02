@@ -27,13 +27,18 @@ class ProfileView extends GetView<ProfileController> {
                   title: "Cửa hàng của tôi",
                   subtitle: "Tham gia với chúng tôi với tư cách nhà bán hàng",
                   onTap: () {
-                    // Truyền userId sang trang cửa hàng
                     final userIdStr = BaseCommon.instance.userId;
                     if (userIdStr != null) {
                       final userId = int.tryParse(userIdStr);
                       if (userId != null) {
-                        // Chuyển đến trang cửa hàng và truyền userId
-                        Get.toNamed(Routes.SHOP_REGISTER, arguments: {'userId': userId});
+                        if (controller.isShopOwner.value) {
+                          // Nếu người dùng có cửa hàng, chuyển đến ShopView
+                          final shopId = controller.isShopOwner.value ? controller.shopId.value : 0; // Sử dụng shopId thực tế nếu cần
+                          Get.toNamed(Routes.SHOP, arguments: {'userId': userId, 'shopId': shopId});
+                        } else {
+                          // Nếu người dùng chưa có cửa hàng, chuyển đến SHOP_REGISTER
+                          Get.toNamed(Routes.SHOP_REGISTER, arguments: {'userId': userId});
+                        }
                       }
                     }
                   },
@@ -72,3 +77,5 @@ class ProfileView extends GetView<ProfileController> {
     );
   }
 }
+
+

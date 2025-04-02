@@ -1,3 +1,4 @@
+import 'package:ffb_fe_flutter/app/resources/assets_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../controllers/product_detail_controller.dart';
@@ -6,7 +7,7 @@ import 'package:intl/intl.dart';
 
 // Helper function: Xây dựng URL ảnh đầy đủ
 String buildImageUrl(String imageUrl) {
-  if (imageUrl.isEmpty) return 'assets/images/placeholder.png';
+  if (imageUrl.isEmpty) return ImageAssets.defaultFood;
   if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
     return imageUrl;
   }

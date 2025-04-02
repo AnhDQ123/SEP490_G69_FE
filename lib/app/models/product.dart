@@ -10,7 +10,7 @@ class Product {
   final String supplier;
   int quantity;
   final String category;
-  final double discount;  // Danh sách các đợt giảm giá
+  final List<Discount> discount;  // Cập nhật thành List<Discount>
   final String image;
   final String description;
   final double rate;
@@ -42,11 +42,11 @@ class Product {
       supplier: json['supplier'] ?? '',
       quantity: json['quantity'] ?? 0,
       category: json['category'] ?? '',
-      discount: (json['discount'] is List && (json['discount'] as List).isEmpty)  // Kiểm tra nếu discount là danh sách rỗng
-          ? 0.0  // Nếu là danh sách rỗng, gán discount là 0.0
-          : (json['discount'] is num)  // Nếu discount là kiểu num, chuyển thành double
-          ? (json['discount'] as num).toDouble()
-          : 0.0,  // Nếu không phải num, gán giá trị mặc định là 0.0
+      discount: json['discount'] != null
+          ? (json['discount'] as List)
+          .map((item) => Discount.fromJson(item))
+          .toList()
+          : [],  // Cập nhật sử dụng List<Discount>
       image: json['image'] ?? '',
       description: json['description'] ?? '',
       rate: (json['rate'] as num?)?.toDouble() ?? 0.0,
@@ -70,7 +70,7 @@ class Product {
       'supplier': supplier,
       'quantity': quantity,
       'category': category,
-      'discount': discount,
+      'discount': discount.map((item) => item.toJson()).toList(),
       'image': image,
       'description': description,
       'rate': rate,

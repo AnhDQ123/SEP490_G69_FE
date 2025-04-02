@@ -28,8 +28,8 @@ class TextConstant {
 
   static Text titleH2(BuildContext context,
       {required String text,
-      double size = 22,
-      FontWeight fontWeight = FontWeight.w800,
+      double size = 20,
+      FontWeight fontWeight = FontWeight.w400,
       Color color = Colors.black}) {
     return Text(
       text,
@@ -64,7 +64,7 @@ class TextConstant {
 
   static Text subTile2(BuildContext context,
       {required String text,
-      double size = 14,
+      double size = 12,
       FontWeight fontWeight = FontWeight.w600,
       Color color = Colors.black}) {
     return Text(
@@ -87,6 +87,33 @@ class TextConstant {
       overflow: overflow,
       style: textStyleDefine(context,
           size: size, fontWeight: fontWeight, color: color),
+    );
+  }
+
+  static Text changeLabelText(BuildContext context, String text,
+      {bool toUpperCase = false, bool toLowerCase = false, String? replace,
+        double size = 14, FontWeight fontWeight = FontWeight.normal,
+        Color color = Colors.black, TextAlign textAlign = TextAlign.left}) {
+
+    String modifiedText = text;
+
+    if (toUpperCase) {
+      modifiedText = modifiedText.toUpperCase();
+    } else if (toLowerCase) {
+      modifiedText = modifiedText.toLowerCase();
+    } else if (replace != null) {
+      modifiedText = modifiedText.replaceAll(replace, '');
+    }
+
+    return Text(
+      modifiedText,
+      style: textStyleDefine(
+        context,
+        size: size,
+        fontWeight: fontWeight,
+        color: color,
+      ),
+      textAlign: textAlign,
     );
   }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../models/extra_option.dart';
+import '../../../../resources/assets_manager.dart';
 import '../../../cart/controllers/cart_controller.dart';
 import '../../controllers/product_detail_controller.dart';
 
@@ -31,8 +32,8 @@ class ExtraOptionsSheet extends StatelessWidget {
               ),
               clipBehavior: Clip.antiAlias,
               child: selectedOption?.imageUrl != null
-                  ? Image.network(selectedOption!.imageUrl!, fit: BoxFit.cover)
-                  : Image.network('https://via.placeholder.com/150', fit: BoxFit.cover),
+                  ? Image.asset(selectedOption!.imageUrl!, fit: BoxFit.cover)
+                  : Image.asset(ImageAssets.defaultFood, fit: BoxFit.cover),
             ),
             const SizedBox(width: 8),
             Expanded(

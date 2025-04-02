@@ -22,6 +22,7 @@ class ShopProductListController extends GetxController {
     final shopId = Get.find<ShopController>().shopId;
     final result = await shopService.fetchProductsByShop(shopId);
     products.assignAll(result);
+    print(shopId);
   }
 
   List<ProductDiscount> get filteredProducts {

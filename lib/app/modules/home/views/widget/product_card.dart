@@ -19,7 +19,6 @@ class ProductCard extends StatelessWidget {
 
   String getFullImageUrl(String? imagePath) {
     if (imagePath == null || imagePath.isEmpty) {
-      // Nếu không có imagePath, trả về URL mặc định hoặc URL hình ảnh mặc định
       return "https://images.immediate.co.uk/production/volatile/sites/30/2020/08/chorizo-mozarella-gnocchi-bake-cropped-9ab73a3.jpg";
     }
     if (imagePath.startsWith("http")) {
@@ -65,7 +64,8 @@ class ProductCard extends StatelessWidget {
             ),
           ],
         ),
-        child: Row(
+        child:
+        Row(
           children: [
             // Ảnh sản phẩm bên trái với kích thước lớn hơn
             ClipRRect(
@@ -75,11 +75,15 @@ class ProductCard extends StatelessWidget {
                 width: imageSize,
                 height: imageSize,
                 fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return Image.asset('assets/images/default_food.avif', fit: BoxFit.cover);
+                },
               ),
             ),
+
             SizedBox(width: UtilsReponsive.width(20, context)),
             // Thông tin sản phẩm bên phải
-            Expanded(
+            Expanded( // Thêm Expanded để phần thông tin chiếm phần còn lại
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -130,7 +134,8 @@ class ProductCard extends StatelessWidget {
               ),
             ),
           ],
-        ),
+        )
+
       ),
     );
   }

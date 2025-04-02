@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import '../../../../models/discount.dart';
 import '../../../../models/product.dart';
 import '../../../../resources/util_common.dart';
 
@@ -11,15 +12,18 @@ class ProductItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final double originalPrice = item.defaultPrice;
-    // final double discount = item.discount;
-    // final bool hasDiscount = discount > 0;
-    // final double finalPrice = hasDiscount ? originalPrice * (1 - discount) : originalPrice;
-    final double discount = item.discount > 0 ? item.discount : 0.0;
 
+    // Lọc discount có trạng thái ACTIVE
+    Discount? activeDiscount;
+    for (var discount in item.discount) {
+      if (discount.status == 'ACTIVE') {
+        activeDiscount = discount;
+        break; // Lấy discount đầu tiên có trạng thái ACTIVE
+      }
+    }
 
-    final bool hasDiscount = discount > 0;
-    final double finalPrice = hasDiscount ? originalPrice * (1 - discount) : originalPrice;
-
+    final bool hasDiscount = activeDiscount != null;
+    final double finalPrice = hasDiscount ? originalPrice * (1 - (activeDiscount!.amount / 100)) : originalPrice;
 
     return InkWell(
       onTap: () {
@@ -77,7 +81,7 @@ class ProductItem extends StatelessWidget {
                               borderRadius: BorderRadius.circular(4),
                             ),
                             child: Text(
-                              '-${(discount * 100).toStringAsFixed(0)}%',
+                              '-${(activeDiscount!.amount).toStringAsFixed(0)}%',
                               style: const TextStyle(
                                 fontSize: 12,
                                 color: Colors.white,
@@ -187,3 +191,4 @@ class ProductItem extends StatelessWidget {
     );
   }
 }
+

@@ -98,6 +98,7 @@ flutter:
     - assets/images/logo.png
     - assets/shop1_logo.png
     - assets/terms_and_conditions.pdf
+    - assets/images/default_food.avif
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

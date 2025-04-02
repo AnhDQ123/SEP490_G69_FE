@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../../models/discount.dart';
 import '../../../../models/product.dart';
 import '../../controllers/product_detail_controller.dart';
 import 'package:intl/intl.dart';
@@ -33,11 +34,21 @@ class ProductListWidget extends StatelessWidget {
           final item = products[index];
 
           double originalPrice = item.defaultPrice;
-          // discount là số thập phân, ví dụ 0.12 tương đương 12%
-          // double discountFraction = (item.discount ?? 0).toDouble();
-          double discountFraction = item.discount > 0 ? item.discount : 0.0;
 
-          double discountedPrice = originalPrice * (1 - discountFraction);
+          // Lọc discount có trạng thái ACTIVE và lấy discount đầu tiên
+          final activeDiscount = item.discount.firstWhere(
+                (discount) => discount.status == 'ACTIVE',
+            orElse: () => Discount(  // Nếu không có discount ACTIVE, trả về discount mặc định
+              id: 0,
+              amount: 0.0,  // Mặc định là không có giảm giá
+              startDate: '',
+              endDate: '',
+              status: 'INACTIVE',  // Mặc định là INACTIVE
+            ),
+          );
+
+          // Tính giá mới sau discount (nếu có)
+          double discountedPrice = originalPrice * (1 - activeDiscount.amount);
 
 
           return Container(
@@ -76,7 +87,7 @@ class ProductListWidget extends StatelessWidget {
                         ),
                       ),
                     ),
-                    if (discountFraction > 0)
+                    if (activeDiscount.amount > 0)
                       Positioned(
                         top: 3,
                         left: 3,
@@ -88,7 +99,7 @@ class ProductListWidget extends StatelessWidget {
                             borderRadius: BorderRadius.circular(3),
                           ),
                           child: Text(
-                            '-${(discountFraction * 100).toStringAsFixed(0)}%',
+                            '-${(activeDiscount.amount * 100).toStringAsFixed(0)}%',
                             style: const TextStyle(
                               color: Colors.white,
                               fontSize: 8,
@@ -143,7 +154,7 @@ class ProductListWidget extends StatelessWidget {
                 // Giá gốc và giá giảm (nếu có)
                 Row(
                   children: [
-                    if (discountFraction > 0)
+                    if (activeDiscount.amount > 0)
                       Text(
                         formatPrice(originalPrice),
                         style: const TextStyle(

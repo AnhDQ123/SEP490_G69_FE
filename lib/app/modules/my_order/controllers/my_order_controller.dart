@@ -24,14 +24,11 @@ class MyOrderController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    final Order? passedOrder = Get.arguments as Order?;
-    if (passedOrder != null) {
-      userId = passedOrder.ownerId; // ✅ Lấy userId từ Order
-      loadOrders();
-    } else {
-      print("❗Không nhận được đơn hàng từ Checkout");
-    }
+    final int userId = Get.arguments as int;  // Chỉ cần nhận userId là int
+    this.userId = userId;  // Lưu vào biến userId
+    loadOrders();
   }
+
 
 
   Future<void> loadOrders() async {

@@ -37,5 +37,32 @@ class UserService extends GetConnect {
       return null;
     }
   }
+
+  // Fetch thông tin cửa hàng của người dùng
+  Future<dynamic> fetchUserShop(int userId) async {
+    final response = await get('${ApiBaseUrl.baseUrl}/api/users/shop?id=$userId');
+
+    if (response.statusCode == 200) {
+      if (response.body is String) {
+        // Kiểm tra nếu body trả về là một chuỗi
+        print("Thông báo lỗi từ API: ${response.body}");  // In ra thông báo từ API
+        return response.body;  // Trả về thông báo lỗi nếu là chuỗi
+      } else if (response.body is Map<String, dynamic>) {
+        // Nếu body trả về là một Map, bạn có thể xử lý dữ liệu cửa hàng
+        print("Thông tin cửa hàng: ${response.body}");
+        return response.body;  // Trả về thông tin cửa hàng
+      } else {
+        // Nếu body có định dạng khác, bạn sẽ không xử lý được, trả về thông báo lỗi
+        print("Error: Unexpected response body format.");
+        return "Error: Unexpected response body format.";
+      }
+    } else {
+      print("Error fetching user shop: ${response.statusCode}");
+      return null;
+    }
+  }
+
+
+
 }
 

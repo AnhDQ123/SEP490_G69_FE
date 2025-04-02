@@ -47,7 +47,7 @@ class OrderStatusScroll extends StatelessWidget {
                     if (userIdStr != null) {
                       final userId = int.tryParse(userIdStr);
                       if (userId != null) {
-                        Get.toNamed('/my-order', arguments: {'userId': userId});
+                        Get.toNamed('/my-order', arguments: userId);
                       }
                     }
                   },

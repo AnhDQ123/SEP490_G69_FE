@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../../../resources/text_style.dart';
 import '../../controllers/shop_register_controller.dart';
 
 class Step3 extends StatelessWidget {

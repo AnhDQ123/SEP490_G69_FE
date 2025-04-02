@@ -1,4 +1,3 @@
-
 import 'package:ffb_fe_flutter/app/models/food_option_model.dart';
 import 'discount.dart';
 import 'food_option.dart';
@@ -10,6 +9,7 @@ class ProductDiscount {
   final String supplier;
   int quantity;
   final String category;
+  final String? type;
   final String status;
   final List<Discount> discount;  // Danh sách các đợt giảm giá
   final dynamic image;
@@ -26,6 +26,7 @@ class ProductDiscount {
     required this.supplier,
     required this.quantity,
     required this.category,
+    this.type,
     required this.status,
     required this.discount,
     required this.image,
@@ -44,6 +45,7 @@ class ProductDiscount {
       supplier: json['supplier'] ?? '',
       quantity: json['quantity'] ?? 0,
       category: json['category'] ?? '',
+      type: json['type'] ?? '',
       status: json['status'] ?? '',
       discount: json['discount'] != null
           ? (json['discount'] as List)

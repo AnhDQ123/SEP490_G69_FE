@@ -17,7 +17,7 @@ import '../base/api_base_url.dart';
 import '../models/shop.dart';  // Import ApiBaseUrl
 
 class ShopService {
-  final String baseUrl = "http://192.168.1.15:8080/api";
+  final String baseUrl = ApiBaseUrl.baseUrl +"/api";
 
   Future<List<Bank>> fetchBanks() async {
     try {

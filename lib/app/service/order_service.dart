@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import '../base/api_base_url.dart';
@@ -12,6 +13,8 @@ class OrderService {
     try {
       final url = Uri.parse('$baseUrl/checkout?id=$id');
       final response = await http.get(url);
+      log("📦 Raw order JSON: ${response.body}");
+
 
       print("🔥 [GET] $url");
       print("🔥 STATUS: ${response.statusCode}");
@@ -30,7 +33,6 @@ class OrderService {
     }
   }
 
-  /// 🔁 Lấy danh sách đơn hàng theo người dùng + trạng thái (có phân trang)
   Future<List<Order>> fetchOrdersByOwnerAndStatus({
     required int id,
     required String status,
@@ -58,7 +60,6 @@ class OrderService {
     }
   }
 
-  /// 🏪 Lấy danh sách đơn theo shop + trạng thái (có phân trang)
   Future<List<Order>> fetchOrdersByShopAndStatus({
     required int id,
     required String status,

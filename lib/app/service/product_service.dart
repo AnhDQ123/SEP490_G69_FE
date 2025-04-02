@@ -8,9 +8,9 @@ import '../models/product_discount.dart';
 
 class ProductService {
   // Lấy danh sách sản phẩm
-    Future<List<Product>> fetchProducts() async {
+  Future<List<Product>> fetchProducts(productId) async {
     try {
-      final response = await http.get(Uri.parse("${ApiBaseUrl.baseUrl}/api/shop/1"));
+      final response = await http.get(Uri.parse("${ApiBaseUrl.baseUrl}/api/shop/${productId}"));
 
       if (response.statusCode == 200) {
         // Giải mã UTF-8 đúng cách
@@ -48,23 +48,25 @@ class ProductService {
   }
 
   // Hàm gửi API tạo sản phẩm
-  static Future<bool> createProduct(ProductDiscount product, File? avatar, List<File> options) async {
+  static Future<bool> createProduct(ProductDiscount product, File? avatar, List<File> options, int shopId) async {
     try {
-      var request = http.MultipartRequest("POST", Uri.parse("${ApiBaseUrl.baseUrl}/api/add"));
+      var request = http.MultipartRequest("POST", Uri.parse("${ApiBaseUrl.baseUrl}/api/product/add"));
 
       // 🟢 Thêm dữ liệu dạng `form-data`
-      request.fields["name"] = product.name;
+      request.fields["name"] = product.name ?? "Default Name";
       request.fields["description"] = product.description ?? "";
-      request.fields["category_id"] = product.category.toString();
+      request.fields["category"] = product.category.toString();
       request.fields["quantity"] = product.quantity.toString();
-      request.fields["shop_id"] = "1"; // Shop ID có thể cần lấy từ `user session`
+      request.fields["shopId"] = shopId.toString(); // Shop ID có thể cần lấy từ `user session`
       request.fields["supplier"] = product.supplier ?? "";
+      request.fields["foodType"] = product.type.toString();
 
       // 🟢 Gửi danh sách `foodOptions` theo dạng `form-data`
       for (int i = 0; i < product.foodOptions!.length; i++) {
         var option = product.foodOptions![i];
-        request.fields["foodOption[$i].name"] = option.name ?? ""; // Nếu null, gửi chuỗi rỗng
+        request.fields["foodOption[$i].name"] = option.name ??  "Default Option Name";
         request.fields["foodOption[$i].price"] = option.price.toString();
+        request.fields["foodOption[$i].type_id"] = option.typeId.toString();
       }
 
       // 🟢 Gửi ảnh đại diện (avatar) nếu có

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../../resources/assets_manager.dart';
 import '../../../../resources/text_style.dart';
 import '../../controllers/home_controller.dart';
 
@@ -104,26 +105,29 @@ class _CategorySectionState extends State<CategorySection> {
                           image: DecorationImage(
                             image: (category.image != null && category.image!.isNotEmpty)
                                 ? NetworkImage(category.image!)
-                                : const AssetImage('assets/images/default_category.png') as ImageProvider,
+                                : AssetImage(ImageAssets.defaultFood) as ImageProvider,
                             fit: BoxFit.cover,
                           ),
                         ),
                       ),
                       const SizedBox(height: 2),
-                      Text(
-                        category.name ?? 'No Name',
-                        style: const TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.black87,
+                      Flexible(
+                        child: Text(
+                          category.name ?? 'No Name',
+                          style: const TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.black87,
+                          ),
+                          textAlign: TextAlign.center,
+                          maxLines: 2,  // Giới hạn 2 dòng
+                          overflow: TextOverflow.ellipsis, // Thêm dấu ba chấm
                         ),
-                        textAlign: TextAlign.center,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
                       ),
                     ],
                   ),
                 );
+
               }).toList(),
             ),
           ),

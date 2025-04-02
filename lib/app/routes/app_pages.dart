@@ -70,21 +70,49 @@ import '../modules/search_screen/bindings/search_screen_binding.dart';
 import '../modules/search_screen/views/search_screen_view.dart';
 import '../modules/send_report/bindings/send_report_binding.dart';
 import '../modules/send_report/views/send_report_view.dart';
+import '../modules/shop_add_discount/bindings/shop_add_discount_binding.dart';
+import '../modules/shop_add_discount/views/shop_add_discount_view.dart';
+import '../modules/shop_add_product/bindings/shop_add_product_binding.dart';
+import '../modules/shop_add_product/views/shop_add_product_view.dart';
+import '../modules/shop_dashboard/bindings/shop_dashboard_binding.dart';
+import '../modules/shop_dashboard/views/shop_dashboard_view.dart';
+import '../modules/shop_detail/bindings/shop_detail_binding.dart';
+import '../modules/shop_detail/views/shop_detail_view.dart';
+import '../modules/shop_menu/bindings/shop_binding.dart';
+import '../modules/shop_menu/views/shop_view.dart';
 import '../modules/shop_order/bindings/shop_order_binding.dart';
 import '../modules/shop_order/views/shop_order_view.dart';
+import '../modules/shop_product_discount_list/bindings/product_discount_binding.dart';
+import '../modules/shop_product_discount_list/views/product_discount_view.dart';
+import '../modules/shop_product_list/bindings/shop_product_list_binding.dart';
+import '../modules/shop_product_list/views/shop_product_list_view.dart';
 import '../modules/shop_profile/bindings/shop_profile_binding.dart';
 import '../modules/shop_profile/views/shop_profile_view.dart';
+import '../modules/shop_register/bindings/shop_register_binding.dart';
+import '../modules/shop_register/views/shop_register_view.dart';
 import '../modules/shop_report/bindings/shop_report_binding.dart';
 import '../modules/shop_report/views/shop_report_view.dart';
 import '../modules/shop_report_list/bindings/shop_report_list_binding.dart';
 import '../modules/shop_report_list/views/shop_report_list_view.dart';
+import '../modules/shop_voucher_add/bindings/shop_voucher_add_binding.dart';
+import '../modules/shop_voucher_add/views/shop_voucher_add_view.dart';
+import '../modules/shop_voucher_list/bindings/shop_voucher_list_binding.dart';
+import '../modules/shop_voucher_list/views/shop_voucher_list_view.dart';
+import '../modules/user_profile/change_password/bindings/change_password_binding.dart';
 import '../modules/user_profile/change_password/bindings/change_password_binding.dart';
 import '../modules/user_profile/change_password/views/change_password_view.dart';
+import '../modules/user_profile/change_password/views/change_password_view.dart';
+import '../modules/user_profile/edit_profile/bindings/edit_profile_binding.dart';
 import '../modules/user_profile/edit_profile/bindings/edit_profile_binding.dart';
 import '../modules/user_profile/edit_profile/views/edit_profile_view.dart';
+import '../modules/user_profile/edit_profile/views/edit_profile_view.dart';
+import '../modules/user_profile/profile/bindings/profile_binding.dart';
 import '../modules/user_profile/profile/bindings/profile_binding.dart';
 import '../modules/user_profile/profile/views/profile_view.dart';
+import '../modules/user_profile/profile/views/profile_view.dart';
 import '../modules/user_profile/setting_logout/bindings/setting_logout_binding.dart';
+import '../modules/user_profile/setting_logout/bindings/setting_logout_binding.dart';
+import '../modules/user_profile/setting_logout/views/setting_logout_view.dart';
 import '../modules/user_profile/setting_logout/views/setting_logout_view.dart';
 import '../modules/user_view_shop_detail/bindings/user_view_shop_detail_binding.dart';
 import '../modules/user_view_shop_detail/views/user_view_shop_detail_view.dart';
@@ -96,7 +124,7 @@ part 'app_routes.dart';
 class AppPages {
   AppPages._();
 
-  static const INITIAL = Routes.SHOP;
+  static const INITIAL = Routes.HOME;
 
   static final routes = [
     GetPage(
@@ -149,11 +177,11 @@ class AppPages {
       page: () => ProductDiscountView(),
       binding: ProductDiscountBinding(),
     ),
-    // GetPage(
-    //   name: _Paths.HOME,
-    //   page: () => const HomeView(),
-    //   binding: HomeBinding(),
-    // ),
+    GetPage(
+      name: _Paths.HOME,
+      page: () => const HomeView(),
+      binding: HomeBinding(),
+    ),
     GetPage(
       name: _Paths.SHOP_DASHBOARD,
       page: () => ShopDashboardView(),
@@ -271,7 +299,7 @@ class AppPages {
     ),
     GetPage(
       name: _Paths.SHOP_REPORT_LIST,
-      page: () =>  ShopReportListView(),
+      page: () => ShopReportListView(),
       binding: ShopReportListBinding(),
     ),
     GetPage(

@@ -86,10 +86,6 @@ class ShopView extends GetView<ShopController> {
                         if (shop.rate - shop.rate.floor() >= 0.5)
                           Icon(Icons.star_half, color: Colors.amber, size: 18),
                         SizedBox(width: 5),
-                        Text(
-                          '${shop.rate.toString()} (${shop.viewCount} lượt xem)',
-                          style: TextStyle(color: Colors.grey),
-                        ),
                       ],
                     )
 
@@ -143,7 +139,11 @@ class ShopView extends GetView<ShopController> {
           children: [
             ListTile(
               title: Text('Đơn hàng trong tháng', style: TextStyle(fontWeight: FontWeight.bold)),
-              trailing: TextButton(onPressed: () {}, child: Text('Xem thêm >')),
+              trailing: TextButton(
+                  onPressed: () {
+                    Get.toNamed(Routes.SHOP_ORDER, arguments: {'shopId': controller.shopId});
+                  },
+                  child: Text('Xem thêm >')),
             ),
             Obx(() {
               // Kiểm tra nếu orderCounts đã được cập nhật từ API
