@@ -27,7 +27,7 @@ class ShopPreparingOrderWidget extends StatelessWidget {
       actionWidgetBuilder: (order, total) {
         return ElevatedButton.icon(
           icon: const Icon(Icons.local_shipping_outlined, size: 18),
-          label: const Text("Đã chuẩn bị xong", style: TextStyle(fontSize: 12)),
+          label: const Text("Chuẩn bị xong", style: TextStyle(fontSize: 12)),
           onPressed: () async {
             final image = await ImagePicker().pickImage(source: ImageSource.gallery);
             if (image == null) return;

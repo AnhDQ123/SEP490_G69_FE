@@ -36,7 +36,7 @@ class ShopPendingOrderWidget extends StatelessWidget {
                   Get.snackbar("❌ Lỗi", "Không thể xác nhận đơn");
                 }
               },
-              child: const Text("Xác nhận", style: TextStyle(fontSize: 10)),
+              child: const Text("Xác nhận", style: TextStyle(fontSize: 8)),
             ),
             const SizedBox(width: 8),
             OutlinedButton(
@@ -50,7 +50,7 @@ class ShopPendingOrderWidget extends StatelessWidget {
                 }
               },
               style: OutlinedButton.styleFrom(foregroundColor: Colors.red),
-              child: const Text("Từ chối", style: TextStyle(fontSize: 10)),
+              child: const Text("Từ chối", style: TextStyle(fontSize: 8)),
             ),
           ],
         );

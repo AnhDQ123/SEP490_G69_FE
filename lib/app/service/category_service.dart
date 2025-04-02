@@ -1,14 +1,13 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/category.dart';
+import '../base/api_base_url.dart';
 
 class CategoryService {
-  static const String baseUrl = "http://10.0.2.2:8080/api/category"; // URL API category
-
   // Hàm lấy danh sách danh mục
-  static Future<List<Category>> fetchCategories() async {
+  Future<List<Category>> fetchCategories() async {
     try {
-      final response = await http.get(Uri.parse(baseUrl));
+      final response = await http.get(Uri.parse("${ApiBaseUrl.baseUrl}/api/category"));
 
       print("Response status: ${response.statusCode}");
       print("Response body: ${response.body}");
@@ -19,11 +18,19 @@ class CategoryService {
 
         print("Parsed JSON: $jsonData");
 
-        List<Category> categories = (jsonData as List)
-            .map((item) => Category.fromJson(item))
-            .toList();
+        // Truy cập vào trường 'content' để lấy danh sách danh mục
+        var contentList = jsonData['content'];
 
-        return categories;
+        // Kiểm tra nếu contentList là một danh sách, rồi chuyển đổi
+        if (contentList is List) {
+          List<Category> categories = contentList
+              .map((item) => Category.fromJson(item))
+              .toList();
+
+          return categories;
+        } else {
+          throw Exception('Content không phải là một danh sách');
+        }
       } else {
         throw Exception("Lỗi khi tải danh mục. Mã lỗi: ${response.statusCode}");
       }

@@ -37,15 +37,7 @@ class ProductDetailController extends GetxController {
         quantity: 0,
         category: '',
         // discount: 0.0,
-        discount: [
-          Discount(
-            id: 1,
-            amount: 0.12,
-            startDate: DateTime.now(),
-            endDate: DateTime.now().add(Duration(days: 7)),
-            status: "ACTIVE",
-          ),
-        ],
+        discount: [],  // Để trống danh sách discount
         image: '',
         description: '',
         rate: 0.0,
@@ -61,6 +53,7 @@ class ProductDetailController extends GetxController {
     print("👤 [ProductDetail] Đang đăng nhập với userId: $userId");
     fetchProductData();
 
+
     // Các dữ liệu mẫu cho menuProducts, drinkProducts, reviews...
     menuProducts.assignAll([
       Product(
@@ -71,16 +64,7 @@ class ProductDetailController extends GetxController {
         quantity: 1,
         category: '',         // Giá trị mặc định
         // discount: 0.12,        // Giá trị mặc định
-        discount: [
-          Discount(
-            id: 1,
-            amount: 0.12,
-            startDate: DateTime.now(),
-            endDate: DateTime.now().add(Duration(days: 7)),
-            status: "ACTIVE",
-          ),
-        ],
-
+        discount: [],  // Để trống danh sách discount
         image: 'https://images.squarespace-cdn.com/content/v1/53883795e4b016c956b8d243/1551438228969-H0FPV1FO3W5B0QL328AS/chup-anh-thuc-an-1.jpg',
         description: '',      // Giá trị mặc định
         rate: 5,
@@ -96,16 +80,7 @@ class ProductDetailController extends GetxController {
         quantity: 1,
         category: '',
         // discount: 0.12,
-        discount: [
-          Discount(
-            id: 1,
-            amount: 0.12,
-            startDate: DateTime.now(),
-            endDate: DateTime.now().add(Duration(days: 7)),
-            status: "ACTIVE",
-          ),
-        ],
-
+        discount: [],  // Để trống danh sách discount
         image: 'https://images.squarespace-cdn.com/content/v1/53883795e4b016c956b8d243/1551438228969-H0FPV1FO3W5B0QL328AS/chup-anh-thuc-an-1.jpg',
         description: '',
         rate: 5,
@@ -124,16 +99,7 @@ class ProductDetailController extends GetxController {
         quantity: 1,
         category: '',
         // discount: 0.12,
-        discount: [
-          Discount(
-            id: 1,
-            amount: 0.12,
-            startDate: DateTime.now(),
-            endDate: DateTime.now().add(Duration(days: 7)),
-            status: "ACTIVE",
-          ),
-        ],
-
+        discount: [],  // Để trống danh sách discount
         image: 'https://images.squarespace-cdn.com/content/v1/53883795e4b016c956b8d243/1551438228969-H0FPV1FO3W5B0QL328AS/chup-anh-thuc-an-1.jpg',
         description: '',
         rate: 5,
@@ -149,16 +115,7 @@ class ProductDetailController extends GetxController {
         quantity: 1,
         category: '',
         // discount: 0.12,
-        discount: [
-          Discount(
-            id: 1,
-            amount: 0.12,
-            startDate: DateTime.now(),
-            endDate: DateTime.now().add(Duration(days: 7)),
-            status: "ACTIVE",
-          ),
-        ],
-
+        discount: [],  // Để trống danh sách discount
         image: 'https://images.squarespace-cdn.com/content/v1/53883795e4b016c956b8d243/1551438228969-H0FPV1FO3W5B0QL328AS/chup-anh-thuc-an-1.jpg',
         description: '',
         rate: 5,
@@ -210,7 +167,7 @@ class ProductDetailController extends GetxController {
           id: e.id.toString(),
           name: e.name,
           price: e.price,
-          imageUrl: e.image.isNotEmpty ? e.image : null,
+          imageUrl: e.image?? null,
           unit: "suất",
           selected: false,
           quantity: 1,
@@ -225,8 +182,7 @@ class ProductDetailController extends GetxController {
 
       print("📦 Similar products loaded: ${similar.length}");
       for (var p in similar) {
-        print("🔍 Product: ${p.name}, price: ${p.defaultPrice}, shop: ${p.shop}");
-      }
+        print("🔍 Product ID: ${p.id}, Name: ${p.name}, Price: ${p.defaultPrice}, Shop: ${p.shop}");      }
 
       similarProducts.assignAll(similar);
     } catch (e) {
@@ -247,32 +203,51 @@ class ProductDetailController extends GetxController {
 
   double get currentPrice {
     if (_product.value == null) return 0;
+
     double basePrice = _product.value!.defaultPrice;
+
+    // Lọc discount có trạng thái ACTIVE và lấy discount đầu tiên
+    final activeDiscount = _product.value!.discount.firstWhere(
+          (discount) => discount.status == 'ACTIVE',
+      orElse: () => Discount(  // Nếu không tìm thấy discount, trả về discount mặc định
+        id: 0,
+        amount: 0.0,  // Mặc định là 0% giảm giá
+        startDate: '',
+        endDate: '',
+        status: 'INACTIVE',  // Mặc định là INACTIVE
+      ),
+    );
+
+    // Nếu có discount ACTIVE, tính giá mới sau discount
+    basePrice = basePrice - (basePrice * (activeDiscount.amount / 100));
+
     List availableSizes = _product.value!.foodOptions
         .where((option) => option.typeId == 2)
         .toList();
+
     if (availableSizes.isNotEmpty) {
       int index = selectedSizeIndex.value;
       if (index < availableSizes.length) {
         return basePrice + availableSizes[index].price;
       }
     }
+
     return basePrice;
   }
+
 
   void selectSize(int index) {
     selectedSizeIndex.value = index;
   }
 
-  /// Cập nhật hàm addToCartWithOptions để gọi API
+  // Cập nhật hàm addToCartWithOptions để gửi discount và tính giá
   Future<void> addToCartWithOptions() async {
     try {
-      // 🧮 Tính giá
       final double basePrice = currentProduct.defaultPrice;
       final int qty = quantity.value;
       double total = 0.0;
 
-      // ✅ Lấy size đã chọn (typeId = 2)
+      // Tính size
       final sizeOptions = currentProduct.foodOptions.where((opt) => opt.typeId == 2).toList();
       CartItemOptionDTO? selectedSizeOption;
       if (sizeOptions.isNotEmpty && selectedSizeIndex.value < sizeOptions.length) {
@@ -281,7 +256,7 @@ class ProductDetailController extends GetxController {
           optionId: size.id,
           typeId: 2,
           optionName: size.name,
-          image: size.image ?? '',
+          image: size.image as String ?? '',
           cartItemId: 0,
           price: size.price,
           totalPrice: size.price * qty,
@@ -290,7 +265,23 @@ class ProductDetailController extends GetxController {
         total += size.price * qty;
       }
 
-      // ✅ Lấy extra topping (typeId = 1)
+      // Lọc và tính giá từ discount có trạng thái ACTIVE
+      final activeDiscount = _product.value!.discount.firstWhere(
+            (discount) => discount.status == 'ACTIVE',
+        orElse: () => Discount(  // Nếu không tìm thấy discount, trả về discount mặc định
+          id: 0,
+          amount: 0.0,  // Mặc định là 0% giảm giá
+          startDate: '',
+          endDate: '',
+          status: 'INACTIVE',  // Mặc định là INACTIVE
+        ),
+      );
+
+      final double discountedPrice = activeDiscount != null
+          ? basePrice - (basePrice * (activeDiscount.amount / 100))
+          : basePrice;
+
+      // Tính topping
       final List<CartItemOptionDTO> extraOptionsList = extraOptions
           .where((opt) => opt.selected)
           .map((opt) => CartItemOptionDTO(
@@ -307,27 +298,27 @@ class ProductDetailController extends GetxController {
 
       total += extraOptionsList.fold(0.0, (sum, e) => sum + e.totalPrice);
 
-      // ✅ Tổng tiền = (base + size) * số lượng + topping
-      final double totalPrice = (basePrice * qty) + total;
+      // Tổng tiền = (base + size) * số lượng + topping
+      final double totalPrice = (discountedPrice * qty) + total;
 
-      // ✅ Gộp tất cả option lại
+      // Gộp tất cả option lại
       if (selectedSizeOption != null) {
         extraOptionsList.insert(0, selectedSizeOption);
       }
 
-      // 🧱 CartItemDTO
+      // Tạo CartItemDTO
       final cartItem = CartItemDTO(
         cartId: 0,
         productId: currentProduct.id,
         productName: currentProduct.name,
         image: currentProduct.image,
-        price: basePrice,
+        price: discountedPrice,
         totalPrice: totalPrice,
         quantity: qty,
         cartItemOptionDTOList: extraOptionsList,
       );
 
-      // 🧱 CartDTO
+      // Tạo CartDTO
       final cart = CartDTO(
         id: 0,
         userId: parsedUserId,
@@ -338,7 +329,7 @@ class ProductDetailController extends GetxController {
         cartItemDTOList: [cartItem],
       );
 
-      // 📡 Gửi lên backend
+      // Gửi lên backend
       bool success = await cartApiService.addToCart(cart);
       if (success) {
         Get.snackbar("Thành công", "Đã thêm sản phẩm vào giỏ hàng");

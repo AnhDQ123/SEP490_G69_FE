@@ -22,11 +22,16 @@ class ShopOrderController extends GetxController {
   final OrderService _orderService = OrderService();
 
   @override
+  @override
   void onInit() {
     super.onInit();
-    shopId = Get.arguments ?? 1; //shopid
+    // Đảm bảo rằng shopId là kiểu int và được lấy chính xác
+    shopId = Get.arguments != null && Get.arguments is Map<String, dynamic>
+        ? Get.arguments['shopId'] ?? 1 // Nếu có giá trị thì lấy, nếu không thì mặc định là 1
+        : 1; // Nếu Get.arguments là null hoặc không phải kiểu Map, mặc định là 1
     fetchAll();
   }
+
 
   Future<void> fetchAll() async {
     try {

@@ -60,6 +60,8 @@ class QrPaymentController extends GetxController {
         if (updatedOrder != null) {
           order = updatedOrder;
           update(); // Cập nhật UI nếu cần
+          log("🖼️ New paymentProof: ${order.paymentProof}");
+
         }
 
         Get.snackbar("✅ Thành công", "Đã gửi ảnh bằng chứng thanh toán!");

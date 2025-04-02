@@ -38,7 +38,7 @@ class HomeController extends GetxController {
   // Cập nhật phương thức fetchCategories với các tham số phân trang
   void fetchCategories({String? name, int page = 0, int size = 20}) async {
     try {
-      final data = await _apiService.fetchCategories(name: name, page: page, size: size);
+      final data = await _apiService.fetchCategories(name: name, page: page + 1, size: size);
       print('API categories data: $data');
       categoryList.value = data;
     } catch (e) {

@@ -1,7 +1,7 @@
 
 import 'package:ffb_fe_flutter/app/models/food_option_model.dart';
-
 import 'discount.dart';
+import 'food_option.dart';
 
 class Product {
   final int id;
@@ -10,14 +10,13 @@ class Product {
   final String supplier;
   int quantity;
   final String category;
-  // final double discount;
-  final List<Discount> discount;
+  final List<Discount> discount;  // Cập nhật thành List<Discount>
   final String image;
   final String description;
   final double rate;
   final String shop;
-  final double defaultPrice;              // Thêm trường price
-  final List<FoodOptionModel> foodOptions; // Nếu cần
+  final double defaultPrice;  // Giá gốc
+  final List<FoodOption> foodOptions; // Nếu có
 
   Product({
     required this.id,
@@ -43,20 +42,25 @@ class Product {
       supplier: json['supplier'] ?? '',
       quantity: json['quantity'] ?? 0,
       category: json['category'] ?? '',
-      // discount: (json['discount'] as num?)?.toDouble() ?? 0.0,
-      discount: (json['discount'] as List?)?.map((e) => Discount.fromJson(e)).toList() ?? [],
+      discount: json['discount'] != null
+          ? (json['discount'] as List)
+          .map((item) => Discount.fromJson(item))
+          .toList()
+          : [],  // Cập nhật sử dụng List<Discount>
       image: json['image'] ?? '',
       description: json['description'] ?? '',
       rate: (json['rate'] as num?)?.toDouble() ?? 0.0,
-      shop: json['shop'] ?? json['shopName'] ?? json['supplier'] ?? '',
+      shop: json['shopName'] ?? json['supplier'] ?? '',
       defaultPrice: (json['defaultPrice'] as num?)?.toDouble() ?? 0.0,
       foodOptions: json['foodOption'] != null
           ? (json['foodOption'] as List)
-          .map((item) => FoodOptionModel.fromJson(item))
+          .map((item) => FoodOption.fromJson(item))
           .toList()
           : [],
     );
   }
+
+
 
   Map<String, dynamic> toJson() {
     return {
@@ -66,7 +70,7 @@ class Product {
       'supplier': supplier,
       'quantity': quantity,
       'category': category,
-      'discount': discount,
+      'discount': discount.map((item) => item.toJson()).toList(),
       'image': image,
       'description': description,
       'rate': rate,
@@ -76,5 +80,3 @@ class Product {
     };
   }
 }
-
-

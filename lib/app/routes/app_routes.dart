@@ -3,6 +3,7 @@ part of 'app_pages.dart';
 
 abstract class Routes {
   Routes._();
+  static const SHOP = _Paths.SHOP;
   static const LOGIN = _Paths.LOGIN;
   static const REGISTER = _Paths.REGISTER;
   static const VERIFY_METHOD = _Paths.VERIFY_METHOD;
@@ -14,7 +15,13 @@ abstract class Routes {
   static const CART = _Paths.CART;
   static const FILTER = _Paths.FILTER;
   static const PRODUCT_LIST_SHOP = _Paths.PRODUCT_LIST_SHOP;
+  static const ADD_PRODUCT = _Paths.ADD_PRODUCT;
+  static const EDIT_PRODUCT = _Paths.EDIT_PRODUCT;
+  static const ADD_BANNER = _Paths.ADD_BANNER;
   static const PRODUCT_FORM = _Paths.PRODUCT_FORM;
+  static const SHOP_REGISTER = _Paths.SHOP_REGISTER;
+  static const PRODUCT_DISCOUNT = _Paths.PRODUCT_DISCOUNT;
+  static const SHOP_DASHBOARD = _Paths.SHOP_DASHBOARD;
   static const PRODUCT_DETAIL = _Paths.PRODUCT_DETAIL;
   static const PRODUCT_SELECTION = _Paths.PRODUCT_SELECTION;
   static const FORGOT_PASSWORD = _Paths.FORGOT_PASSWORD;
@@ -24,6 +31,11 @@ abstract class Routes {
   static const USER_INFO = _Paths.USER_INFO;
   static const SPLASH_SCREEN = _Paths.SPLASH_SCREEN;
   static const CHECKOUT = _Paths.CHECKOUT;
+  static const SHOP_ADD_DISCOUNT = _Paths.SHOP_ADD_DISCOUNT;
+  static const SHOP_VOUCHER_LIST = _Paths.SHOP_VOUCHER_LIST;
+  static const SHOP_VOUCHER_ADD = _Paths.SHOP_VOUCHER_ADD;
+  static const SHOP_DETAIL = _Paths.SHOP_DETAIL;
+  static const SHOP_PRODUCT_LIST = _Paths.SHOP_PRODUCT_LIST;
   static const MY_ORDER = _Paths.MY_ORDER;
   static const RECOMMENDED_PRODUCTS = _Paths.RECOMMENDED_PRODUCTS;
   static const CHECK_OUT = _Paths.CHECK_OUT;
@@ -38,6 +50,7 @@ abstract class Routes {
   static const SHOP_REPORT = _Paths.SHOP_REPORT;
   static const SEND_REPORT = _Paths.SEND_REPORT;
   static const SHOP_REPORT_LIST = _Paths.SHOP_REPORT_LIST;
+  static const SHOP_ADD_PRODUCT = _Paths.SHOP_ADD_PRODUCT;
 }
 
 abstract class _Paths {
@@ -52,7 +65,11 @@ abstract class _Paths {
   static const HOME = '/home';
   static const CART = '/cart';
   static const FILTER = '/filter';
+  static const SHOP = '/shop';
   static const PRODUCT_LIST_SHOP = '/product-list-shop';
+  static const ADD_PRODUCT = '/add-product';
+  static const EDIT_PRODUCT = '/edit-product';
+  static const ADD_BANNER = '/add-banner';
   static const PRODUCT_FORM = '/product-form';
   static const PRODUCT_DETAIL = '/product-detail';
   static const PRODUCT_SELECTION = '/product-selection';
@@ -77,4 +94,13 @@ abstract class _Paths {
   static const SHOP_REPORT = '/shop-report';
   static const SEND_REPORT = '/send-report';
   static const SHOP_REPORT_LIST = '/shop-report-list';
+  static const SHOP_REGISTER = '/shop-register';
+  static const PRODUCT_DISCOUNT = '/product-discount';
+  static const SHOP_DASHBOARD = '/shop-dashboard';
+  static const SHOP_ADD_DISCOUNT = '/shop-add-discount';
+  static const SHOP_VOUCHER_LIST = '/shop-voucher-list';
+  static const SHOP_VOUCHER_ADD = '/shop-voucher-add';
+  static const SHOP_DETAIL = '/shop-detail';
+  static const SHOP_PRODUCT_LIST = '/shop-product-list';
+  static const SHOP_ADD_PRODUCT = '/shop-add-product';
 }

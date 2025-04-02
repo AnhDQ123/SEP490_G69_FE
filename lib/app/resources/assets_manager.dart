@@ -6,6 +6,7 @@ class ImageAssets {
   static String banner1 = '$baseImage/banner1.avif';
   static String banner2 = '$baseImage/banner2.avif';
   static String banner3 = '$baseImage/banner3.avif';
+  static String defaultFood = '$baseImage/default_food.avif';
 
 
 }

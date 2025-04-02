@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import '../../../../models/discount.dart';
 import '../../../../models/product.dart';
 import '../../../../resources/responsive_utils.dart';
 import '../../../../resources/text_style.dart';
@@ -26,15 +27,22 @@ class FoodList extends StatelessWidget {
   }
 
   Widget _buildProductCard(BuildContext context, Product product) {
-    // final double discount = product.discount;
-    // final double newPrice = product.defaultPrice * (1 - discount);
-    // Lấy giảm giá đầu tiên nếu có, hoặc mặc định 0
-    final double discountValue = product.discount.isNotEmpty
-        ? product.discount.first.amount
-        : 0.0;
+    // Lấy discount có trạng thái ACTIVE
+    Discount? activeDiscount;
+    for (var discount in product.discount) {
+      if (discount.status == 'ACTIVE') {
+        activeDiscount = discount;
+        break; // Lấy discount đầu tiên có trạng thái ACTIVE
+      }
+    }
 
-    final double newPrice = product.defaultPrice * (1 - discountValue);
+    // Nếu có discount có trạng thái ACTIVE, tính giá mới
+    double discountValue = 0.0;
+    if (activeDiscount != null) {
+      discountValue = activeDiscount.amount / 100;  // Phần trăm giảm giá
+    }
 
+    final double newPrice = product.defaultPrice * (1 - discountValue);  // Tính giá mới sau khi giảm
 
     return InkWell(
       onTap: () {
@@ -78,7 +86,8 @@ class FoodList extends StatelessWidget {
                         ),
                       ),
                     ),
-                    if (discountValue > 0)
+                    // Nếu có discount ACTIVE, hiển thị banner giảm giá
+                    if (activeDiscount != null)
                       Positioned(
                         top: UtilsReponsive.height(2, context),
                         left: UtilsReponsive.width(2, context),
@@ -90,7 +99,7 @@ class FoodList extends StatelessWidget {
                           ),
                           child: TextConstant.subTile3(
                             context,
-                            text: '-${(discountValue * 100).toStringAsFixed(0)}%',
+                            text: '-${(activeDiscount.amount).toStringAsFixed(0)}%',
                             size: 7,
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
@@ -102,20 +111,27 @@ class FoodList extends StatelessWidget {
                 SizedBox(height: UtilsReponsive.height(8, context)),
 
                 // Thông tin sản phẩm
-                TextConstant.subTile2(
-                  context,
-                  text: product.name,
-                  size: 10,
-                  fontWeight: FontWeight.normal,
-                  color: Colors.black,
+                Row(
+                  children: [
+                    Expanded(  // Thêm Expanded để cho phép tên sản phẩm co giãn
+                      child: TextConstant.subTile2(
+                        context,
+                        text: product.name,
+                        size: 10,
+                        fontWeight: FontWeight.normal,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ],
                 ),
+
 
                 Row(
                   children: [
                     TextConstant.subTile2(
                       context,
                       text: product.shop,
-                      size: 10,
+                      size: 6,
                       color: const Color.fromRGBO(212, 163, 115, 1),
                     ),
                     SizedBox(width: UtilsReponsive.width(2, context)),
@@ -140,7 +156,8 @@ class FoodList extends StatelessWidget {
 
                 Row(
                   children: [
-                    if (discountValue > 0)
+                    // Hiển thị giá cũ nếu có discount
+                    if (activeDiscount != null)
                       Text(
                         formatPrice(product.defaultPrice),
                         style: TextConstant.textStyleDefine(
@@ -151,6 +168,7 @@ class FoodList extends StatelessWidget {
                         ).copyWith(decoration: TextDecoration.lineThrough),
                       ),
                     SizedBox(width: UtilsReponsive.width(2, context)),
+                    // Hiển thị giá mới
                     TextConstant.titleH2(
                       context,
                       text: formatPrice(newPrice),
@@ -239,6 +257,7 @@ class FoodList extends StatelessWidget {
     });
   }
 }
+
 
 
 
