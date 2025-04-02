@@ -129,6 +129,9 @@ class ShopView extends GetView<ShopController> {
       title: Text(title),
       value: value.value,
       onChanged: (val) => value.value = val,
+      activeColor: Color.fromRGBO(251, 196, 139, 1.0), // Màu khi bật (on)
+      inactiveThumbColor: Colors.grey,  // Màu khi tắt (off)
+      inactiveTrackColor: Colors.grey.shade300, // Màu đường viền khi tắt
     ));
   }
 
@@ -193,7 +196,7 @@ class ShopView extends GetView<ShopController> {
       shrinkWrap: true,
       physics: NeverScrollableScrollPhysics(),
       crossAxisCount: 2,
-      childAspectRatio: 2.5, // Điều chỉnh tỉ lệ để tránh overflow
+      childAspectRatio: 3 / 2, // Điều chỉnh tỉ lệ chiều rộng / chiều cao để làm ô cao hơn
       children: [
         _buildGridItem(Icons.category, 'Sản phẩm', () => Get.toNamed(Routes.SHOP_PRODUCT_LIST)),
         _buildGridItem(Icons.pie_chart, 'Thống kê', () => Get.toNamed(Routes.SHOP_DASHBOARD)),
@@ -205,6 +208,7 @@ class ShopView extends GetView<ShopController> {
     );
   }
 
+
   Widget _buildGridItem(IconData icon, String title, VoidCallback onTap) {
     return Card(
       child: InkWell(
@@ -215,7 +219,7 @@ class ShopView extends GetView<ShopController> {
             children: [
               Icon(icon, size: 30),
               SizedBox(height: 5),
-              Text(title, style: TextStyle(fontWeight: FontWeight.bold), textAlign: TextAlign.center),
+              Text(title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18), textAlign: TextAlign.center),
             ],
           ),
         ),

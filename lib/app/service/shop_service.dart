@@ -57,7 +57,8 @@ class ShopService {
     required File? menu,
     required String selectedBankBin,
     required String bankInfo,
-  }) async {
+  }) async
+  {
     var uri = Uri.parse('$baseUrl/shops/register');
     var request = http.MultipartRequest('POST', uri);
 
@@ -208,7 +209,8 @@ class ShopService {
     File? citizenIDBack,
     File? registrationCert,
     File? foodSafetyCert,
-  }) async {
+  }) async
+  {
     var uri = Uri.parse('$baseUrl/shops/$shopId');
     var request = http.MultipartRequest('PUT', uri);
 
@@ -302,7 +304,8 @@ class ShopService {
     }
   }
 
-  Future<List<ProductDiscount>> fetchProductsByShop(int shopId) async {
+  Future<List<ProductDiscount>> fetchProductsByShop(int shopId) async
+  {
     final response = await http.get(Uri.parse('$baseUrl/product/shop/$shopId'));
 
     if (response.statusCode == 200) {

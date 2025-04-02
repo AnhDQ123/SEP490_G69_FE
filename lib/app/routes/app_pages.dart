@@ -30,6 +30,8 @@ import '../modules/home/bindings/home_binding.dart';
 import '../modules/home/views/home_view.dart';
 import '../modules/shop_add_discount/bindings/shop_add_discount_binding.dart';
 import '../modules/shop_add_discount/views/shop_add_discount_view.dart';
+import '../modules/shop_add_product/bindings/shop_add_product_binding.dart';
+import '../modules/shop_add_product/views/shop_add_product_view.dart';
 import '../modules/shop_dashboard/bindings/shop_dashboard_binding.dart';
 import '../modules/shop_dashboard/views/shop_dashboard_view.dart';
 import '../modules/shop_detail/bindings/shop_detail_binding.dart';
@@ -94,7 +96,7 @@ part 'app_routes.dart';
 class AppPages {
   AppPages._();
 
-  static const INITIAL = Routes.LOGIN;
+  static const INITIAL = Routes.SHOP;
 
   static final routes = [
     GetPage(
@@ -147,11 +149,11 @@ class AppPages {
       page: () => ProductDiscountView(),
       binding: ProductDiscountBinding(),
     ),
-    GetPage(
-      name: _Paths.HOME,
-      page: () => const HomeView(),
-      binding: HomeBinding(),
-    ),
+    // GetPage(
+    //   name: _Paths.HOME,
+    //   page: () => const HomeView(),
+    //   binding: HomeBinding(),
+    // ),
     GetPage(
       name: _Paths.SHOP_DASHBOARD,
       page: () => ShopDashboardView(),
@@ -271,6 +273,11 @@ class AppPages {
       name: _Paths.SHOP_REPORT_LIST,
       page: () =>  ShopReportListView(),
       binding: ShopReportListBinding(),
+    ),
+    GetPage(
+      name: _Paths.SHOP_ADD_PRODUCT,
+      page: () => ShopAddProductView(),
+      binding: ShopAddProductBinding(),
     ),
   ];
 }

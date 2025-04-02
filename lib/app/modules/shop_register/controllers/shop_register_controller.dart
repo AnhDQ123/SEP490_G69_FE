@@ -55,7 +55,6 @@ class ShopRegisterController extends GetxController {
   var openTime = Rxn<TimeOfDay>();
   var closeTime = Rxn<TimeOfDay>();
 
-
   String formatTime(TimeOfDay? time) {
     if (time == null) return "";
     return "${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}";

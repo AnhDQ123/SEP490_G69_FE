@@ -21,7 +21,9 @@ class StepIndicator extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
-                      color: isActive ? Colors.black : Colors.grey,
+                      color: isActive
+                          ? Color.fromRGBO(255, 144, 30, 1.0)
+                          : Color.fromRGBO(243, 180, 124, 1.0),
                     ),
                   ),
                   SizedBox(height: 4),
@@ -29,7 +31,9 @@ class StepIndicator extends StatelessWidget {
                     width: 50,
                     height: 4,
                     decoration: BoxDecoration(
-                      color: isActive ? Colors.black : Colors.grey[300],
+                      color: isActive
+                          ? Color.fromRGBO(255, 144, 30, 1.0)
+                          : Color.fromRGBO(248, 198, 153, 1.0),
                       borderRadius: BorderRadius.circular(2),
                     ),
                   ),

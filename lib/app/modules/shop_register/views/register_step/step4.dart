@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../controllers/shop_register_controller.dart';
 
 class Step4 extends StatelessWidget {
@@ -17,19 +19,18 @@ class Step4 extends StatelessWidget {
           children: [
             Text(
               "Vui lòng chuẩn bị các giấy tờ liên quan",
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             Text(
               "Vui lòng xem và điền các giấy tờ liên quan để xác thực cho việc đăng ký cửa hàng",
-              style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+              style: TextStyle(fontSize: 18, color: Colors.grey[700]),
             ),
             const SizedBox(height: 12),
-            Text("Thông tin, giấy tờ cần chuẩn bị",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 12),
             buildTextField(controller.idCard,
-                label: "Số CCCD/CMND/Hộ chiếu", isRequired: true),
+                label: "Số CCCD/CMND/Hộ chiếu",
+                isRequired: true,
+                maxLength: 12),
             buildImageUploader(
                 label: "Mặt trước CCCD/CMND",
                 imageController: controller.idCardFrontImage,
@@ -63,7 +64,7 @@ class Step4 extends StatelessWidget {
               children: [
                 Expanded(
                   child: buildImageUploader(
-                      label: "Giấy phép đăng ký kinh doanh",
+                      label: "Giấy phép đăng ký kinh doanh    ",
                       imageController: controller.registrationCertificateImage,
                       onGalleryPick: () => controller.pickImageFromGallery(
                           controller.registrationCertificateImage),
@@ -106,10 +107,8 @@ class Step4 extends StatelessWidget {
             RichText(
               text: TextSpan(
                   text: "Chọn ngân hàng",
-                  style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black),
+                  style: GoogleFonts.montserrat( // Áp dụng GoogleFonts cho text
+                      fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
                   children: [
                     TextSpan(
                       text: " *",
@@ -153,15 +152,15 @@ class Step4 extends StatelessWidget {
   }
 
   Widget buildTextField(RxString controllerValue,
-      {String label = "", bool isRequired = false}) {
+      {String label = "", bool isRequired = false, int maxLength = 100}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         RichText(
           text: TextSpan(
             text: label,
-            style: TextStyle(
-                fontSize: 14, fontWeight: FontWeight.bold, color: Colors.black),
+            style: GoogleFonts.montserrat( // Áp dụng GoogleFonts cho text
+                fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
             children: isRequired
                 ? [
                     TextSpan(
@@ -177,7 +176,15 @@ class Step4 extends StatelessWidget {
         ),
         SizedBox(height: 4),
         TextField(
+          keyboardType: TextInputType.number,
+          // Đảm bảo bàn phím chỉ hiển thị số
           onChanged: (value) => controllerValue.value = value,
+          inputFormatters: [
+            FilteringTextInputFormatter.digitsOnly,
+            // Chỉ cho phép nhập số
+            LengthLimitingTextInputFormatter(maxLength),
+            // Giới hạn độ dài tối đa
+          ],
           decoration: InputDecoration(
             border: OutlineInputBorder(),
             contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -215,17 +222,15 @@ class Step4 extends StatelessWidget {
                 children: [
                   TextSpan(
                     text: label,
-                    style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black),
+                    style: GoogleFonts.montserrat( // Áp dụng GoogleFonts cho text
+                        fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
                   ),
                   if (isRequired)
                     TextSpan(
                       text: ' *',
                       style: TextStyle(
                           color: Colors.red,
-                          fontSize: 14,
+                          fontSize: 18,
                           fontWeight: FontWeight.bold),
                     ),
                 ],
@@ -321,42 +326,49 @@ class Step4 extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(label,
-            style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+          style: GoogleFonts.montserrat( // Áp dụng GoogleFonts cho text
+              fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),),
         SizedBox(height: 4),
         GestureDetector(
           onTap: () async {
             DateTime? pickedDate = await showDatePicker(
               context: Get.context!,
               initialDate: dateController.value ?? DateTime.now(),
-              firstDate: DateTime(1900),
+              firstDate: DateTime.now(), // Chỉ cho phép chọn ngày từ hiện tại trở đi
               lastDate: DateTime(2100),
             );
             if (pickedDate != null) {
-              dateController.value = pickedDate;
+              if (pickedDate.isBefore(DateTime.now())) {
+                // Hiển thị thông báo nếu người dùng chọn ngày quá khứ
+                Get.snackbar("Thông báo", "Vui lòng chọn ngày từ hôm nay trở đi.");
+              } else {
+                dateController.value = pickedDate;
+              }
             }
           },
           child: Obx(() => Container(
-                width: double.infinity,
-                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey),
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: Text(
-                  dateController.value != null
-                      ? "${dateController.value!.day}/${dateController.value!.month}/${dateController.value!.year}"
-                      : "Chọn ngày",
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: dateController.value != null
-                        ? Colors.black87
-                        : Colors.grey,
-                  ),
-                ),
-              )),
+            width: double.infinity,
+            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.grey),
+              borderRadius: BorderRadius.circular(4),
+            ),
+            child: Text(
+              dateController.value != null
+                  ? "${dateController.value!.day}/${dateController.value!.month}/${dateController.value!.year}"
+                  : "Chọn ngày",
+              style: TextStyle(
+                fontSize: 16,
+                color: dateController.value != null
+                    ? Colors.black87
+                    : Colors.grey,
+              ),
+            ),
+          )),
         ),
         SizedBox(height: 8),
       ],
     );
   }
+
 }
