@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../controllers/shop_register_controller.dart';
 
 class Step3 extends StatelessWidget {
@@ -77,8 +78,7 @@ class Step3 extends StatelessWidget {
         RichText(
           text: TextSpan(
             text: label,
-            style: TextStyle(
-                fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
+            style: GoogleFonts.montserrat(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
             children: [
               TextSpan(
                 text: " *",
@@ -139,8 +139,8 @@ class Step3 extends StatelessWidget {
         RichText(
           text: TextSpan(
             text: label,
-            style: TextStyle(
-                fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
+            style: GoogleFonts.montserrat(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
+
             children: isRequired
                 ? [
                     TextSpan(
@@ -184,8 +184,7 @@ class Step3 extends StatelessWidget {
         RichText(
           text: TextSpan(
             text: label,
-            style: TextStyle(
-                fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
+            style: GoogleFonts.montserrat(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
             children: [
               TextSpan(
                 text: " *",
@@ -228,8 +227,7 @@ class Step3 extends StatelessWidget {
         RichText(
           text: TextSpan(
             text: "Logo cửa hàng ",
-            style: TextStyle(
-                fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black),
+            style: GoogleFonts.montserrat(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
             children: [
               TextSpan(
                 text: "*",
@@ -336,9 +334,10 @@ class Step3 extends StatelessWidget {
       children: [
         Text(
           "Ảnh bìa",
-          style: TextStyle(
+          style: GoogleFonts.montserrat( // Áp dụng GoogleFonts cho text
               fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black),
         ),
+
         SizedBox(height: 8),
         Center(
           // Căn giữa toàn bộ khung ảnh nền

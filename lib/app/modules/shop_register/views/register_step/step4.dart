@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../controllers/shop_register_controller.dart';
 
 class Step4 extends StatelessWidget {
@@ -23,11 +24,8 @@ class Step4 extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               "Vui lòng xem và điền các giấy tờ liên quan để xác thực cho việc đăng ký cửa hàng",
-              style: TextStyle(fontSize: 16, color: Colors.grey[700]),
+              style: TextStyle(fontSize: 18, color: Colors.grey[700]),
             ),
-            const SizedBox(height: 12),
-            Text("Thông tin, giấy tờ cần chuẩn bị",
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
             const SizedBox(height: 12),
             buildTextField(controller.idCard,
                 label: "Số CCCD/CMND/Hộ chiếu",
@@ -66,7 +64,7 @@ class Step4 extends StatelessWidget {
               children: [
                 Expanded(
                   child: buildImageUploader(
-                      label: "Giấy phép đăng ký kinh doanh",
+                      label: "Giấy phép đăng ký kinh doanh    ",
                       imageController: controller.registrationCertificateImage,
                       onGalleryPick: () => controller.pickImageFromGallery(
                           controller.registrationCertificateImage),
@@ -109,10 +107,8 @@ class Step4 extends StatelessWidget {
             RichText(
               text: TextSpan(
                   text: "Chọn ngân hàng",
-                  style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black),
+                  style: GoogleFonts.montserrat( // Áp dụng GoogleFonts cho text
+                      fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
                   children: [
                     TextSpan(
                       text: " *",
@@ -163,7 +159,7 @@ class Step4 extends StatelessWidget {
         RichText(
           text: TextSpan(
             text: label,
-            style: TextStyle(
+            style: GoogleFonts.montserrat( // Áp dụng GoogleFonts cho text
                 fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
             children: isRequired
                 ? [
@@ -226,10 +222,8 @@ class Step4 extends StatelessWidget {
                 children: [
                   TextSpan(
                     text: label,
-                    style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black),
+                    style: GoogleFonts.montserrat( // Áp dụng GoogleFonts cho text
+                        fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
                   ),
                   if (isRequired)
                     TextSpan(
@@ -332,7 +326,8 @@ class Step4 extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(label,
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          style: GoogleFonts.montserrat( // Áp dụng GoogleFonts cho text
+              fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),),
         SizedBox(height: 4),
         GestureDetector(
           onTap: () async {
