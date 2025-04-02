@@ -15,7 +15,7 @@ class Step3 extends StatelessWidget {
         children: [
           Text(
             "Thông tin cơ bản",
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 12),
 
@@ -229,12 +229,12 @@ class Step3 extends StatelessWidget {
           text: TextSpan(
             text: "Logo cửa hàng ",
             style: TextStyle(
-                fontSize: 14, fontWeight: FontWeight.bold, color: Colors.black),
+                fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black),
             children: [
               TextSpan(
                 text: "*",
                 style: TextStyle(
-                    fontSize: 14,
+                    fontSize: 20,
                     fontWeight: FontWeight.bold,
                     color: Colors.red),
               ),
@@ -337,7 +337,7 @@ class Step3 extends StatelessWidget {
         Text(
           "Ảnh bìa",
           style: TextStyle(
-              fontSize: 14, fontWeight: FontWeight.bold, color: Colors.black),
+              fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black),
         ),
         SizedBox(height: 8),
         Center(

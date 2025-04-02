@@ -18,7 +18,7 @@ class Step2 extends StatelessWidget {
         children: [
           Text(
             "Vui lòng đọc kỹ điều khoản và điều kiện",
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
           SizedBox(height: 12),
           FutureBuilder<String>(
@@ -56,18 +56,6 @@ class Step2 extends StatelessWidget {
                   _openPdf(context, path);
                 },
               ),
-              // Nút tải xuống
-              IconButton(
-                icon: Icon(Icons.download, color: Colors.black),
-                onPressed: () async {
-                  final path = await _copyPdfFromAssets();
-                  Get.snackbar(
-                    "Thành công",
-                    "File đã được tải về tại $path",
-                    snackPosition: SnackPosition.BOTTOM,
-                  );
-                },
-              ),
             ],
           ),
 
@@ -79,15 +67,15 @@ class Step2 extends StatelessWidget {
             },
             title: Text(
               "Tôi xác nhận rằng đã đọc tất cả các điều khoản và điều kiện nêu trên và đồng ý với Fast F&B để trở thành đối tác bán hàng của Fast F&B",
-              style: TextStyle(fontSize: 14),
+              style: TextStyle(fontSize: 16),
             ),
             controlAffinity: ListTileControlAffinity.leading,
           )),
 
           SizedBox(height: 8),
           Text(
-            "• Bằng việc tiếp tục đăng ký, Đối tác đồng ý sẽ chịu toàn bộ trách nhiệm liên quan đến việc đăng bán **SẢN PHẨM BỊ CẤM** trên Fast F&B",
-            style: TextStyle(fontSize: 14),
+            "• Bằng việc tiếp tục đăng ký, Đối tác đồng ý sẽ chịu toàn bộ trách nhiệm liên quan đến việc đăng bán SẢN PHẨM BỊ CẤM trên Fast F&B",
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
         ],
       ),

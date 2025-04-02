@@ -18,16 +18,16 @@ class Step4 extends StatelessWidget {
           children: [
             Text(
               "Vui lòng chuẩn bị các giấy tờ liên quan",
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             Text(
               "Vui lòng xem và điền các giấy tờ liên quan để xác thực cho việc đăng ký cửa hàng",
-              style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+              style: TextStyle(fontSize: 16, color: Colors.grey[700]),
             ),
             const SizedBox(height: 12),
             Text("Thông tin, giấy tờ cần chuẩn bị",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
             const SizedBox(height: 12),
             buildTextField(controller.idCard,
                 label: "Số CCCD/CMND/Hộ chiếu",
@@ -110,7 +110,7 @@ class Step4 extends StatelessWidget {
               text: TextSpan(
                   text: "Chọn ngân hàng",
                   style: TextStyle(
-                      fontSize: 14,
+                      fontSize: 18,
                       fontWeight: FontWeight.bold,
                       color: Colors.black),
                   children: [
@@ -164,7 +164,7 @@ class Step4 extends StatelessWidget {
           text: TextSpan(
             text: label,
             style: TextStyle(
-                fontSize: 14, fontWeight: FontWeight.bold, color: Colors.black),
+                fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
             children: isRequired
                 ? [
                     TextSpan(
@@ -227,7 +227,7 @@ class Step4 extends StatelessWidget {
                   TextSpan(
                     text: label,
                     style: TextStyle(
-                        fontSize: 15,
+                        fontSize: 18,
                         fontWeight: FontWeight.bold,
                         color: Colors.black),
                   ),
@@ -236,7 +236,7 @@ class Step4 extends StatelessWidget {
                       text: ' *',
                       style: TextStyle(
                           color: Colors.red,
-                          fontSize: 14,
+                          fontSize: 18,
                           fontWeight: FontWeight.bold),
                     ),
                 ],
@@ -332,42 +332,48 @@ class Step4 extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(label,
-            style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
         SizedBox(height: 4),
         GestureDetector(
           onTap: () async {
             DateTime? pickedDate = await showDatePicker(
               context: Get.context!,
               initialDate: dateController.value ?? DateTime.now(),
-              firstDate: DateTime(1900),
+              firstDate: DateTime.now(), // Chỉ cho phép chọn ngày từ hiện tại trở đi
               lastDate: DateTime(2100),
             );
             if (pickedDate != null) {
-              dateController.value = pickedDate;
+              if (pickedDate.isBefore(DateTime.now())) {
+                // Hiển thị thông báo nếu người dùng chọn ngày quá khứ
+                Get.snackbar("Thông báo", "Vui lòng chọn ngày từ hôm nay trở đi.");
+              } else {
+                dateController.value = pickedDate;
+              }
             }
           },
           child: Obx(() => Container(
-                width: double.infinity,
-                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey),
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: Text(
-                  dateController.value != null
-                      ? "${dateController.value!.day}/${dateController.value!.month}/${dateController.value!.year}"
-                      : "Chọn ngày",
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: dateController.value != null
-                        ? Colors.black87
-                        : Colors.grey,
-                  ),
-                ),
-              )),
+            width: double.infinity,
+            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.grey),
+              borderRadius: BorderRadius.circular(4),
+            ),
+            child: Text(
+              dateController.value != null
+                  ? "${dateController.value!.day}/${dateController.value!.month}/${dateController.value!.year}"
+                  : "Chọn ngày",
+              style: TextStyle(
+                fontSize: 16,
+                color: dateController.value != null
+                    ? Colors.black87
+                    : Colors.grey,
+              ),
+            ),
+          )),
         ),
         SizedBox(height: 8),
       ],
     );
   }
+
 }

@@ -13,7 +13,7 @@ class Step1 extends StatelessWidget {
         children: [
           Text(
             "Vui lòng chọn loại hình dịch vụ",
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
           SizedBox(height: 12),
           _buildServiceOption(
@@ -65,14 +65,14 @@ class Step1 extends StatelessWidget {
                       child: Text(
                         title,
                         style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold),
+                            fontSize: 20, fontWeight: FontWeight.bold),
                       ),
                     ),
                   ],
                 ),
                 Padding(
                   padding: const EdgeInsets.only(left: 40.0),
-                  child: Text(description),
+                  child: Text(description, style: TextStyle(fontSize: 16)),
                 ),
               ],
             ),
