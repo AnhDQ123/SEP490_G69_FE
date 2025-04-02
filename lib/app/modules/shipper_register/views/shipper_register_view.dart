@@ -152,8 +152,15 @@ class ShipperRegisterView extends StatelessWidget {
         SizedBox(height: 4),
         TextField(
           keyboardType: isNumeric ? TextInputType.number : TextInputType.text,
-          inputFormatters:
-              isNumeric ? [FilteringTextInputFormatter.digitsOnly] : [],
+          inputFormatters: isNumeric
+              ? [
+            FilteringTextInputFormatter.digitsOnly,
+            LengthLimitingTextInputFormatter(
+                label == "Số điện thoại"
+                    ? 10
+                    : (label == "Số CMND/Căn cước" ? 12 : 100)),
+          ]
+              : [],
           onChanged: (value) {
             controllerValue.value = value;
             controller.validateForm();
@@ -167,6 +174,7 @@ class ShipperRegisterView extends StatelessWidget {
       ],
     );
   }
+
 
   Widget _buildEmailField(RxString controllerValue) {
     return Column(
