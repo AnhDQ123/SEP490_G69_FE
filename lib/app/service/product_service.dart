@@ -56,6 +56,7 @@ class ProductService {
       request.fields["name"] = product.name;
       request.fields["description"] = product.description ?? "";
       request.fields["category_id"] = product.category.toString();
+      request.fields["foodType"] = product.type.toString();
       request.fields["quantity"] = product.quantity.toString();
       request.fields["shop_id"] = "1"; // Shop ID có thể cần lấy từ `user session`
       request.fields["supplier"] = product.supplier ?? "";

@@ -261,7 +261,7 @@ class ProductDetailController extends GetxController {
       ))
           .toList();
 
-      total += extraOptionsList.fold(0.0, (sum, e) => sum + e.totalPrice);
+      total += extraOptionsList.fold(0.0, (sum, e) => sum + (e.totalPrice ?? 0.0));
 
       // ✅ Tổng tiền = (base + size) * số lượng + topping
       final double totalPrice = (basePrice * qty) + total;

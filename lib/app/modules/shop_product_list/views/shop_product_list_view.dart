@@ -34,8 +34,11 @@ class ShopProductListView extends GetView<ShopProductListController> {
                 Get.toNamed(Routes.SHOP_ADD_PRODUCT);
               },
               child: Text("Thêm sản phẩm mới"),
-              style: ElevatedButton.styleFrom(minimumSize: Size.fromHeight(48)),
+              style: ElevatedButton.styleFrom(
+                minimumSize: Size.fromHeight(48), backgroundColor: Color.fromRGBO(251, 196, 139, 1.0),  // Màu nền của nút (màu vàng)
+              ),
             ),
+
           )
         ],
       ),
@@ -86,10 +89,12 @@ class ShopProductListView extends GetView<ShopProductListController> {
               margin: EdgeInsets.symmetric(horizontal: 6), // Giảm giãn cách
               padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               decoration: BoxDecoration(
-                color: isSelected ? Colors.blue : Colors.transparent,
+                color: isSelected ? Color.fromRGBO(251, 196, 139, 1.0) : Colors.transparent,
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: isSelected ? Colors.blue : Colors.grey[300]!, // Border cho nút chưa chọn
+                  color: isSelected
+                      ? Colors.black54
+                      : Colors.grey[300]!, // Border cho nút chưa chọn
                   width: 1.5,
                 ),
               ),

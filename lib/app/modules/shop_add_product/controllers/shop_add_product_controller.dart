@@ -21,9 +21,11 @@
     var productDescription = "".obs;
     var manufacturer = "".obs;
     var supplier = "".obs;
+    var type = "".obs;
 
     var quantity = 0.obs;
     var quantityController = TextEditingController();
+
 
     // Danh mục và lựa chọn sản phẩm
     var categories = <Category>[].obs;
@@ -194,6 +196,7 @@
         supplier: supplier.value,
         quantity: quantity.value,
         category: selectedCategory.value,
+        type: type.value,
         discount: [],
         foodOptions: allOptions,
         image: '',

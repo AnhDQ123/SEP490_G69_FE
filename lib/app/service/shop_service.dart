@@ -3,21 +3,15 @@ import 'dart:io';
 import 'package:ffb_fe_flutter/app/models/product_discount.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:intl/intl.dart';
-import 'package:path/path.dart';
-import 'package:mime/mime.dart';
 import '../models/discount.dart';
-import '../models/product.dart';
 import '../models/shop_profile.dart';
 import 'package:http_parser/http_parser.dart';
-
 import '../models/bank.dart';
 import '../models/voucher.dart';
 import '../base/api_base_url.dart';
-import '../models/shop.dart';  // Import ApiBaseUrl
 
 class ShopService {
-  final String baseUrl = "http://192.168.1.15:8080/api";
+  final String baseUrl = ApiBaseUrl.baseUrl;
 
   Future<List<Bank>> fetchBanks() async {
     try {
@@ -337,6 +331,7 @@ class ShopService {
           supplier: item['supplier'] ?? '',
           quantity: item['quantity'] ?? 0,
           category: item['category'] ?? '',
+          type: item['type'] ?? '',
           status: item['status'] ?? '',
           discount: discountList,  // Truyền discountList đã được parse đúng kiểu
           image: item['image'] ?? '',

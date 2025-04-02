@@ -30,6 +30,7 @@ class ShopAddProductView extends GetView<ShopAddProductController> {
             _buildCard(_buildTextField(label: "Tên sản phẩm",value:  controller.productName)),
             _buildCard(_buildTextField(label: "Mô tả sản phẩm",value:  controller.productDescription)),
             _buildCard(_buildQuantity()),
+            _buildCard(_buildTypeDropdown()),
             _buildCard(_buildCategoryDropdown()), // Danh mục sản phẩm
             _buildCard(buildFoodOptionSelector(
               title: "Kích cỡ sản phẩm",
@@ -176,6 +177,39 @@ class ShopAddProductView extends GetView<ShopAddProductController> {
       ],
     ));
   }
+
+  Widget _buildTypeDropdown() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text("Loại sản phẩm *", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+        SizedBox(height: 8),
+        Obx(() {
+          return DropdownButtonFormField<String>(
+            value: controller.type.value.isNotEmpty ? controller.type.value : null,
+            items: [
+              DropdownMenuItem(
+                value: "FRESH",
+                child: Text("Thực phẩm tươi sống"),
+              ),
+              DropdownMenuItem(
+                value: "COOKED",
+                child: Text("Thực phẩm chế biến"),
+              ),
+            ],
+            onChanged: (value) {
+              controller.type.value = value!;
+            },
+            decoration: InputDecoration(
+              border: OutlineInputBorder(),
+              contentPadding: EdgeInsets.symmetric(horizontal: 12),
+            ),
+          );
+        }),
+      ],
+    );
+  }
+
 
   Widget _buildCategoryDropdown() {
     return Column(
