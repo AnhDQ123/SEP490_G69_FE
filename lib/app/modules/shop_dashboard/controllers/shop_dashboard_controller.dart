@@ -2,10 +2,18 @@ import 'package:get/get.dart';
 import '../../../service/dashboard_service.dart';
 
 class ShopDashboardController extends GetxController {
-  var orders_S = <Map<String, dynamic>>[].obs;  // Đơn hàng thành công
-  var orders_F = <Map<String, dynamic>>[].obs;  // Đơn hàng thất bại
+  // Biến cho dữ liệu theo tháng
+  var orders_S = <Map<String, dynamic>>[].obs;  // Đơn hàng thành công theo tháng
+  var orders_F = <Map<String, dynamic>>[].obs;  // Đơn hàng thất bại theo tháng
+
+  // Biến cho dữ liệu theo ngày
+  var orders_S_Daily = <Map<String, dynamic>>[].obs; // Đơn hàng thành công theo ngày
+  var orders_F_Daily = <Map<String, dynamic>>[].obs; // Đơn hàng thất bại theo ngày
+
   var topProducts = <Map<String, dynamic>>[].obs; // Top sản phẩm bán chạy
   var isLoading = true.obs;
+  var selectedChartType = 'monthly'.obs; // 'monthly' hoặc 'daily'
+  var shopId = 1.obs; // Có thể thay đổi theo shop
 
   final DashboardService dashboardService = DashboardService();
 
@@ -15,53 +23,65 @@ class ShopDashboardController extends GetxController {
     loadDashboardData();
   }
 
-  // Hàm tổng hợp tất cả dữ liệu dashboard
-  void loadDashboardData() async {
+  Future<void> loadDashboardData() async {
     isLoading.value = true;
     try {
-      // Gọi đồng thời tất cả API cần thiết
+      // Gọi đồng thời tất cả API
       final results = await Future.wait([
-        dashboardService.fetchOrdersByStatusByMonth(1, "DELIVERED"),
-        dashboardService.fetchOrdersByStatusByMonth(1, "REJECTED"),
-        dashboardService.fetchOrdersByStatusByMonth(1, "CANCELLED"),
-        dashboardService.fetchTopSellingProductsByMonth(1),
+        dashboardService.fetchOrdersByStatusByMonth(shopId.value, "DELIVERED"),
+        dashboardService.fetchOrdersByStatusByMonth(shopId.value, "REJECTED"),
+        dashboardService.fetchOrdersByStatusByMonth(shopId.value, "CANCELLED"),
+        dashboardService.fetchOrdersByStatusByDay(shopId.value, "DELIVERED"),
+        dashboardService.fetchOrdersByStatusByDay(shopId.value, "REJECTED"),
+        dashboardService.fetchOrdersByStatusByDay(shopId.value, "CANCELLED"),
+        dashboardService.fetchTopSellingProductsByMonth(shopId.value),
       ]);
 
-      // Xử lý đơn hàng thành công
+      // Xử lý dữ liệu theo tháng
       orders_S.assignAll(results[0]);
+      final failedMonthlyOrders = [...results[1], ...results[2]];
+      orders_F.assignAll(_combineOrders(failedMonthlyOrders, isDaily: false));
 
-      // Kết hợp đơn hàng thất bại
-      final failedOrders = [...results[1], ...results[2]];
-      final combinedFailedOrders = _combineOrdersByMonth(failedOrders);
-      orders_F.assignAll(combinedFailedOrders);
+      // Xử lý dữ liệu theo ngày
+      orders_S_Daily.assignAll(results[3]);
+      final failedDailyOrders = [...results[4], ...results[5]];
+      orders_F_Daily.assignAll(_combineOrders(failedDailyOrders, isDaily: true));
 
-      // Xử lý top sản phẩm
-      topProducts.assignAll(results[3]);
+      // Top sản phẩm
+      topProducts.assignAll(results[6]);
 
     } catch (e) {
-      print("Error loading dashboard data: $e");
+      Get.snackbar('Lỗi', 'Không thể tải dữ liệu dashboard: ${e.toString()}');
     } finally {
       isLoading.value = false;
     }
   }
 
-  // Hàm helper để kết hợp đơn hàng theo tháng
-  List<Map<String, dynamic>> _combineOrdersByMonth(List<Map<String, dynamic>> orders) {
-    final Map<String, Map<String, dynamic>> combined = {};
+  List<Map<String, dynamic>> _combineOrders(
+      List<Map<String, dynamic>> orders, {
+        required bool isDaily,
+      }) {
+    final combined = <String, Map<String, dynamic>>{};
+    final keyField = isDaily ? 'date' : 'month';
 
     for (var order in orders) {
-      final key = '${order['month']}-${order['year']}';
+      final key = order[keyField].toString();
       if (combined.containsKey(key)) {
         combined[key]!['orderCount'] += order['orderCount'];
       } else {
-        combined[key] = {
-          'month': order['month'],
-          'year': order['year'],
-          'orderCount': order['orderCount'],
-        };
+        combined[key] = {...order};
       }
     }
 
-    return combined.values.toList();
+    return combined.values.toList()
+      ..sort((a, b) => a[keyField].compareTo(b[keyField]));
+  }
+
+  void toggleChartType(String type) {
+    selectedChartType.value = type;
+  }
+
+  Future<void> refreshData() async {
+    await loadDashboardData();
   }
 }
