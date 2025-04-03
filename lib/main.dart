@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:path_provider/path_provider.dart';
 import 'app/routes/app_pages.dart';
 import 'app/service/shop_service.dart';
@@ -21,6 +22,9 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       title: 'Demo HomePage',
       debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        textTheme: GoogleFonts.montserratTextTheme(Theme.of(context).textTheme), // Áp dụng font Montserrat
+      ),
       initialRoute: AppPages.INITIAL,
       getPages: AppPages.routes,
     );

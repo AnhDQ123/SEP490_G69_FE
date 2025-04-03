@@ -94,7 +94,6 @@ import '../modules/voucher_list/views/voucher_list_view.dart';
 part 'app_routes.dart';
 
 class AppPages {
-  AppPages._();
 
   static const INITIAL = Routes.SHOP;
 

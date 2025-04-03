@@ -53,7 +53,7 @@ class ShopService {
     required String bankInfo,
   }) async
   {
-    var uri = Uri.parse('$baseUrl/shops/register');
+    var uri = Uri.parse('$baseUrl/api/shops/register');
     var request = http.MultipartRequest('POST', uri);
 
     // Thêm dữ liệu dạng text vào request
@@ -153,7 +153,7 @@ class ShopService {
   }
 
   Future<ShopProfile> fetchShopProfile(int shopId) async {
-    final url = Uri.parse('$baseUrl/shops/$shopId');
+    final url = Uri.parse('$baseUrl/api/shops/$shopId');
     print('👉 Đang gọi API: $url');
 
     final response = await http.get(url);
@@ -205,7 +205,7 @@ class ShopService {
     File? foodSafetyCert,
   }) async
   {
-    var uri = Uri.parse('$baseUrl/shops/$shopId');
+    var uri = Uri.parse('$baseUrl/api/shops/$shopId');
     var request = http.MultipartRequest('PUT', uri);
 
     // ⏰ Convert TimeOfDay -> HH:mm:ss
@@ -263,7 +263,7 @@ class ShopService {
   Future<Map<String, int>> fetchOrderCounts(int shopId) async {
     try {
       final response =
-          await http.get(Uri.parse('$baseUrl/order/count?id=$shopId'));
+          await http.get(Uri.parse('$baseUrl/api/order/count?id=$shopId'));
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = json.decode(response.body);
@@ -300,7 +300,7 @@ class ShopService {
 
   Future<List<ProductDiscount>> fetchProductsByShop(int shopId) async
   {
-    final response = await http.get(Uri.parse('$baseUrl/product/shop/$shopId'));
+    final response = await http.get(Uri.parse('$baseUrl/api/product/shop/$shopId'));
 
     if (response.statusCode == 200) {
       // Giải mã dữ liệu UTF-8
@@ -351,7 +351,7 @@ class ShopService {
   ///Discount
   Future<ApiResponse> addDiscount({required Discount discount,required int productId}) async {
     try {
-      final uri = Uri.parse('$baseUrl/discount/add?productId=$productId');
+      final uri = Uri.parse('$baseUrl/api/discount/add?productId=$productId');
       final request = http.Request('POST', uri);
 
       final body = jsonEncode({
@@ -379,7 +379,7 @@ class ShopService {
   }
 
   Future<void> updateDiscountToProduct(int productId, Discount discount) async {
-    final url = Uri.parse('$baseUrl/discount/add?productId=$productId');
+    final url = Uri.parse('$baseUrl/api/discount/add?productId=$productId');
 
     final body = jsonEncode({
       'id': discount.id,
@@ -402,7 +402,7 @@ class ShopService {
 
   Future<ApiResponse> deleteDiscount(int discountId) async {
     try {
-      final response = await http.delete(Uri.parse('$baseUrl/discount/$discountId'));
+      final response = await http.delete(Uri.parse('$baseUrl/api/discount/$discountId'));
 
       if (response.statusCode == 200) {
         return ApiResponse(success: true, message: "Huỷ thành công");
@@ -418,7 +418,7 @@ class ShopService {
   ///Voucher
   Future<List<Voucher>> fetchVouchersByShop(int shopId) async {
     final response = await http.get(
-      Uri.parse('$baseUrl/vouchers/shop/$shopId'),  // API route mới cho voucher theo shop
+      Uri.parse('$baseUrl/api/vouchers/shop/$shopId'),  // API route mới cho voucher theo shop
     );
 
     if (response.statusCode == 200) {
@@ -443,7 +443,7 @@ class ShopService {
 
   Future<ApiResponse> addVoucher(Voucher voucher) async {
     try {
-      final uri = Uri.parse('$baseUrl/vouchers');
+      final uri = Uri.parse('$baseUrl/api/vouchers');
 
       final body = jsonEncode({
         'code': voucher.code,
@@ -477,7 +477,7 @@ class ShopService {
 
   Future<ApiResponse> updateVoucher(String code, Voucher voucher) async {
     try {
-      final uri = Uri.parse('$baseUrl/vouchers/$code');
+      final uri = Uri.parse('$baseUrl/api/vouchers/$code');
 
       final body = jsonEncode({
         'code': voucher.code,
@@ -511,7 +511,7 @@ class ShopService {
 
   Future<ApiResponse> deleteVoucher(String code) async {
     try {
-      final uri = Uri.parse('$baseUrl/vouchers/$code');
+      final uri = Uri.parse('$baseUrl/api/vouchers/$code');
       final response = await http.delete(uri);
 
       if (response.statusCode == 204) {

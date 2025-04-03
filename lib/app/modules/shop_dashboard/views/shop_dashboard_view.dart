@@ -1,143 +1,63 @@
 import 'package:flutter/material.dart';
-import 'package:fl_chart/fl_chart.dart';
 import 'package:get/get.dart';
+import 'package:fl_chart/fl_chart.dart';
 import '../controllers/shop_dashboard_controller.dart';
 
 class ShopDashboardView extends StatelessWidget {
-  final ShopDashboardController controller = Get.put(ShopDashboardController());
-
   @override
   Widget build(BuildContext context) {
+    final ShopDashboardController controller = Get.put(ShopDashboardController());
+
     return Scaffold(
-      appBar: AppBar(title: Text('Thống kê')),
+      appBar: AppBar(
+        title: Text('Shop Dashboard'),
+      ),
       body: Obx(() {
-        if (controller.dashboardData.value == null) {
+        if (controller.isLoading.value) {
           return Center(child: CircularProgressIndicator());
+        } else if (controller.orders.isEmpty) {
+          return Center(child: Text('No orders available'));
         } else {
-          return Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Doanh thu hôm nay
-                Text(
-                    'Doanh thu hôm nay: ${controller.dashboardData.value.totalRevenue}đ'),
-                SizedBox(height: 10),
-                // Biểu đồ doanh thu theo ngày
-                _buildRevenueChart(),
-                SizedBox(height: 20),
-                // Đơn hàng hôm nay
-                Text(
-                    'Đơn hàng hôm nay: ${controller.dashboardData.value.totalOrders} đơn'),
-                SizedBox(height: 10),
-                // Biểu đồ đơn hàng mỗi ngày
-                _buildOrdersChart(),
-                SizedBox(height: 20),
-                // Món ăn bán chạy nhất
-                Text('Món ăn bán chạy nhất:'),
-                _buildBestSellingFoods(),
-                SizedBox(height: 20),
-                // Đánh giá trung bình
-                Text('Đánh giá trung bình:'),
-                _buildRatingsChart(),
-              ],
-            ),
+          return ListView(
+            children: [
+              // Card chứa biểu đồ
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Card(
+                  elevation: 4,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Container(
+                    height: MediaQuery.of(context).size.height / 2, // Chiều cao khoảng nửa màn hình
+                    padding: const EdgeInsets.all(16),
+                    child: BarChart(
+                      BarChartData(
+                        titlesData: FlTitlesData(show: true),
+                        borderData: FlBorderData(show: true),
+                        gridData: FlGridData(show: true),
+                        barGroups: controller.orders.map((order) {
+                          return BarChartGroupData(
+                            x: order['month'],
+                            barRods: [
+                              BarChartRodData(
+                                toY: order['orderCount'].toDouble(),
+                                color: Colors.blue,
+                                width: 20,
+                              ),
+                            ],
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              // Các phần khác của giao diện (nếu có)
+            ],
           );
         }
       }),
-    );
-  }
-
-  // Biểu đồ doanh thu theo ngày
-  Widget _buildRevenueChart() {
-    return Expanded(
-      child: BarChart(
-        BarChartData(
-          borderData: FlBorderData(show: false),
-          titlesData: FlTitlesData(show: true),
-          gridData: FlGridData(show: false),
-          alignment: BarChartAlignment.spaceAround,
-          maxY: 20000,
-          barGroups: controller.dashboardData.value.orderStats.map((data) {
-            return BarChartGroupData(
-              x: int.parse(data.date.split('/')[0]),
-              barRods: [
-                BarChartRodData(
-                  fromY: 0,
-                  // Điểm bắt đầu
-                  toY: data.ordersCount * 1000.toDouble(),
-                  // Điểm kết thúc (doanh thu)
-                  color: Colors.blue,
-                  width: 10,
-                ),
-              ],
-            );
-          }).toList(),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildOrdersChart() {
-    return BarChart(
-      BarChartData(
-        borderData: FlBorderData(show: false),
-        titlesData: FlTitlesData(show: true),
-        gridData: FlGridData(show: false),
-        alignment: BarChartAlignment.spaceAround,
-        maxY: 50,
-        barGroups: controller.dashboardData.value.orderStats.map((data) {
-          return BarChartGroupData(
-            x: int.parse(data.date.split('/')[0]),
-            barRods: [
-              BarChartRodData(
-                fromY: 0, // Điểm bắt đầu
-                toY: data.ordersCount.toDouble(), // Điểm kết thúc
-                color: Colors.cyan,
-                width: 10,
-              ),
-            ],
-          );
-        }).toList(),
-      ),
-    );
-  }
-
-  // Món ăn bán chạy nhất
-  Widget _buildBestSellingFoods() {
-    return Column(
-      children: controller.dashboardData.value.bestSellingFoods
-          .map((food) => ListTile(
-                title: Text(food.name),
-                trailing: Text('${food.quantity} đơn'),
-              ))
-          .toList(),
-    );
-  }
-
-  // Biểu đồ đánh giá
-  Widget _buildRatingsChart() {
-    return BarChart(
-      BarChartData(
-        borderData: FlBorderData(show: false),
-        titlesData: FlTitlesData(show: true),
-        gridData: FlGridData(show: false),
-        alignment: BarChartAlignment.spaceAround,
-        maxY: 150,
-        barGroups: controller.dashboardData.value.ratings.map((rating) {
-          return BarChartGroupData(
-            x: rating.score.toInt(),
-            barRods: [
-              BarChartRodData(
-                fromY: rating.count.toDouble(),
-                color: Colors.green,
-                width: 10,
-                toY: rating.count.toDouble(), // Thêm tham số toY
-              ),
-            ],
-          );
-        }).toList(),
-      ),
     );
   }
 }
