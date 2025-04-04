@@ -27,7 +27,7 @@ class FoodOption {
       name: json['name'] ?? '',
       price: (json['price'] ?? 0).toDouble(),
       description: json['description'],
-      image: json['image'] != null ? File(json['image']) : null,
+      image: _parseImage(json['image']),
       typeId: json['type_id'],
       status: json['status'],
       productId: json['product_id'] ?? 0,
@@ -39,10 +39,26 @@ class FoodOption {
       'id': id,
       'name': name,
       'price': price,
-      'image': image,
+      'image': image is File ? (image as File).path : image,
       'type_id': typeId,
       'status': status,
       'product_id': productId,
     };
+  }
+
+  static dynamic _parseImage(dynamic imageJson) {
+    if (imageJson == null) return null;
+
+    // Kiểm tra nếu là URL (String)
+    if (imageJson is String && imageJson.startsWith('http')) {
+      return imageJson; // Đây là URL
+    }
+
+    // Kiểm tra nếu là file (File)
+    if (imageJson is String) {
+      return File(imageJson); // Đây là file cục bộ
+    }
+
+    return null; // Trả về null nếu không phải URL hay file hợp lệ
   }
 }

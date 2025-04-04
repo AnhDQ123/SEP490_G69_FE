@@ -30,6 +30,8 @@ class ProductService {
     }
   }
 
+
+
   // Lấy chi tiết sản phẩm
   static Future<ProductDiscount?> fetchProductDetail(int productId) async {
     try {
@@ -48,14 +50,14 @@ class ProductService {
   }
 
   // Hàm gửi API tạo sản phẩm
-  static Future<bool> createProduct(ProductDiscount product, File? avatar, List<File> options) async {
+  static Future<bool> updateProduct(ProductDiscount product, File? avatar, List<File> options, productId) async {
     try {
-      var request = http.MultipartRequest("POST", Uri.parse("${ApiBaseUrl.baseUrl}/api/add"));
+      var request = http.MultipartRequest("PUT", Uri.parse("${ApiBaseUrl.baseUrl}/api/product/update/$productId"));
 
       // 🟢 Thêm dữ liệu dạng `form-data`
       request.fields["name"] = product.name;
       request.fields["description"] = product.description ?? "";
-      request.fields["category_id"] = product.category.toString();
+      request.fields["category_name"] = product.category.toString();
       request.fields["foodType"] = product.type.toString();
       request.fields["quantity"] = product.quantity.toString();
       request.fields["shop_id"] = "1"; // Shop ID có thể cần lấy từ `user session`
@@ -79,6 +81,7 @@ class ProductService {
       }
 
       // 🟢 Debug dữ liệu gửi lên server
+      print("📡 ID sản phẩm: ${productId}");
       print("📡 Dữ liệu gửi lên server: ${request.fields}");
       print("📡 Danh sách file đính kèm: ${request.files.map((f) => f.filename)}");
 
@@ -94,6 +97,52 @@ class ProductService {
       return false;
     }
   }
+  static Future<bool> addProduct(ProductDiscount product, File? avatar, List<File> options) async {
+      try {
+        var request = http.MultipartRequest("POST", Uri.parse("${ApiBaseUrl.baseUrl}/api/product/add"));
+
+        // 🟢 Thêm dữ liệu dạng `form-data`
+        request.fields["name"] = product.name;
+        request.fields["description"] = product.description ?? "";
+        request.fields["category_id"] = product.category.toString();
+        request.fields["foodType"] = product.type.toString();
+        request.fields["quantity"] = product.quantity.toString();
+        request.fields["shop_id"] = "1"; // Shop ID có thể cần lấy từ `user session`
+        request.fields["supplier"] = product.supplier ?? "";
+
+        // 🟢 Gửi danh sách `foodOptions` theo dạng `form-data`
+        for (int i = 0; i < product.foodOptions!.length; i++) {
+          var option = product.foodOptions![i];
+          request.fields["foodOption[$i].name"] = option.name ?? ""; // Nếu null, gửi chuỗi rỗng
+          request.fields["foodOption[$i].price"] = option.price.toString();
+        }
+
+        // 🟢 Gửi ảnh đại diện (avatar) nếu có
+        if (avatar != null) {
+          request.files.add(await http.MultipartFile.fromPath("avatar", avatar.path));
+        }
+
+        // 🟢 Gửi danh sách ảnh `option`
+        for (var optionFile in options) {
+          request.files.add(await http.MultipartFile.fromPath("option", optionFile.path));
+        }
+
+        // 🟢 Debug dữ liệu gửi lên server
+        print("📡 Dữ liệu gửi lên server: ${request.fields}");
+        print("📡 Danh sách file đính kèm: ${request.files.map((f) => f.filename)}");
+
+        var response = await request.send();
+        var responseBody = await response.stream.bytesToString();
+
+        print("📡 Response Status Code: ${response.statusCode}");
+        print("📡 Response Body: $responseBody");
+
+        return response.statusCode == 200 || response.statusCode == 201;
+      } catch (e) {
+        print("❌ Lỗi ngoại lệ khi gửi API: $e");
+        return false;
+      }
+    }
 
   Future<List<Map<String, dynamic>>> getTopSellingProductsToday(String shopId) async {
     final uri = Uri.parse('${ApiBaseUrl.baseUrl}/api/product/top-selling/today?shopId=$shopId');

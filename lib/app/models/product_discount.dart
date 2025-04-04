@@ -46,7 +46,7 @@ class ProductDiscount {
       supplier: json['supplier'] ?? '',
       quantity: json['quantity'] ?? 0,
       category: json['category'] ?? '',
-      type: json['type'] ?? '',
+      type: json['foodType'] ?? '',
       status: json['status'] ?? '',
       discount: json['discount'] != null
           ? (json['discount'] as List)

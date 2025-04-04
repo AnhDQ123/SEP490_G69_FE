@@ -10,13 +10,12 @@ class CategoryService {
       final response = await http.get(Uri.parse("${ApiBaseUrl.baseUrl}/api/category"));
 
       print("Response status: ${response.statusCode}");
-      print("Response body: ${response.body}");
 
       if (response.statusCode == 200) {
         String utf8Body = utf8.decode(response.bodyBytes);
         var jsonData = jsonDecode(utf8Body); // Kiểm tra xem đây có phải là JSON hợp lệ không
 
-        print("Parsed JSON: $jsonData");
+        // print("Parsed JSON: $jsonData");
 
         // Truy cập vào trường 'content' để lấy danh sách danh mục
         var contentList = jsonData['content'];
