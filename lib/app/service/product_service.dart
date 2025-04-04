@@ -5,6 +5,7 @@ import '../base/api_base_url.dart';
 import '../models/product.dart';
 import '../models/product_discount.dart';
 
+//Dòng 61 fix cứng Shopid
 
 class ProductService {
   // Lấy danh sách sản phẩm
@@ -57,17 +58,19 @@ class ProductService {
       // 🟢 Thêm dữ liệu dạng `form-data`
       request.fields["name"] = product.name;
       request.fields["description"] = product.description ?? "";
-      request.fields["category_name"] = product.category.toString();
+      request.fields["category"] = product.category.toString();
       request.fields["foodType"] = product.type.toString();
       request.fields["quantity"] = product.quantity.toString();
-      request.fields["shop_id"] = "1"; // Shop ID có thể cần lấy từ `user session`
+      request.fields["shopId"] = "1"; ///Change here
       request.fields["supplier"] = product.supplier ?? "";
 
       // 🟢 Gửi danh sách `foodOptions` theo dạng `form-data`
       for (int i = 0; i < product.foodOptions!.length; i++) {
         var option = product.foodOptions![i];
+        request.fields["foodOption[$i].id"] = option.id.toString();
         request.fields["foodOption[$i].name"] = option.name ?? ""; // Nếu null, gửi chuỗi rỗng
         request.fields["foodOption[$i].price"] = option.price.toString();
+        request.fields["foodOption[$i].type_id"] = option.typeId.toString();
       }
 
       // 🟢 Gửi ảnh đại diện (avatar) nếu có
