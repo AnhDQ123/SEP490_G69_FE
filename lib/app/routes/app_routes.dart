@@ -8,6 +8,7 @@ abstract class Routes {
   static const CART = _Paths.CART;
   static const BLOGDETAIL = _Paths.BLOGDETAIL;
   static const IMAGE_VIEWER = _Paths.IMAGE_VIEWER;
+  static const ADD_BLOG = _Paths.ADD_BLOG;
 }
 
 abstract class _Paths {
@@ -17,4 +18,5 @@ abstract class _Paths {
   static const CART = '/cart';
   static const BLOGDETAIL = '/blogdetail';
   static const IMAGE_VIEWER = '/image-viewer';
+  static const ADD_BLOG = '/add-blog';
 }

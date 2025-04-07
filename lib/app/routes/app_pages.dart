@@ -1,5 +1,7 @@
 import 'package:get/get.dart';
 
+import '../modules/add_blog/bindings/add_blog_binding.dart';
+import '../modules/add_blog/views/add_blog_view.dart';
 import '../modules/blogdetail/bindings/blogdetail_binding.dart';
 import '../modules/blogdetail/views/blogdetail_view.dart';
 import '../modules/bloglist/bindings/bloglist_binding.dart';
@@ -34,6 +36,11 @@ class AppPages {
       name: _Paths.IMAGE_VIEWER,
       page: () => ImageViewerView(),
       binding: ImageViewerBinding(),
+    ),
+    GetPage(
+      name: _Paths.ADD_BLOG,
+      page: () => const AddBlogView(),
+      binding: AddBlogBinding(),
     ),
   ];
 }
