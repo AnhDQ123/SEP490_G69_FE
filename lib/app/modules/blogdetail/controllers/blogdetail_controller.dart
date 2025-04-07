@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import '../../../models/blog.dart';
 import '../../bloglist/controllers/bloglist_controller.dart';
 
 class BlogDetailController extends GetxController {

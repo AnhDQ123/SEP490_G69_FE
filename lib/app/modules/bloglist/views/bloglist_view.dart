@@ -1,6 +1,8 @@
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
+import '../../../models/blog.dart';
 import '../../../routes/app_pages.dart';
 import '../controllers/bloglist_controller.dart';
 
@@ -104,8 +106,8 @@ class BlogCard extends StatelessWidget {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(blog.author, style: TextStyle(fontWeight: FontWeight.bold)),
-                      Text(blog.date, style: TextStyle(color: Colors.grey)),
+                      Text(blog.writer.name, style: TextStyle(fontWeight: FontWeight.bold)),
+                      Text(DateFormat('yyyy-MM-dd HH:mm:ss').format(blog.createdAt), style: TextStyle(color: Colors.grey)),
                     ],
                   ),
                   Spacer(),
@@ -160,20 +162,20 @@ class BlogCard extends StatelessWidget {
 
             SizedBox(height: 10),
             // Hiển thị ảnh
-            if (blog.mediaUrls.isNotEmpty)
+            if (blog.imageUrls.isNotEmpty)
               GestureDetector(
                 onTap: () => Get.toNamed(
                   Routes.IMAGE_VIEWER,
-                  arguments: {'images': blog.mediaUrls, 'index': 0},
+                  arguments: {'images': blog.imageUrls, 'index': 0},
                 ),
-                child: _buildMediaGrid(blog.mediaUrls),
+                child: _buildMediaGrid(blog.imageUrls),
               ),
             SizedBox(height: 10),
             // Nút Like, Comment, Share
             Row(
               children: [
                 _buildInteractionButton(Icons.favorite_border, () {
-                print("Đã thích bài viết của ${blog.author}");
+                print("Đã thích bài viết của ${blog.writer.name}");
                 }),
                 SizedBox(width: 10),
                 _buildInteractionButton(Icons.comment, () {
@@ -181,7 +183,7 @@ class BlogCard extends StatelessWidget {
                 }),
                 SizedBox(width: 10),
                 _buildInteractionButton(Icons.send, () {
-                print("Chia sẻ bài viết của ${blog.author}");
+                print("Chia sẻ bài viết của ${blog.writer.name}");
                 }
               ),
             ],

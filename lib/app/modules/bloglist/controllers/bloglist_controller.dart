@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import '../../../models/blog.dart';
+import '../../../services/blog_services.dart';
 
 class BloglistController extends GetxController {
   var blogs = <Blog>[].obs;
@@ -11,55 +13,18 @@ class BloglistController extends GetxController {
     fetchBlogs();
   }
 
-  void fetchBlogs() {
-    blogs.assignAll([
-      Blog(
-        author: "Hoang Hai Dang",
-        date: "05/02/2025 10:03",
-        content: "Welcome to ThichBunCa. Nếu bạn đang tìm kiếm một trải nghiệm Việt Nam đích thực, đừng tìm đâu xa! Tại ThichBunCa...",
-        mediaUrls: ["img.png"],
-      ),
-      Blog(
-        author: "Nguyen Minh Nhat",
-        date: "05/01/2025 9:03",
-        content: "bun bo",
-        mediaUrls: ["img_3.png", "img_4.png"],
-      ),
-      Blog(
-        author: "Nguyen Minh Nhat",
-        date: "05/01/2025 9:03",
-        content: "bun bo",
-        mediaUrls: ["img_3.png", "img_4.png","img_5.png"],
-      ),
-      Blog(
-        author: "Nguyen Minh Nhat",
-        date: "05/01/2025 9:03",
-        content: "bun bo",
-        mediaUrls: ["img_3.png", "img_4.png","img_5.png","img_1.png"],
-      ),
-      Blog(
-        author: "Nguyen Minh Nhat",
-        date: "05/01/2025 9:03",
-        content: "bun bo",
-        mediaUrls: ["img.png", "img_4.png","img_5.png","img_4.png","img_2.png"],
-      )
-    ]);
+
+  Future<void> fetchBlogs() async {
+    try {
+      final blogService = BlogService();
+      blogs.value = await blogService.fetchBlogs();
+    } catch (e) {
+      print('Error fetching blogs: $e');
+    }
   }
+
 }
 
-class Blog {
-  final String author;
-  final String date;
-  final String? content;
-  final List<String> mediaUrls;
-
-  Blog({
-    required this.author,
-    required this.date,
-    this.content,
-    required this.mediaUrls,
-  });
-}
 
 class ImagePickerController extends GetxController {
   final ImagePicker _picker = ImagePicker();

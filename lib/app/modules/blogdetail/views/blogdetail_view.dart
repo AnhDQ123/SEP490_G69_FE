@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import '../../../routes/app_pages.dart';
 import '../controllers/blogdetail_controller.dart';
 
@@ -27,13 +28,13 @@ class BlogdetailView extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(controller.blog.author, style: TextStyle(fontWeight: FontWeight.bold)),
-                          Text(controller.blog.date, style: TextStyle(color: Colors.grey)),
+                          Text(controller.blog.writer.name, style: TextStyle(fontWeight: FontWeight.bold)),
+                          Text(DateFormat('yyyy-MM-dd HH:mm:ss').format(controller.blog.createdAt), style: TextStyle(color: Colors.grey)),
                           SizedBox(height: 10),
                           Text(controller.blog.content ?? "", style: TextStyle(color: Colors.black54)),
                           SizedBox(height: 10),
-                          if (controller.blog.mediaUrls.isNotEmpty)
-                            _buildMediaGrid(controller.blog.mediaUrls),
+                          if (controller.blog.imageUrls.isNotEmpty)
+                            _buildMediaGrid(controller.blog.imageUrls),
                         ],
                       ),
                     ),
