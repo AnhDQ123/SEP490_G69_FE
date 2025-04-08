@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import '../../../models/voucher.dart';
 import '../../../service/shop_service.dart';
+import '../../shop_menu/controllers/shop_controller.dart';
 
 class ShopVoucherListController extends GetxController {
   final vouchers = <Voucher>[].obs;
@@ -12,6 +13,7 @@ class ShopVoucherListController extends GetxController {
   final RxnString selectedDiscountType = RxnString(); // null = tất cả
   final RxString searchKeyword = ''.obs;
   final Rx<VoucherSortType> sortType = VoucherSortType.none.obs;
+  final shopId = Get.find<ShopController>().shopId;
 
 
   @override
@@ -22,7 +24,7 @@ class ShopVoucherListController extends GetxController {
 
   Future<void> fetchVouchers() async {
     try {
-      final list = await shopService.fetchVouchersByShop(1);
+      final list = await shopService.fetchVouchersByShop(shopId);
       vouchers.assignAll(list);
       applyFilter();
     } catch (e) {

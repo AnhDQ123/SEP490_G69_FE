@@ -1,143 +1,425 @@
 import 'package:flutter/material.dart';
-import 'package:fl_chart/fl_chart.dart';
 import 'package:get/get.dart';
+import 'package:fl_chart/fl_chart.dart';
 import '../controllers/shop_dashboard_controller.dart';
 
 class ShopDashboardView extends StatelessWidget {
-  final ShopDashboardController controller = Get.put(ShopDashboardController());
+  const ShopDashboardView({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final controller = Get.put(ShopDashboardController());
+
     return Scaffold(
-      appBar: AppBar(title: Text('Thống kê')),
+      appBar: AppBar(
+        title: const Text('Thống kê cửa hàng'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: controller.refreshData,
+          ),
+        ],
+      ),
       body: Obx(() {
-        if (controller.dashboardData.value == null) {
-          return Center(child: CircularProgressIndicator());
-        } else {
-          return Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Doanh thu hôm nay
-                Text(
-                    'Doanh thu hôm nay: ${controller.dashboardData.value.totalRevenue}đ'),
-                SizedBox(height: 10),
-                // Biểu đồ doanh thu theo ngày
-                _buildRevenueChart(),
-                SizedBox(height: 20),
-                // Đơn hàng hôm nay
-                Text(
-                    'Đơn hàng hôm nay: ${controller.dashboardData.value.totalOrders} đơn'),
-                SizedBox(height: 10),
-                // Biểu đồ đơn hàng mỗi ngày
-                _buildOrdersChart(),
-                SizedBox(height: 20),
-                // Món ăn bán chạy nhất
-                Text('Món ăn bán chạy nhất:'),
-                _buildBestSellingFoods(),
-                SizedBox(height: 20),
-                // Đánh giá trung bình
-                Text('Đánh giá trung bình:'),
-                _buildRatingsChart(),
-              ],
-            ),
-          );
+        if (controller.isLoading.value) {
+          return const Center(child: CircularProgressIndicator());
         }
+        return RefreshIndicator(
+          onRefresh: controller.refreshData,
+          child: ListView(
+            children: [
+              _buildChartSection(controller),
+              if (controller.topProducts.isNotEmpty)
+                _buildTopProductsSection(controller),
+            ],
+          ),
+        );
       }),
     );
   }
 
-  // Biểu đồ doanh thu theo ngày
-  Widget _buildRevenueChart() {
-    return Expanded(
-      child: BarChart(
-        BarChartData(
-          borderData: FlBorderData(show: false),
-          titlesData: FlTitlesData(show: true),
-          gridData: FlGridData(show: false),
-          alignment: BarChartAlignment.spaceAround,
-          maxY: 20000,
-          barGroups: controller.dashboardData.value.orderStats.map((data) {
-            return BarChartGroupData(
-              x: int.parse(data.date.split('/')[0]),
-              barRods: [
-                BarChartRodData(
-                  fromY: 0,
-                  // Điểm bắt đầu
-                  toY: data.ordersCount * 1000.toDouble(),
-                  // Điểm kết thúc (doanh thu)
-                  color: Colors.blue,
-                  width: 10,
-                ),
-              ],
-            );
-          }).toList(),
+  Widget _buildChartSection(ShopDashboardController controller) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Card(
+        elevation: 4,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Text(
+                      'THỐNG KÊ ĐƠN HÀNG',
+                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                      overflow: TextOverflow.ellipsis, // tránh lỗi tràn
+                    ),
+                  ),
+                  _buildChartTypeDropdown(controller),
+                ],
+              ),
+
+              const SizedBox(height: 16),
+              _buildChartLegend(),
+              const SizedBox(height: 16),
+              SizedBox(
+                height: 300,
+                child: Obx(() {
+                  return controller.selectedChartType.value == 'monthly'
+                      ? _buildMonthlyChart(controller)
+                      : _buildDailyChart(controller);
+                }),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildOrdersChart() {
-    return BarChart(
-      BarChartData(
-        borderData: FlBorderData(show: false),
-        titlesData: FlTitlesData(show: true),
-        gridData: FlGridData(show: false),
-        alignment: BarChartAlignment.spaceAround,
-        maxY: 50,
-        barGroups: controller.dashboardData.value.orderStats.map((data) {
-          return BarChartGroupData(
-            x: int.parse(data.date.split('/')[0]),
-            barRods: [
-              BarChartRodData(
-                fromY: 0, // Điểm bắt đầu
-                toY: data.ordersCount.toDouble(), // Điểm kết thúc
-                color: Colors.cyan,
-                width: 10,
-              ),
-            ],
-          );
-        }).toList(),
+  Widget _buildChartTypeDropdown(ShopDashboardController controller) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: DropdownButton<String>(
+        value: controller.selectedChartType.value,
+        underline: const SizedBox(), // Loại bỏ gạch chân mặc định
+        icon: const Icon(Icons.arrow_drop_down, color: Colors.blue),
+        items: const [
+          DropdownMenuItem(
+            value: 'monthly',
+            child: Text('Theo tháng'),
+          ),
+          DropdownMenuItem(
+            value: 'daily',
+            child: Text('Theo ngày'),
+          ),
+        ],
+        onChanged: (String? newValue) {
+          if (newValue != null) {
+            controller.toggleChartType(newValue);
+          }
+        },
       ),
     );
   }
 
-  // Món ăn bán chạy nhất
-  Widget _buildBestSellingFoods() {
-    return Column(
-      children: controller.dashboardData.value.bestSellingFoods
-          .map((food) => ListTile(
-                title: Text(food.name),
-                trailing: Text('${food.quantity} đơn'),
-              ))
-          .toList(),
+  Widget _buildChartLegend() {
+    return const Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        _LegendItem(color: Colors.green, text: 'Thành công'),
+        SizedBox(width: 20),
+        _LegendItem(color: Colors.red, text: 'Thất bại'),
+      ],
     );
   }
 
-  // Biểu đồ đánh giá
-  Widget _buildRatingsChart() {
+  Widget _buildMonthlyChart(ShopDashboardController controller) {
     return BarChart(
       BarChartData(
-        borderData: FlBorderData(show: false),
-        titlesData: FlTitlesData(show: true),
-        gridData: FlGridData(show: false),
         alignment: BarChartAlignment.spaceAround,
-        maxY: 150,
-        barGroups: controller.dashboardData.value.ratings.map((rating) {
-          return BarChartGroupData(
-            x: rating.score.toInt(),
-            barRods: [
-              BarChartRodData(
-                fromY: rating.count.toDouble(),
-                color: Colors.green,
-                width: 10,
-                toY: rating.count.toDouble(), // Thêm tham số toY
-              ),
-            ],
-          );
-        }).toList(),
+        maxY: _calculateMaxY(controller.orders_S, controller.orders_F),
+        titlesData: FlTitlesData(
+          leftTitles: const AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              reservedSize: 40,
+            ),
+          ),
+          bottomTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              getTitlesWidget: (value, meta) {
+                return Text(
+                  'Tháng ${value.toInt()}',
+                  style: const TextStyle(fontSize: 12),
+                );
+              },
+              reservedSize: 30,
+            ),
+          ),
+          topTitles:
+          const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          rightTitles:
+          const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+        ),
+        borderData: FlBorderData(show: true),
+        gridData: const FlGridData(show: true),
+        barGroups:
+        _buildMonthlyBarGroups(controller.orders_S, controller.orders_F),
       ),
+    );
+  }
+
+  Widget _buildDailyChart(ShopDashboardController controller) {
+    final dailyData = controller.orders_S_Daily;
+    return BarChart(
+      BarChartData(
+        alignment: BarChartAlignment.spaceAround,
+        maxY: _calculateMaxY(
+            controller.orders_S_Daily, controller.orders_F_Daily),
+        titlesData: FlTitlesData(
+          leftTitles: const AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              reservedSize: 40,
+            ),
+          ),
+          bottomTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              getTitlesWidget: (value, meta) {
+                final index = value.toInt();
+                if (index >= 0 && index < dailyData.length) {
+                  final date =
+                      dailyData[index]['date'].toString().split('-').last;
+                  return Text(date, style: const TextStyle(fontSize: 10));
+                }
+                return const Text('');
+              },
+              reservedSize: 30,
+            ),
+          ),
+          topTitles:
+          const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          rightTitles:
+          const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+        ),
+        borderData: FlBorderData(show: true),
+        gridData: const FlGridData(show: true),
+        barGroups: _buildDailyBarGroups(
+          controller.orders_S_Daily,
+          controller.orders_F_Daily,
+        ),
+      ),
+    );
+  }
+
+  List<BarChartGroupData> _buildMonthlyBarGroups(
+      List<Map<String, dynamic>> successOrders,
+      List<Map<String, dynamic>> failedOrders,
+      )
+  {
+    final successMap = {for (var e in successOrders) e['month']: e};
+    final failedMap = {for (var e in failedOrders) e['month']: e};
+
+    final allMonths = {
+      ...successOrders.map((e) => e['month']),
+      ...failedOrders.map((e) => e['month']),
+    }.toList()
+      ..sort();
+
+    return allMonths.map((month) {
+      return BarChartGroupData(
+        x: month,
+        barRods: [
+          BarChartRodData(
+            toY: (successMap[month]?['orderCount'] ?? 0).toDouble(),
+            color: Colors.green,
+            width: 12,
+          ),
+          BarChartRodData(
+            toY: (failedMap[month]?['orderCount'] ?? 0).toDouble(),
+            color: Colors.red,
+            width: 12,
+          ),
+        ],
+        barsSpace: 8,
+      );
+    }).toList();
+  }
+
+  List<BarChartGroupData> _buildDailyBarGroups(
+      List<Map<String, dynamic>> successOrders,
+      List<Map<String, dynamic>> failedOrders,
+      )
+  {
+    final successMap = {for (var e in successOrders) e['date']: e};
+    final failedMap = {for (var e in failedOrders) e['date']: e};
+
+    final allDates = {
+      ...successOrders.map((e) => e['date']),
+      ...failedOrders.map((e) => e['date']),
+    }.toList()
+      ..sort();
+
+    return allDates.asMap().entries.map((entry) {
+      final date = entry.value;
+      final index = entry.key;
+      return BarChartGroupData(
+        x: index,
+        barRods: [
+          BarChartRodData(
+            toY: (successMap[date]?['orderCount'] ?? 0).toDouble(),
+            color: Colors.green,
+            width: 8,
+          ),
+          BarChartRodData(
+            toY: (failedMap[date]?['orderCount'] ?? 0).toDouble(),
+            color: Colors.red,
+            width: 8,
+          ),
+        ],
+        barsSpace: 4,
+      );
+    }).toList();
+  }
+
+  double _calculateMaxY(
+      List<Map<String, dynamic>> successOrders,
+      List<Map<String, dynamic>> failedOrders,
+      ) {
+    final maxSuccess = successOrders.fold<double>(
+      0,
+          (max, e) => e['orderCount'] > max ? e['orderCount'].toDouble() : max,
+    );
+    final maxFailed = failedOrders.fold<double>(
+      0,
+          (max, e) => e['orderCount'] > max ? e['orderCount'].toDouble() : max,
+    );
+
+    // Nhân với 1.1 rồi làm tròn lên số nguyên gần nhất
+    final calculatedMax = (maxSuccess > maxFailed ? maxSuccess : maxFailed) * 1.1;
+    return calculatedMax.ceilToDouble(); // Làm tròn lên thành số nguyên
+  }
+
+  Widget _buildTopProductsSection(ShopDashboardController controller) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+      child: Card(
+        elevation: 4,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'TOP SẢN PHẨM BÁN CHẠY TRONG THÁNG',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 16),
+              ...controller.topProducts.map(
+                    (product) => _buildProductItem(
+                    product, controller.topProducts.indexOf(product) + 1),
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildProductItem(Map<String, dynamic> product, int rank) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        children: [
+          Container(
+            width: 32,
+            height: 32,
+            decoration: BoxDecoration(
+              color: _getRankColor(rank),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            alignment: Alignment.center,
+            child: Text(
+              '$rank',
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  product['productName'] ?? 'Không có tên',
+                  style: const TextStyle(fontWeight: FontWeight.w500),
+                ),
+                Text(
+                  'ID: ${product['productId']}',
+                  style: const TextStyle(fontSize: 12, color: Colors.grey),
+                ),
+              ],
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+            decoration: BoxDecoration(
+              color: Colors.green[50],
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Text(
+              '${product['quantitySold']} đơn',
+              style: TextStyle(
+                color: Colors.green[800],
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Color _getRankColor(int rank) {
+    switch (rank) {
+      case 1:
+        return Colors.amber[700]!;
+      case 2:
+        return Colors.grey[600]!;
+      case 3:
+        return Colors.brown[500]!;
+      default:
+        return Colors.blue;
+    }
+  }
+}
+
+class _LegendItem extends StatelessWidget {
+  final Color color;
+  final String text;
+
+  const _LegendItem({required this.color, required this.text});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: 16,
+          height: 16,
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.circular(4),
+          ),
+        ),
+        const SizedBox(width: 8),
+        Text(
+          text,
+          style: const TextStyle(fontSize: 12),
+        ),
+      ],
     );
   }
 }

@@ -210,31 +210,30 @@ class ExtraOptionsSheet extends StatelessWidget {
                   ),
                   padding: const EdgeInsets.symmetric(vertical: 14),
                 ),
-                  onPressed: () async {
-                    final hasSelected = controller.extraOptions.any((o) => o.selected);
-                    if (!hasSelected) {
-                      Get.snackbar("Thông báo", "Vui lòng chọn một tuỳ chọn trước khi thêm");
-                      return;
+                onPressed: () async {
+                  // Kiểm tra nếu có size nhưng chưa chọn
+                  if (controller.hasSelectedSize && controller.selectedSizeIndex.value < 0) {
+                    Get.snackbar("Thông báo", "Vui lòng chọn size trước khi thêm vào giỏ hàng");
+                    return;
+                  }
+
+                  Navigator.pop(context);
+                  controller.isAddingToCart.value = true;
+
+                  try {
+                    await controller.addToCartWithOptions();
+
+                    if (Get.isRegistered<CartController>()) {
+                      await Get.find<CartController>().fetchCart();
                     }
 
-                    Navigator.pop(context); // đóng bottom sheet
-
-                    controller.isAddingToCart.value = true;
-
-                    try {
-                      await controller.addToCartWithOptions();
-
-                      if (Get.isRegistered<CartController>()) {
-                        await Get.find<CartController>().fetchCart();
-                      }
-
-                      Get.snackbar("Thành công", "Đã thêm vào giỏ hàng");
-                    } catch (e) {
-                      Get.snackbar("Lỗi", "Có lỗi xảy ra: $e");
-                    } finally {
-                      controller.isAddingToCart.value = false;
-                    }
-                  },
+                    Get.snackbar("Thành công", "Đã thêm vào giỏ hàng");
+                  } catch (e) {
+                    Get.snackbar("Lỗi", "Có lỗi xảy ra: $e");
+                  } finally {
+                    controller.isAddingToCart.value = false;
+                  }
+                },
 
 
 

@@ -29,6 +29,8 @@ class ShopController extends GetxController {
       final shop = await ShopService().fetchShopProfile(shopId);
       print(shopId);
       shopInfo.value = shop;
+      isFreeShipping.value = shop.isShipping;
+      isShopClosed.value = !shop.isOpening; // Nếu isOpening == false -> cửa hàng đang đóng
     } catch (e) {
       print('❌ Lỗi khi lấy thông tin shop: $e');
     }
@@ -41,4 +43,23 @@ class ShopController extends GetxController {
       orderCounts.value = result; // Cập nhật giá trị vào RxMap
     }
   }
+
+  Future<void> toggleShipping() async {
+    try {
+      await ShopService().toggleShopShippingStatus(shopId);
+      isFreeShipping.toggle(); // Cập nhật local state
+    } catch (e) {
+      print('❌ Toggle shipping failed: $e');
+    }
+  }
+
+  Future<void> toggleOpenStatus() async {
+    try {
+      await ShopService().toggleShopOpenStatus(shopId);
+      isShopClosed.toggle(); // Cập nhật local state
+    } catch (e) {
+      print('❌ Toggle open status failed: $e');
+    }
+  }
+
 }

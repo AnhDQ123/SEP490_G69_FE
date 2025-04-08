@@ -49,7 +49,7 @@ class ShopView extends GetView<ShopController> {
             children: [
               CircleAvatar(
                 radius: 36,
-                backgroundImage: NetworkImage(shop.logo),
+                backgroundImage: NetworkImage(shop.logo!),
                 backgroundColor: Colors.grey[200],
               ),
               SizedBox(width: 10),
@@ -114,11 +114,26 @@ class ShopView extends GetView<ShopController> {
   Widget _buildToggleButtons() {
     return Column(
       children: [
-        _buildSwitchTile('Miễn phí vận chuyển', controller.isFreeShipping),
-        _buildSwitchTile('Tạm đóng cửa hàng', controller.isShopClosed),
+        Obx(() => SwitchListTile(
+          title: Text('Miễn phí vận chuyển'),
+          value: controller.isFreeShipping.value,
+          onChanged: (_) => controller.toggleShipping(),
+          activeColor: Color.fromRGBO(251, 196, 139, 1.0),
+          inactiveThumbColor: Colors.grey,
+          inactiveTrackColor: Colors.grey.shade300,
+        )),
+        Obx(() => SwitchListTile(
+          title: Text('Tạm đóng cửa hàng'),
+          value: controller.isShopClosed.value,
+          onChanged: (_) => controller.toggleOpenStatus(),
+          activeColor: Color.fromRGBO(251, 196, 139, 1.0),
+          inactiveThumbColor: Colors.grey,
+          inactiveTrackColor: Colors.grey.shade300,
+        )),
       ],
     );
   }
+
 
   Widget _buildSwitchTile(String title, RxBool value) {
     return Obx(() => SwitchListTile(
@@ -201,9 +216,15 @@ class ShopView extends GetView<ShopController> {
         _buildGridItem(Icons.category, 'Sản phẩm', () => Get.toNamed(Routes.SHOP_PRODUCT_LIST)),
         _buildGridItem(Icons.pie_chart, 'Thống kê', () => Get.toNamed(Routes.SHOP_DASHBOARD)),
         _buildGridItem(Icons.percent, 'Giảm giá', () => Get.toNamed(Routes.PRODUCT_DISCOUNT)),
-        _buildGridItem(Icons.description, 'Báo cáo', () {}),
-        _buildGridItem(Icons.local_offer, 'Voucher', () => Get.toNamed(Routes.SHOP_VOUCHER_LIST)),
-        _buildGridItem(Icons.campaign, 'Banner', () => Get.toNamed(Routes.ADD_BANNER)),
+        _buildGridItem(Icons.description, 'Báo cáo', () {
+          Get.toNamed(Routes.SHOP_REPORT_LIST, arguments: {'shopId': controller.shopId});
+        }),        _buildGridItem(Icons.local_offer, 'Voucher', () => Get.toNamed(Routes.SHOP_VOUCHER_LIST)),
+        _buildGridItem(Icons.campaign, 'Banner', () {
+          Get.toNamed(Routes.SHOP_BANNER, arguments: {'shopId': controller.shopId});
+        }),
+        _buildGridItem(Icons.delivery_dining, 'Quản li shipper', () {
+          Get.toNamed(Routes.SHOP_MANAGE_SHIPPER, arguments: {'shopId': controller.shopId});
+        }),
       ],
     );
   }

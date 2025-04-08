@@ -9,8 +9,8 @@ class DeliveryTimeWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Nếu Order có trường deliveryTime thì sử dụng nó, nếu không thì giả sử là createdAt + 2 giờ
-    final deliveryTime = order.createdAt.add(const Duration(hours: 2));
-    final timeStr = DateFormat('HH:mm, dd/MM').format(deliveryTime);
+    final deliveryTime = order.createdAt?.add(const Duration(hours: 2));
+    final timeStr = DateFormat('HH:mm, dd/MM').format(deliveryTime!);
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [

@@ -135,11 +135,22 @@ class OrderService {
       final url = Uri.parse('$baseUrl/add');
       final body = jsonEncode(order.toJson());
 
+      print('🟡 [7.ORDER BEFORE API] Chi tiết đơn hàng:');
+      order.orderItem.forEach((item) {
+        print('   ProductID: ${item.productId} | ${item.productName}');
+        item.orderItemOptions.forEach((opt) {
+          print('      → OrderOptionID: ${opt.optionId} | Name: ${opt.optionName}');
+        });
+      });
+
       final response = await http.post(
         url,
         headers: {'Content-Type': 'application/json'},
         body: body,
       );
+
+      print('🟠 [8.API ORDER RESPONSE] Full data: ${response.body}');
+
 
       print("🔥 [POST] $url");
       print("🔥 STATUS: ${response.statusCode}");
@@ -172,9 +183,11 @@ class OrderService {
             total: (responseBody['total'] as num?)?.toDouble() ?? order.total,
             createdAt: DateTime.now(),
             status: responseBody['status'] ?? order.status,
-            items: order.items,
+            orderItem: order.orderItem,
             image: order.image,
             reason: order.reason,
+            ownerName: order.ownerName,
+            phone: order.phone,
           );
 
           print("✅ Order sau khi ghép: ${mergedOrder.toJson()}");

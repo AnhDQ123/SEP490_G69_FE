@@ -6,7 +6,7 @@ class FoodOption {
   final double price;
   final String? description;
   // final String? image;
-  dynamic image; // Cho phép cập nhật ảnh
+  String? image; // Cho phép cập nhật ảnh
   final int? typeId;
   final String? status;
   final int productId;
@@ -24,13 +24,17 @@ class FoodOption {
 
   // Factory constructor để chuyển từ JSON thành đối tượng FoodOption
   factory FoodOption.fromJson(Map<String, dynamic> json) {
+    if (json['price'] == null || json['price'] == 0) {
+      print("⚠️ [FoodOption] Giá = 0 hoặc null | optionId: ${json['id']}, name: ${json['name']}, productId: ${json['product_id']}");
+    }
+
     return FoodOption(
       id: json['id'] ?? 0,
       name: json['name'] ?? '',
       price: (json['price'] ?? 0).toDouble(),
       description: json['description'],
       // image: json['image'],  // Lưu trữ URL hoặc Base64
-      image: json['image'] != null ? File(json['image']) : null,
+      image: json['image']?.toString(), // <-- Đảm bảo luôn là String
       typeId: json['type_id'],
       status: json['status'],
       productId: json['product_id'] ?? 0,

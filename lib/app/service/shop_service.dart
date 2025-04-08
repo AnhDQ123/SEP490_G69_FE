@@ -2,19 +2,24 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:ffb_fe_flutter/app/models/product_discount.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:path/path.dart';
 import 'package:mime/mime.dart';
+import '../models/banner.dart';
 import '../models/discount.dart';
 import '../models/product.dart';
+import '../models/ship_payment.dart';
 import '../models/shop_profile.dart';
 import 'package:http_parser/http_parser.dart';
 
 import '../models/bank.dart';
 import '../models/voucher.dart';
 import '../base/api_base_url.dart';
-import '../models/shop.dart';  // Import ApiBaseUrl
+import '../models/shop.dart';
+import '../modules/shop_menu/controllers/shop_controller.dart';  // Import ApiBaseUrl
 
 class ShopService {
   final String baseUrl = ApiBaseUrl.baseUrl +"/api";
@@ -74,8 +79,8 @@ class ShopService {
     request.fields['userId'] = userId;  // Sử dụng `userId` động ở đây
     request.fields['openTime'] = openTime; // Gửi giờ mở cửa
     request.fields['closeTime'] = closeTime; // Gửi giờ đóng cửa
-    request.fields['bankBin'] = selectedBankBin;
-    request.fields['bankInfo'] = bankInfo;
+    request.fields['bankCode'] = selectedBankBin;
+    request.fields['accountNumber'] = bankInfo;
 
     // Upload file ảnh (nếu có)
     if (logo != null) {
@@ -139,7 +144,6 @@ class ShopService {
       if (response.statusCode == 201 || response.statusCode == 200) {
         return ApiResponse(success: true, message: "Đăng ký thành công!");
       } else {
-        // ✅ Kiểm tra responseBody có dữ liệu không trước khi decode
         if (responseBody.isNotEmpty) {
           var decodedResponse = jsonDecode(responseBody);
           return ApiResponse(
@@ -165,26 +169,20 @@ class ShopService {
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
-      // ✅ Giải mã UTF-8 thủ công
       final decodedBody = utf8.decode(response.bodyBytes);
       final data = json.decode(decodedBody);
 
       print('✅ Dữ liệu JSON nhận được: $data');
 
-      final shop = ShopProfile.fromJson(data);
-
-      print('🔍 Thông tin cửa hàng:');
-      print('📌 Tên: ${shop.name}');
-      print('📍 Địa chỉ: ${shop.address}');
-      print('📞 SĐT: ${shop.phone}');
-      print('🕖 Giờ mở cửa: ${shop.openTime} - ${shop.closeTime}');
-      print('🚚 Giao hàng: ${shop.isShipping ? "Có" : "Không"}');
-      print('👤 Chủ shop: ${shop.owner.profile.name} (${shop.owner.email})');
-      print('⭐ Đánh giá: ${shop.rate} | Lượt xem: ${shop.viewCount}');
-
-      return shop;
+      try {
+        final shop = ShopProfile.fromJson(data);
+        return shop;
+      } catch (e) {
+        print('❌ Lỗi khi parse ShopProfile: $e');
+        print('🔥 Dữ liệu gây lỗi: $data');
+        throw Exception('Lỗi khi xử lý dữ liệu cửa hàng');
+      }
     } else {
-      print('❌ Lỗi khi gọi API: ${response.statusCode}');
       throw Exception('Không thể tải dữ liệu cửa hàng');
     }
   }
@@ -446,9 +444,9 @@ class ShopService {
     }
   }
 
-  Future<ApiResponse> addVoucher(Voucher voucher) async {
+  Future<ApiResponse> addVoucher(Voucher voucher, int shopId) async {
     try {
-      final uri = Uri.parse('$baseUrl/vouchers');
+      final uri = Uri.parse('$baseUrl/vouchers/create/$shopId');
 
       final body = jsonEncode({
         'code': voucher.code,
@@ -529,8 +527,112 @@ class ShopService {
     }
   }
 
+  // Thêm 2 API mới
+  Future<void> toggleShopOpenStatus(int shopId) async {
+    try {
+      final response = await http.put(
+        Uri.parse('$baseUrl/shops/isOpen?shopId=$shopId'),
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      if (response.statusCode != 200) {
+        throw Exception('Failed to toggle shop open status: ${response.body}');
+      }
+    } catch (e) {
+      print('Error toggling shop open status: $e');
+      throw e;
+    }
+  }
+
+  Future<void> toggleShopShippingStatus(int shopId) async {
+    try {
+      final response = await http.put(
+        Uri.parse('$baseUrl/shops/isShipping?shopId=$shopId'),
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      if (response.statusCode != 200) {
+        throw Exception('Failed to toggle shop shipping status: ${response.body}');
+      }
+    } catch (e) {
+      print('Error toggling shop shipping status: $e');
+      throw e;
+    }
+  }
+
+  Future<bool> addBanner(File banner) async {
+    try {
+      var request = http.MultipartRequest("POST", Uri.parse("${ApiBaseUrl.baseUrl}/api/shops/banner/upload"));
+
+      // Thêm shopId vào request
+      request.fields["shopId"] = Get.find<ShopController>().shopId.toString();
+
+      // Thêm file vào request
+      request.files.add(await http.MultipartFile.fromPath("file", banner.path));
+
+      // Gửi request và nhận phản hồi
+      var response = await request.send();
+
+      // Đọc phản hồi từ server
+      var responseBody = await response.stream.bytesToString();
+
+      // In ra phản hồi để debug
+      print('Response status: ${response.statusCode}');
+      print('Response body: $responseBody');
+
+      // Kiểm tra mã trạng thái và trả về true nếu thành công
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return true;
+      } else {
+        // In ra thông báo lỗi nếu không thành công
+        print('Upload failed with status code: ${response.statusCode}');
+        return false;
+      }
+    } catch (e) {
+      // In ra lỗi nếu có
+      print("❌ Lỗi ngoại lệ khi gửi API: $e");
+      return false;
+    }
+  }
+
+  Future<List<BannerDTO>> fetchBannersByShop(int shopId) async {
+    final url = Uri.parse('$baseUrl/shops/banner/shop?shopId=$shopId');
+
+    final response = await http.get(url);
+    print('📥 Status Code: ${response.statusCode}');
+    print('📥 Response Body: ${response.body}');
+
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = json.decode(response.body);
+      return data.map((item) => BannerDTO.fromJson(item)).toList();
+    } else {
+      throw Exception('Failed to load banners');
+    }
+  }
+
+  Future<List<ShipPaymentDTO>> fetchShipperPayments(int shopId) async {
+    final url = Uri.parse('$baseUrl/shops/shipPayment/$shopId');
+
+    try {
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = json.decode(response.body);
+        return data.map((item) => ShipPaymentDTO.fromJson(item)).toList();
+      } else {
+        print('❌ Lỗi API shipPayment: ${response.statusCode}');
+        throw Exception('Không thể lấy dữ liệu shipper');
+      }
+    } catch (e) {
+      print('❌ Lỗi khi gọi API shipPayment: $e');
+      throw Exception('Lỗi kết nối shipper');
+    }
+  }
 
 }
+
+
 
 class ApiResponse {
   final bool success;

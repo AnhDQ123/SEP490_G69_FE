@@ -118,7 +118,6 @@ class CartView extends StatelessWidget {
   Widget _buildCartItem(BuildContext parentContext, int shopId, CartItemDTO item) {
     final controller = Get.find<CartController>();
 
-    // 🔹 Nếu Product chưa được lấy từ API, gọi fetchProductOptions
     if (!controller.productOptions.containsKey(item.productId)) {
       controller.fetchProductOptions(item.productId);
     }
@@ -245,12 +244,14 @@ class CartView extends StatelessWidget {
 
                         const SizedBox(height: 4),
 
-                        // 🏷️ Hiển thị giá của sản phẩm (Chỉ lấy từ Size)
                         Text(
-                          "${controller.formatCurrency(selectedSize?.price ?? 0)}",
+                          "${controller.formatCurrency(item.totalPrice)}",
                           style: const TextStyle(
-                              fontSize: 14, fontWeight: FontWeight.bold),
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
+
                       ],
                     ),
                   ),

@@ -2,7 +2,7 @@ class UserProfile {
   final int id;
   final String name;
   final String address;
-  final String avatar;
+  final String? avatar;
   final String gender;
   final String dob;
   final String phone;
@@ -12,7 +12,7 @@ class UserProfile {
     required this.id,
     required this.name,
     required this.address,
-    required this.avatar,
+    this.avatar,
     required this.gender,
     required this.dob,
     required this.phone,

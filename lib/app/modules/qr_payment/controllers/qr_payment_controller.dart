@@ -82,7 +82,7 @@ class QrPaymentController extends GetxController {
       );
 
       log("✅ Đã gọi NotificationService thành công, chuyển trang...");
-      Get.toNamed('/my-order', arguments: order);
+      Get.toNamed('/my-order', arguments: order.ownerId);
     } catch (e) {
       log("❌ Lỗi trong confirmPaymentAndNotify: $e");
       Get.snackbar("Lỗi", "Không thể xác nhận thanh toán: $e");

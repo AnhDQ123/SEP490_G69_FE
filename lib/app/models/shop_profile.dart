@@ -2,8 +2,8 @@ class ShopProfile {
   final int id;
   final String name;
   final String? description;
-  final String logo;
-  final String backgroundImage;
+  final String? logo;
+  final String? backgroundImage;
   final String? menu;
   final String phone;
   final String openTime;
@@ -22,8 +22,8 @@ class ShopProfile {
     required this.id,
     required this.name,
     this.description,
-    required this.logo,
-    required this.backgroundImage,
+    this.logo,
+    this.backgroundImage,
     this.menu,
     required this.phone,
     required this.openTime,
@@ -42,17 +42,17 @@ class ShopProfile {
   factory ShopProfile.fromJson(Map<String, dynamic> json) {
     return ShopProfile(
       id: json['id'],
-      name: json['name'],
-      description: json['description'],
-      logo: json['logo'],
-      backgroundImage: json['backgroundImage'],
-      menu: json['menu'],
+      name: json['name'] ?? '',
+      description: json['description'] ?? '',
+      logo: json['logo'] ?? '',
+      backgroundImage: json['backgroundImage'] ?? '',
+      menu: json['menu'] ?? '',
       phone: json['phone'],
       openTime: json['openTime'],
       closeTime: json['closeTime'],
       registrationCertificate: json['registrationCertificate'],
       foodSafetyCertificate: json['foodSafetyCertificate'],
-      address: json['address'],
+      address: json['address'] ?? '',
       isActive: json['isActive'],
       rate: (json['rate'] as num).toDouble(),
       viewCount: json['viewCount'],
@@ -121,7 +121,7 @@ class Owner {
 class Profile {
   final int id;
   final String name;
-  final String avatar;
+  final String? avatar;
   final String? taxCode;
   final String? citizenIDNumber;
   final String? citizenIDCardFront;
@@ -135,7 +135,7 @@ class Profile {
   Profile({
     required this.id,
     required this.name,
-    required this.avatar,
+    this.avatar,
     this.taxCode,
     this.citizenIDNumber,
     this.citizenIDCardFront,
@@ -151,7 +151,7 @@ class Profile {
     return Profile(
       id: json['id'],
       name: json['name'],
-      avatar: json['avatar'],
+      avatar: json['avatar'] ?? '',
       taxCode: json['taxCode'],
       citizenIDNumber: json['citizenIDNumber'],
       citizenIDCardFront: json['citizenIDCardFront'],

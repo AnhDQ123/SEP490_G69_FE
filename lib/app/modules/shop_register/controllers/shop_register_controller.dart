@@ -174,7 +174,7 @@ class ShopRegisterController extends GetxController {
       if (response.success) {
         Get.snackbar("Thành công", "Đăng ký cửa hàng thành công!");
         Future.delayed(Duration(seconds: 2), () {
-          Get.offAllNamed(Routes.SHOP); // ✅ Chuyển hướng về trang shop
+          Get.offAllNamed(Routes.PROFILE); // ✅ Chuyển hướng về trang shop
         });
       } else {
         Get.snackbar("Lỗi", response.message);

@@ -1,4 +1,5 @@
 import 'cart_item.dart';
+import 'discount.dart';
 import 'order.dart';
 import 'order_item.dart';
 import 'order_item_option.dart';
@@ -10,6 +11,7 @@ class CartDTO {
   String shopName;
   double price;
   String status;
+  double? discountPrice; // ✅ THÊM DÒNG NÀY nếu chưa có
   List<CartItemDTO> cartItemDTOList;
 
   CartDTO({
@@ -19,24 +21,27 @@ class CartDTO {
     required this.shopName,
     required this.price,
     required this.status,
+    this.discountPrice, // ✅ Đừng quên truyền ở constructor
     required this.cartItemDTOList,
   });
 
   factory CartDTO.fromJson(Map<String, dynamic> json) {
     return CartDTO(
       id: json['id'],
-      userId: json['userId'],
-      shopId: json['shopId'],
-      shopName: json['shopName'] ??'',
-      price: (json['price'] as num).toDouble(),
-      status: json['status'] ??'',
-      cartItemDTOList: (json['cartItemDTOList'] as List)
-          .map((e) => CartItemDTO.fromJson(e))
-          .toList(),
+      userId: json['userId'] ?? 0, // Thêm xử lý null
+      shopId: json['shopId'] ?? 0, // Thêm xử lý null
+      shopName: json['shopName'] ?? '',
+      price: (json['price'] as num?)?.toDouble() ?? 0.0, // Sửa thành as num?
+      status: json['status'] ?? '',
+      discountPrice: (json['discountPrice'] as num?)?.toDouble(), // ✅ Parse đúng kiểu
+      cartItemDTOList: (json['cartItemDTOList'] as List?) // Thêm dấu ?
+          ?.map((e) => CartItemDTO.fromJson(e))
+          .toList() ?? [], // Thêm giá trị mặc định
     );
   }
 
   Map<String, dynamic> toJson() {
+
     return {
       'id': id,
       'userId': userId,
@@ -109,18 +114,21 @@ class CartDTO {
     List<OrderItem> orderItems = cartItemDTOList.map((cartItem) {
       print("📜 Converting CartItem to OrderItem: ${cartItem.toJson()}");
 
+      List<Discount>? discounts = cartItem.discount; // Sử dụng discount từ CartItemDTO
+
+
       return OrderItem(
-        id: cartItem.id ?? 0,
+        id:  0,
         orderId: 0,
         productId: cartItem.productId ?? 0,
-        dishName: cartItem.productName ?? 'No name',
-        imageUrl: cartItem.image ?? '',
+        productName: cartItem.productName ?? 'No name',
+        image: cartItem.image ?? '',
         price: cartItem.price ?? 0.0,
         quantity: cartItem.quantity.value,
         total: cartItem.totalPrice ?? 0.0,
-        discount: 0.0,
+        discount: discounts,
         createdAt: DateTime.now(),
-        options: cartItem.cartItemOptionDTOList.map((opt) {
+        orderItemOptions: cartItem.cartItemOptionDTOList.map((opt) {
           return OrderItemOption(
             id: 0,
             orderItemId: 0,
@@ -137,20 +145,21 @@ class CartDTO {
 
     return Order(
       id: 0,
-      shopId: shopId,                     // ✅ QUAN TRỌNG: truyền đúng từ cart
+      shopId: shopId,
       shopName: shopName,
       ownerId: userId,
-      shipperId: 22,
       shipMethodId: shipMethodId,
       paymentMethodId: paymentMethodId,
       voucherAmount: 0.0,
       voucherId: null,
       address: 'Some address',
-      total: price,
+      total: discountPrice ?? price,
       createdAt: DateTime.now(),
       status: 'PENDING',
-      items: orderItems,
-      image: null,                        // ❓ Hoặc truyền hình ảnh logo shop nếu có
+      orderItem: orderItems,
+      image: null,
+      ownerName: 'Owner Name',
+      phone: 'Phone Number',
     );
   }
 

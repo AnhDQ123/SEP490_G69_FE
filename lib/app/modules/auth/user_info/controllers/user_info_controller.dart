@@ -19,6 +19,7 @@ class UserInfoController extends GetxController {
   var dob = Rx<DateTime?>(null);
   File? avatarFile;
   final ImagePicker _picker = ImagePicker();
+  var phoneController = TextEditingController();
 
   // Nhận user_id từ Get.arguments (được chuyển từ bước đăng ký email/mật khẩu)
   var userId = ''.obs;
@@ -26,10 +27,9 @@ class UserInfoController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    if (Get.arguments != null && Get.arguments['user_id'] != null) {
-      userId.value = Get.arguments['user_id'].toString();
-    }
-    print("User ID nhận được: ${userId.value}");
+    final phone = Get.arguments?['phone'] ?? '';
+    phoneController.text = phone; // Đúng cách gán giá trị cho TextEditingController
+    print("Phone nhận được: $phone");
   }
 
   // Hàm chọn ảnh avatar từ thư viện
@@ -55,38 +55,33 @@ class UserInfoController extends GetxController {
     }
   }
 
-  // Hàm gửi dữ liệu cập nhật profile
   Future<void> submitProfileUpdate() async {
-    // Kiểm tra đầy đủ thông tin: tên, địa chỉ, giới tính (selectedGender), ngày sinh và avatar
-    if (nameController.text.trim().isEmpty ||
-        addressController.text.trim().isEmpty ||
-        selectedGender.value.trim().isEmpty ||
-        dob.value == null ||
-        avatarFile == null) {
-      CustomSnackbar.showError("Vui lòng điền đầy đủ thông tin và chọn ảnh avatar.");
+    if (nameController.text.isEmpty || dob.value == null) {
+      CustomSnackbar.showError("Vui lòng điền đầy đủ thông tin");
       return;
     }
+
     isLoading(true);
     try {
       String dobStr = DateFormat('yyyy-MM-dd').format(dob.value!);
-      Map<String, dynamic> response = await RegisterService().updateUserProfile(
-          userId.value,
-          nameController.text.trim(),
-          // Sử dụng selectedGender thay cho genderController.text
-          selectedGender.value,
-          dobStr,
-          addressController.text.trim(),
-          avatarFile!
+
+      final response = await RegisterService().updateUserProfile(
+        phoneController.text, // Đúng: lấy nội dung text từ controller
+        nameController.text,
+        selectedGender.value,
+        dobStr,
+        addressController.text,
+        avatarFile,
       );
+
       if (response['success']) {
         CustomSnackbar.showSuccess(response['message']);
-        // Chuyển hướng hoặc cập nhật UI sau khi thành công
         Get.offAllNamed('/login');
       } else {
         CustomSnackbar.showError(response['message']);
       }
     } catch (e) {
-      CustomSnackbar.showError("Có lỗi xảy ra: $e");
+      CustomSnackbar.showError("Lỗi: ${e.toString()}");
     } finally {
       isLoading(false);
     }

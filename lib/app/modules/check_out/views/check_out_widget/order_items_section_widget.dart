@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import '../../../../models/order.dart';
 import '../../../../models/order_item.dart';
 import '../../../../models/order_item_option.dart';
+import '../../../../resources/assets_manager.dart';
 
 class OrderItemsSectionWidget extends StatelessWidget {
   final Order order;
@@ -13,9 +14,16 @@ class OrderItemsSectionWidget extends StatelessWidget {
   }
 
   double _calculateDiscountedPrice(OrderItem item) {
-    final discountRate = (100 - (item.discount * 100)) / 100;
+    // Kiểm tra discount có tồn tại và không rỗng
+    if (item.discount == null || item.discount!.isEmpty) {
+      return item.price * item.quantity; // Nếu không có discount, trả về giá gốc
+    }
+
+    // Nếu có discount, áp dụng giảm giá
+    final discountRate = (100 - (item.discount!.first.amount * 100)) / 100;
     return item.price * item.quantity * discountRate;
   }
+
 
   // Giá gốc của món
   double _calculateOriginalPrice(OrderItem item) {
@@ -35,10 +43,10 @@ class OrderItemsSectionWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (order.items.isEmpty) {
+    if (order.orderItem.isEmpty) {
       return const SizedBox.shrink();
     }
-    final groupedItems = _groupItemsByShop(order.items);
+    final groupedItems = _groupItemsByShop(order.orderItem);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -109,13 +117,13 @@ class OrderItemsSectionWidget extends StatelessWidget {
     // Lấy option với typeId == 2 làm size, nếu có
     OrderItemOption? sizeOption;
     try {
-      sizeOption = item.options.firstWhere((option) => option.typeId == 2);
+      sizeOption = item.orderItemOptions.firstWhere((option) => option.typeId == 2);
     } catch (e) {
       sizeOption = null;
     }
     // Lọc các option có typeId == 1
     final additionalOptions =
-    item.options.where((option) => option.typeId == 1).toList();
+    item.orderItemOptions.where((option) => option.typeId == 1).toList();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -145,13 +153,28 @@ class OrderItemsSectionWidget extends StatelessWidget {
               ClipRRect(
                 borderRadius: BorderRadius.circular(4),
                 child: Image.network(
-                  item.imageUrl,
+                  item.image.isNotEmpty ? item.image : ImageAssets.defaultFood,
                   width: 60,
                   height: 60,
                   fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) => Image.asset(
+                    ImageAssets.defaultFood,
+                    width: 60,
+                    height: 60,
+                    fit: BoxFit.cover,
+                  ),
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return Container(
+                      width: 60,
+                      height: 60,
+                      color: Colors.grey[200],
+                      child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
+                    );
+                  },
                 ),
               ),
-              if (item.discount > 0)
+              if (item.discount != null && item.discount!.isNotEmpty && item.discount!.first.amount > 0)
                 Positioned(
                   top: 0,
                   left: 0,
@@ -159,7 +182,7 @@ class OrderItemsSectionWidget extends StatelessWidget {
                     padding: const EdgeInsets.all(2),
                     color: Colors.redAccent,
                     child: Text(
-                      "${(item.discount * 100).toInt()}%",
+                      "${(item.discount!.first.amount * 100).toInt()}%",
                       style: const TextStyle(fontSize: 8, color: Colors.white),
                     ),
                   ),
@@ -173,7 +196,7 @@ class OrderItemsSectionWidget extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "${item.quantity} x ${item.dishName}",
+                  "${item.quantity} x ${item.productName}",
                   style: const TextStyle(fontSize: 10, color: Colors.black),
                 ),
                 if (sizeOption != null)
@@ -191,7 +214,7 @@ class OrderItemsSectionWidget extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              if (item.discount > 0)
+              if (item.discount != null && item.discount!.isNotEmpty && item.discount!.first.amount > 0)
                 Text(
                   _formatPrice(originalPrice),
                   style: const TextStyle(
@@ -220,13 +243,27 @@ class OrderItemsSectionWidget extends StatelessWidget {
           ClipRRect(
             borderRadius: BorderRadius.circular(4),
             child: Image.network(
-              // Sử dụng placeholder nếu không có ảnh thực
-              'https://via.placeholder.com/40',
+              option.image?.isNotEmpty == true ? option.image! : ImageAssets.defaultFood,
               width: 40,
               height: 40,
               fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) =>
-              const Icon(Icons.error, size: 40),
+              errorBuilder: (context, error, stackTrace) => Image.asset(
+                ImageAssets.defaultFood,
+                width: 40,
+                height: 40,
+                fit: BoxFit.cover,
+              ),
+              loadingBuilder: (context, child, loadingProgress) {
+                if (loadingProgress == null) return child;
+                return Container(
+                  width: 40,
+                  height: 40,
+                  color: Colors.grey[200],
+                  child: const Center(
+                    child: CircularProgressIndicator(strokeWidth: 1),
+                  ),
+                );
+              },
             ),
           ),
           const SizedBox(width: 8),

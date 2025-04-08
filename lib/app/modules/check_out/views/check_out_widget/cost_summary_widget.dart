@@ -12,33 +12,44 @@ class CostSummaryWidget extends StatelessWidget {
   double get shippingFee => 0;
 
   // Tính giá gốc của món: giá sản phẩm + giá các option (loại typeId == 1)
+  // Tính giá gốc của món: giá sản phẩm + giá tất cả các option
   double _calculateOriginalPrice(OrderItem item) {
     double productPrice = item.price * item.quantity;
-    double optionsPrice = item.options
-        .where((option) => option.typeId == 1)
+    double optionsPrice = item.orderItemOptions
         .fold(0.0, (sum, option) => sum + (option.price * option.quantity));
     return productPrice + optionsPrice;
   }
 
-  // Tính giá sau discount cho từng món: giá gốc * (1 - discount)
+// Tính giá sau discount cho từng món
   double _calculateDiscountedPrice(OrderItem item) {
     double original = _calculateOriginalPrice(item);
-    return original * (1 - item.discount);
+
+    // Kiểm tra discount hợp lệ
+    if (item.discount == null ||
+        item.discount!.isEmpty ||
+        item.discount!.first.amount <= 0) {
+      return original;
+    }
+
+    // Đảm bảo discount amount nằm trong khoảng 0-1
+    double discountAmount = item.discount!.first.amount.clamp(0.0, 1.0);
+    return original * (1 - discountAmount);
   }
+
 
   // Tổng tạm tính: tổng giá của tất cả các món sau discount
   double get computedSubTotal {
-    return order.items.fold(0.0, (sum, item) => sum + _calculateDiscountedPrice(item));
+    return order.total;
   }
 
-  // Giả sử order.voucherAmount là số phần trăm (ví dụ: 0.20 tương đương 20%)
-  double get voucherPercentage => order.voucherAmount;
-
-  // Số tiền giảm voucher = computedSubTotal * voucherPercentage
-  double get voucherDiscount => computedSubTotal * voucherPercentage;
-
-  // Tổng thanh toán = computedSubTotal - voucherDiscount (với phí ship = 0)
-  double get finalTotal => computedSubTotal - voucherDiscount;
+  // // Giả sử order.voucherAmount là số phần trăm (ví dụ: 0.20 tương đương 20%)
+  // double get voucherPercentage => order.voucherAmount;
+  //
+  // // Số tiền giảm voucher = computedSubTotal * voucherPercentage
+  // double get voucherDiscount => computedSubTotal * voucherPercentage;
+  //
+  // // Tổng thanh toán = computedSubTotal - voucherDiscount (với phí ship = 0)
+  // double get finalTotal => computedSubTotal - voucherDiscount;
 
   String _formatPrice(double price) {
     final formatter =
@@ -99,23 +110,23 @@ class CostSummaryWidget extends StatelessWidget {
           ),
           const SizedBox(height: 2),
           // Voucher
-          if (voucherPercentage > 0)
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: const [
-                    Icon(Icons.discount, size: 14, color: Colors.black54),
-                    SizedBox(width: 4),
-                    Text("Voucher", style: TextStyle(fontSize: 10)),
-                  ],
-                ),
-                Text(
-                  "(-${(voucherPercentage * 100).toInt()}%) ${_formatPrice(voucherDiscount)}",
-                  style: const TextStyle(fontSize: 10, color: Colors.redAccent),
-                ),
-              ],
-            ),
+          // if (voucherPercentage > 0)
+          //   Row(
+          //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          //     children: [
+          //       Row(
+          //         children: const [
+          //           Icon(Icons.discount, size: 14, color: Colors.black54),
+          //           SizedBox(width: 4),
+          //           Text("Voucher", style: TextStyle(fontSize: 10)),
+          //         ],
+          //       ),
+          //       Text(
+          //         "(-${(voucherPercentage * 100).toInt()}%) ${_formatPrice(voucherDiscount)}",
+          //         style: const TextStyle(fontSize: 10, color: Colors.redAccent),
+          //       ),
+          //     ],
+          //   ),
           const Divider(),
           // Tổng thanh toán
           Row(
@@ -128,7 +139,7 @@ class CostSummaryWidget extends StatelessWidget {
                   Text("Tổng thanh toán", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
                 ],
               ),
-              Text(_formatPrice(finalTotal),
+              Text(_formatPrice(order.total),
                   style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
             ],
           ),

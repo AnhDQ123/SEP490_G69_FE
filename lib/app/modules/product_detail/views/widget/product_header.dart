@@ -203,18 +203,43 @@ class ProductHeader extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
           child: Obx(() {
-            final totalPrice = controller.currentPrice * controller.quantity.value;
+            // Lấy giá trực tiếp từ controller
+            final unitPrice = controller.currentPrice;
+            final totalPrice = unitPrice * controller.quantity.value;
+
             return Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  'Giá: ${formatPrice(totalPrice)}',
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.red,
-                  ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (controller.originalPrice > controller.currentPrice) ...[
+                          Text(
+                            'Giá gốc: ${formatPrice(controller.originalPrice * controller.quantity.value)}',
+                            style: const TextStyle(
+                              fontSize: 13,
+                              decoration: TextDecoration.lineThrough,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ],
+                        Text(
+                          ' ${formatPrice(controller.currentPrice * controller.quantity.value)}',
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.red,
+                          ),
+                        ),
+                      ],
+                    ),
+
+                  ],
                 ),
+                // Phần quantity picker giữ nguyên
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(

@@ -50,7 +50,7 @@ class ShopDetailView extends GetView<ShopDetailController> {
               image: DecorationImage(
                 image: file != null
                     ? FileImage(file)
-                    : NetworkImage(controller.shop.backgroundImage) as ImageProvider,
+                    : NetworkImage(controller.shop.backgroundImage!) as ImageProvider,
                 fit: BoxFit.cover,
               ),
             ),
@@ -92,7 +92,7 @@ class ShopDetailView extends GetView<ShopDetailController> {
               radius: 40,
               backgroundImage: file != null
                   ? FileImage(file)
-                  : NetworkImage(controller.shop.logo),
+                  : NetworkImage(controller.shop.logo!),
               backgroundColor: Colors.grey[200],
             ),
             SizedBox(width: 16),

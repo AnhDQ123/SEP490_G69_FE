@@ -57,9 +57,9 @@ class ShopAddProductView extends GetView<ShopAddProductController> {
       bottomNavigationBar: Padding(
         padding: EdgeInsets.all(16),
         child: ElevatedButton(
-          onPressed: () => controller.saveProduct(),
+          onPressed: controller.isLoading.value ? null : () => controller.saveProduct(),
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.black,
+            backgroundColor: Color.fromRGBO(251, 196, 139, 1.0),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           ),
           child: Obx(() => Text(controller.isEditing.value ? "Lưu thay đổi" : "Thêm sản phẩm")),
@@ -186,7 +186,7 @@ class ShopAddProductView extends GetView<ShopAddProductController> {
         SizedBox(height: 8),
         Obx(() {
           return DropdownButtonFormField<String>(
-            value: controller.type.value.isNotEmpty ? controller.type.value : null,
+            value: controller.type.value.isNotEmpty ? controller.type.value : null,  // Gán giá trị loại sản phẩm
             items: [
               DropdownMenuItem(
                 value: "FRESH",
@@ -198,7 +198,7 @@ class ShopAddProductView extends GetView<ShopAddProductController> {
               ),
             ],
             onChanged: (value) {
-              controller.type.value = value!;
+              controller.type.value = value!;  // Cập nhật giá trị khi người dùng thay đổi
             },
             decoration: InputDecoration(
               border: OutlineInputBorder(),
@@ -209,6 +209,8 @@ class ShopAddProductView extends GetView<ShopAddProductController> {
       ],
     );
   }
+
+
 
   Widget _buildCategoryDropdown() {
     return Column(

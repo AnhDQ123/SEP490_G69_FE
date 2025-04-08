@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'cart_item_option.dart';
+import 'discount.dart';
 import 'order_item.dart';
 
 class CartItemDTO {
@@ -12,6 +13,8 @@ class CartItemDTO {
   double totalPrice;
   RxInt quantity; // ✅ Chuyển sang RxInt
   List<CartItemOptionDTO> cartItemOptionDTOList;
+  List<Discount>? discount;  // Thêm trường discount
+
 
   CartItemDTO({
     this.id,
@@ -23,20 +26,25 @@ class CartItemDTO {
     required this.totalPrice,
     required int quantity, // Nhận int bình thường
     required this.cartItemOptionDTOList,
+    this.discount
   }) : quantity = quantity.obs; // ✅ Gán vào RxInt
+
 
   factory CartItemDTO.fromJson(Map<String, dynamic> json) {
     return CartItemDTO(
       id: json['id'],
-      cartId: json['cartId'],
-      productId: json['productId'],
+      cartId: json['cartId'] ?? 0, // Thêm xử lý null
+      productId: json['productId'] ?? 0, // Thêm xử lý null
       productName: json['productName'] ?? '',
       image: json['image'] ?? '',
-      price: (json['price'] ?? 0).toDouble(),
-      totalPrice: (json['totalPrice'] ?? 0).toDouble(),
+      price: (json['price'] as num?)?.toDouble() ?? 0.0, // Sửa thành as num?
+      totalPrice: (json['totalPrice'] as num?)?.toDouble() ?? 0.0, // Sửa thành as num?
       quantity: json['quantity'] ?? 1,
-      cartItemOptionDTOList: (json['cartItemOptionDTOList'] as List)
-          .map((e) => CartItemOptionDTO.fromJson(e))
+      cartItemOptionDTOList: (json['cartItemOptionDTOList'] as List?) // Thêm dấu ?
+          ?.map((e) => CartItemOptionDTO.fromJson(e))
+          .toList() ?? [], // Thêm giá trị mặc định
+      discount: (json['discount'] as List<dynamic>?) // Thêm dấu ?
+          ?.map((e) => Discount.fromJson(e))
           .toList(),
     );
   }
@@ -53,6 +61,8 @@ class CartItemDTO {
       'quantity': quantity.value, // ✅ Xuất ra int
       'cartItemOptionDTOList':
       cartItemOptionDTOList.map((option) => option.toJson()).toList(),
+      'discount': discount?.map((d) => d.toJson()).toList(),  // Nếu có discount, gửi danh sách
+
     };
   }
 
@@ -61,15 +71,15 @@ class CartItemDTO {
       id: id ?? 0,
       orderId: 0,
       productId: productId,
-      dishName: productName,
-      imageUrl: image,
+      productName: productName,
+      image: image,
       price: price,
       discountId: null,
       quantity: quantity.value,
       total: totalPrice,
-      discount: 0.0,
+      discount: [],
       createdAt: DateTime.now(),
-      options: cartItemOptionDTOList.map((opt) => opt.toOrderItemOption()).toList(),
+      orderItemOptions: cartItemOptionDTOList.map((opt) => opt.toOrderItemOption()).toList(),
     );
   }
 

@@ -64,9 +64,9 @@ class ReturnOrderDetailPageView extends GetView<ReturnOrderDetailController> {
               const SizedBox(height: 16),
               const Text("🍱 Chi tiết món ăn", style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
 
-              ...returnOrder.order.items.map((item) {
-                final optionGroup = item.options.where((opt) => opt.typeId == 1).toList();
-                final sizeGroup = item.options.where((opt) => opt.typeId == 2).toList();
+              ...returnOrder.order.orderItem.map((item) {
+                final optionGroup = item.orderItemOptions.where((opt) => opt.typeId == 1).toList();
+                final sizeGroup = item.orderItemOptions.where((opt) => opt.typeId == 2).toList();
                 final optionTotal = optionGroup.fold<double>(0, (sum, e) => sum + e.price * e.quantity);
                 final basePrice = item.price + optionTotal;
                 final finalPrice = item.total;
@@ -82,7 +82,7 @@ class ReturnOrderDetailPageView extends GetView<ReturnOrderDetailController> {
                         ClipRRect(
                           borderRadius: BorderRadius.circular(8),
                           child: Image.network(
-                            item.imageUrl,
+                            item.image,
                             width: 60,
                             height: 60,
                             fit: BoxFit.cover,
@@ -99,14 +99,14 @@ class ReturnOrderDetailPageView extends GetView<ReturnOrderDetailController> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(item.dishName, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+                              Text(item.productName, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
                               if (optionGroup.isNotEmpty)
                                 Text("➕ Option: ${optionGroup.map((e) => "${e.optionName} x${e.quantity}").join(', ')}", style: const TextStyle(fontSize: 10)),
                               if (sizeGroup.isNotEmpty)
                                 Text("📏 Size: ${sizeGroup.map((e) => "${e.optionName}").join(', ')}", style: const TextStyle(fontSize: 10)),
                               Text("🔢 Số lượng: ${item.quantity}", style: const TextStyle(fontSize: 10)),
                               const SizedBox(height: 4),
-                              if (item.discount > 0)
+                              if (item.discount != null && item.discount!.isNotEmpty && item.discount!.first.amount > 0)
                                 Row(
                                   children: [
                                     Text(formatPrice(basePrice), style: const TextStyle(fontSize: 10, decoration: TextDecoration.lineThrough, color: Colors.grey)),

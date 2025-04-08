@@ -79,7 +79,7 @@ class ShopVoucherAddController extends GetxController {
 
     try {
       final result = editingVoucher == null
-          ? await shopService.addVoucher(voucher)
+          ? await shopService.addVoucher(voucher,shopId)
           : await shopService.updateVoucher(voucher.code, voucher);
 
       if (result.success) {

@@ -4,7 +4,7 @@ import '../../../service/report_service.dart';
 
 
 class ShopReportListController extends GetxController {
-  var shopId = 1.obs; // ID cửa hàng, có thể được truyền từ trang trước
+  var shopId = 0.obs; // Initialize with 0
   var reports = <ReportViewDTO>[].obs; // Danh sách các báo cáo
   var isLoading = false.obs; // Trạng thái loading
   var currentPage = 1.obs; // Trạng thái trang hiện tại
@@ -14,7 +14,12 @@ class ShopReportListController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    fetchReports(); // Lấy danh sách báo cáo khi controller khởi tạo
+    // Get shopId from arguments
+    final arguments = Get.arguments;
+    if (arguments != null && arguments['shopId'] != null) {
+      shopId.value = arguments['shopId'];
+    }
+    fetchReports();
   }
 
   // Hàm lấy báo cáo của cửa hàng
@@ -46,10 +51,6 @@ class ShopReportListController extends GetxController {
       isLoading(false);
     }
   }
-
-
-
-
 
   // Hàm chuyển sang trang tiếp theo
   void nextPage() {

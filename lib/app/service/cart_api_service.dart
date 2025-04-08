@@ -10,6 +10,13 @@ class CartApiService {
   /// 🛒 1. Thêm giỏ hàng
   Future<bool> addToCart(CartDTO cartDTO) async {
     final url = Uri.parse("$baseUrl/api/cart/add");
+    print('🔴 [5.CART BEFORE API] Danh sách items trong giỏ:');
+    cartDTO.cartItemDTOList.forEach((item) {
+      print('   ProductID: ${item.productId} | ${item.productName}');
+      item.cartItemOptionDTOList.forEach((opt) {
+        print('      → CartOptionID: ${opt.optionId} | Name: ${opt.optionName}');
+      });
+    });
 
     // 🔍 In dữ liệu trước khi gửi
     print("📦 Gửi dữ liệu: ${jsonEncode(cartDTO.toJson())}");
@@ -41,7 +48,6 @@ class CartApiService {
     }
   }
 
-  /// 🛒 3. Lấy giỏ hàng theo ID giỏ hàng
   Future<CartDTO> getCartById(int cartId) async {
     final url = Uri.parse("$baseUrl/api/cart/$cartId");
     final response = await http.get(url);
@@ -54,19 +60,4 @@ class CartApiService {
     }
   }
 
-  // /// 🛒 4. Cập nhật giỏ hàng
-  // Future<bool> updateCart(CartDTO cartDTO) async {
-  //   final url = Uri.parse("$baseUrl/api/cart");
-  //   final response = await http.put(
-  //     url,
-  //     headers: {"Content-Type": "application/json"},
-  //     body: jsonEncode(cartDTO.toJson()),
-  //   );
-  //
-  //   if (response.statusCode == 200 || response.statusCode == 204) {
-  //     return true;
-  //   } else {
-  //     throw Exception("❌ Failed to update cart: ${response.statusCode}");
-  //   }
-  // }
 }

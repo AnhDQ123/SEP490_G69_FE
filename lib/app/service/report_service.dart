@@ -28,7 +28,7 @@ class ReportService {
 
   Future<bool> createReport(ReportCreateDTO reportCreateDTO, List<File> images) async {
     try {
-      var uri = Uri.parse('$apiUrl/add');
+      var uri = Uri.parse('$apiUrl/create');
       var request = http.MultipartRequest('POST', uri);
 
       // Thêm các trường văn bản
@@ -41,7 +41,12 @@ class ReportService {
       for (var image in images) {
         var stream = http.ByteStream(image.openRead());
         var length = await image.length();
-        var multipartFile = http.MultipartFile('option', stream, length, filename: image.uri.pathSegments.last);
+        var multipartFile = http.MultipartFile(
+          'option',
+          stream,
+          length,
+          filename: image.uri.pathSegments.last,
+        );
         request.files.add(multipartFile);
       }
 
@@ -60,6 +65,7 @@ class ReportService {
       return false;
     }
   }
+
 
   Future<bool> addEvidence(int reportId, List<File> images) async {
     try {

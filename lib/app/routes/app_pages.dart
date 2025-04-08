@@ -28,34 +28,6 @@ import '../modules/filter/bindings/filter_binding.dart';
 import '../modules/filter/views/filter_view.dart';
 import '../modules/home/bindings/home_binding.dart';
 import '../modules/home/views/home_view.dart';
-import '../modules/shop_add_discount/bindings/shop_add_discount_binding.dart';
-import '../modules/shop_add_discount/views/shop_add_discount_view.dart';
-import '../modules/shop_add_product/bindings/shop_add_product_binding.dart';
-import '../modules/shop_add_product/views/shop_add_product_view.dart';
-import '../modules/shop_dashboard/bindings/shop_dashboard_binding.dart';
-import '../modules/shop_dashboard/views/shop_dashboard_view.dart';
-import '../modules/shop_detail/bindings/shop_detail_binding.dart';
-import '../modules/shop_detail/views/shop_detail_view.dart';
-import '../modules/shop_menu/bindings/shop_binding.dart';
-import '../modules/shop_menu/views/shop_view.dart';
-import '../modules/shop_product_discount_list/bindings/product_discount_binding.dart';
-import '../modules/shop_product_discount_list/views/product_discount_view.dart';
-import '../modules/shop_product_list/bindings/shop_product_list_binding.dart';
-import '../modules/shop_product_list/views/shop_product_list_view.dart';
-import '../modules/shop_register/bindings/shop_register_binding.dart';
-import '../modules/shop_register/views/shop_register_view.dart';
-import '../modules/shop_voucher_add/bindings/shop_voucher_add_binding.dart';
-import '../modules/shop_voucher_add/views/shop_voucher_add_view.dart';
-import '../modules/shop_voucher_list/bindings/shop_voucher_list_binding.dart';
-import '../modules/shop_voucher_list/views/shop_voucher_list_view.dart';
-import '../modules/user_profile/change_password/bindings/change_password_binding.dart';
-import '../modules/user_profile/change_password/views/change_password_view.dart';
-import '../modules/user_profile/edit_profile/bindings/edit_profile_binding.dart';
-import '../modules/user_profile/edit_profile/views/edit_profile_view.dart';
-import '../modules/user_profile/profile/bindings/profile_binding.dart';
-import '../modules/user_profile/profile/views/profile_view.dart';
-import '../modules/user_profile/setting_logout/bindings/setting_logout_binding.dart';
-import '../modules/user_profile/setting_logout/views/setting_logout_view.dart';
 import '../modules/my_order/bindings/my_order_binding.dart';
 import '../modules/my_order/views/my_order_view.dart';
 import '../modules/product_detail/bindings/product_detail_binding.dart';
@@ -70,48 +42,88 @@ import '../modules/search_screen/bindings/search_screen_binding.dart';
 import '../modules/search_screen/views/search_screen_view.dart';
 import '../modules/send_report/bindings/send_report_binding.dart';
 import '../modules/send_report/views/send_report_view.dart';
+import '../modules/shipper_home/bindings/shipper_home_binding.dart';
+import '../modules/shipper_home/views/shipper_home_view.dart';
+import '../modules/shipper_order_detail/bindings/shipper_order_detail_binding.dart';
+import '../modules/shipper_order_detail/views/shipper_order_detail_view.dart';
+import '../modules/shipper_order_list/bindings/shipper_order_list_binding.dart';
+import '../modules/shipper_order_list/views/shipper_order_list_view.dart';
+import '../modules/shipper_register/bindings/shipper_register_binding.dart';
+import '../modules/shipper_register/views/shipper_register_view.dart';
+import '../modules/shop_add_discount/bindings/shop_add_discount_binding.dart';
 import '../modules/shop_add_discount/bindings/shop_add_discount_binding.dart';
 import '../modules/shop_add_discount/views/shop_add_discount_view.dart';
+import '../modules/shop_add_discount/views/shop_add_discount_view.dart';
+import '../modules/shop_add_product/bindings/shop_add_product_binding.dart';
 import '../modules/shop_add_product/bindings/shop_add_product_binding.dart';
 import '../modules/shop_add_product/views/shop_add_product_view.dart';
+import '../modules/shop_add_product/views/shop_add_product_view.dart';
+import '../modules/shop_banner/bindings/shop_banner_binding.dart';
+import '../modules/shop_banner/views/shop_banner_view.dart';
+import '../modules/shop_dashboard/bindings/shop_dashboard_binding.dart';
 import '../modules/shop_dashboard/bindings/shop_dashboard_binding.dart';
 import '../modules/shop_dashboard/views/shop_dashboard_view.dart';
+import '../modules/shop_dashboard/views/shop_dashboard_view.dart';
+import '../modules/shop_detail/bindings/shop_detail_binding.dart';
 import '../modules/shop_detail/bindings/shop_detail_binding.dart';
 import '../modules/shop_detail/views/shop_detail_view.dart';
+import '../modules/shop_detail/views/shop_detail_view.dart';
+import '../modules/shop_manage_shipper/bindings/shop_manage_shipper_binding.dart';
+import '../modules/shop_manage_shipper/views/shop_manage_shipper_view.dart';
 import '../modules/shop_menu/bindings/shop_binding.dart';
+import '../modules/shop_menu/bindings/shop_binding.dart';
+import '../modules/shop_menu/views/shop_view.dart';
 import '../modules/shop_menu/views/shop_view.dart';
 import '../modules/shop_order/bindings/shop_order_binding.dart';
 import '../modules/shop_order/views/shop_order_view.dart';
 import '../modules/shop_product_discount_list/bindings/product_discount_binding.dart';
+import '../modules/shop_product_discount_list/bindings/product_discount_binding.dart';
+import '../modules/shop_product_discount_list/views/product_discount_view.dart';
 import '../modules/shop_product_discount_list/views/product_discount_view.dart';
 import '../modules/shop_product_list/bindings/shop_product_list_binding.dart';
+import '../modules/shop_product_list/bindings/shop_product_list_binding.dart';
+import '../modules/shop_product_list/views/shop_product_list_view.dart';
 import '../modules/shop_product_list/views/shop_product_list_view.dart';
 import '../modules/shop_profile/bindings/shop_profile_binding.dart';
 import '../modules/shop_profile/views/shop_profile_view.dart';
 import '../modules/shop_register/bindings/shop_register_binding.dart';
+import '../modules/shop_register/bindings/shop_register_binding.dart';
+import '../modules/shop_register/views/shop_register_view.dart';
 import '../modules/shop_register/views/shop_register_view.dart';
 import '../modules/shop_report/bindings/shop_report_binding.dart';
 import '../modules/shop_report/views/shop_report_view.dart';
 import '../modules/shop_report_list/bindings/shop_report_list_binding.dart';
 import '../modules/shop_report_list/views/shop_report_list_view.dart';
 import '../modules/shop_voucher_add/bindings/shop_voucher_add_binding.dart';
+import '../modules/shop_voucher_add/bindings/shop_voucher_add_binding.dart';
+import '../modules/shop_voucher_add/views/shop_voucher_add_view.dart';
 import '../modules/shop_voucher_add/views/shop_voucher_add_view.dart';
 import '../modules/shop_voucher_list/bindings/shop_voucher_list_binding.dart';
+import '../modules/shop_voucher_list/bindings/shop_voucher_list_binding.dart';
+import '../modules/shop_voucher_list/views/shop_voucher_list_view.dart';
 import '../modules/shop_voucher_list/views/shop_voucher_list_view.dart';
 import '../modules/user_profile/change_password/bindings/change_password_binding.dart';
 import '../modules/user_profile/change_password/bindings/change_password_binding.dart';
+import '../modules/user_profile/change_password/bindings/change_password_binding.dart';
+import '../modules/user_profile/change_password/views/change_password_view.dart';
 import '../modules/user_profile/change_password/views/change_password_view.dart';
 import '../modules/user_profile/change_password/views/change_password_view.dart';
 import '../modules/user_profile/edit_profile/bindings/edit_profile_binding.dart';
 import '../modules/user_profile/edit_profile/bindings/edit_profile_binding.dart';
+import '../modules/user_profile/edit_profile/bindings/edit_profile_binding.dart';
+import '../modules/user_profile/edit_profile/views/edit_profile_view.dart';
 import '../modules/user_profile/edit_profile/views/edit_profile_view.dart';
 import '../modules/user_profile/edit_profile/views/edit_profile_view.dart';
 import '../modules/user_profile/profile/bindings/profile_binding.dart';
 import '../modules/user_profile/profile/bindings/profile_binding.dart';
+import '../modules/user_profile/profile/bindings/profile_binding.dart';
+import '../modules/user_profile/profile/views/profile_view.dart';
 import '../modules/user_profile/profile/views/profile_view.dart';
 import '../modules/user_profile/profile/views/profile_view.dart';
 import '../modules/user_profile/setting_logout/bindings/setting_logout_binding.dart';
 import '../modules/user_profile/setting_logout/bindings/setting_logout_binding.dart';
+import '../modules/user_profile/setting_logout/bindings/setting_logout_binding.dart';
+import '../modules/user_profile/setting_logout/views/setting_logout_view.dart';
 import '../modules/user_profile/setting_logout/views/setting_logout_view.dart';
 import '../modules/user_profile/setting_logout/views/setting_logout_view.dart';
 import '../modules/user_view_shop_detail/bindings/user_view_shop_detail_binding.dart';
@@ -173,6 +185,21 @@ class AppPages {
       binding: SettingLogoutBinding(),
     ),
     GetPage(
+      name: _Paths.OTP_VERIFICATION,
+      page: () => const OtpVerificationView(),
+      binding: OtpVerificationBinding(), // Tạo file binding riêng
+    ),
+    GetPage(
+      name: _Paths.PASSWORD_VERIFICATION,
+      page: () => const PasswordVerificationView(),
+      binding: PasswordVerificationBinding(), // Tạo file binding riêng
+    ),
+    GetPage(
+      name: _Paths.USER_INFO,
+      page: () => const UserInfoView(),
+      binding: UserInfoBinding(), // Tạo file binding riêng
+    ),
+    GetPage(
       name: _Paths.PRODUCT_DISCOUNT,
       page: () => ProductDiscountView(),
       binding: ProductDiscountBinding(),
@@ -229,7 +256,7 @@ class AppPages {
     ),
     GetPage(
       name: _Paths.FILTER,
-      page: () => const FilterView(),
+      page: () => FilterView(),
       binding: FilterBinding(),
     ),
     GetPage(
@@ -306,6 +333,36 @@ class AppPages {
       name: _Paths.SHOP_ADD_PRODUCT,
       page: () => ShopAddProductView(),
       binding: ShopAddProductBinding(),
+    ),
+    GetPage(
+      name: _Paths.SHIPPER_REGISTER,
+      page: () => ShipperRegisterView(),
+      binding: ShipperRegisterBinding(),
+    ),
+    GetPage(
+      name: _Paths.SHIPPER_HOME,
+      page: () => ShipperHomeView(),
+      binding: ShipperHomeBinding(),
+    ),
+    GetPage(
+      name: _Paths.SHIPPER_ORDER_LIST,
+      page: () => ShipperOrderListView(),
+      binding: ShipperOrderListBinding(),
+    ),
+    GetPage(
+      name: _Paths.SHIPPER_ORDER_DETAIL,
+      page: () => ShipperOrderDetailView(),
+      binding: ShipperOrderDetailBinding(),
+    ),
+    GetPage(
+      name: _Paths.SHOP_BANNER,
+      page: () => ShopBannerView(),
+      binding: ShopBannerBinding(),
+    ),
+    GetPage(
+      name: _Paths.SHOP_MANAGE_SHIPPER,
+      page: () => ShopManageShipperView(),
+      binding: ShopManageShipperBinding(),
     ),
   ];
 }

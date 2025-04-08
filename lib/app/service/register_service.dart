@@ -42,52 +42,59 @@ class RegisterService {
   }
 
   Future<Map<String, dynamic>> registerUser(
-      String phone, String email, String username, String password) async {
+      String phone, String email, String password) async {
     try {
-      final String apiUrl = "${ApiBaseUrl.baseUrl}/api/users/add";
-
-      // Giả sử backend trả về JSON object chứa thông tin user
-      final dynamic response = await _apiService.fetchDataObjectWithPost(
-        apiUrl,
-            (json) => json, // Trả về JSON Map
+      final response = await _apiService.fetchDataObjectWithPost<Map<String, dynamic>>(
+        "${ApiBaseUrl.baseUrl}/api/users/add",
+            (json) => json, // Không cần parse, trả về nguyên bản
         body: {
           "phone": phone,
           "email": email,
-          "username": username,
           "password": password
         },
         isUsingToken: false,
       );
 
-      if (response is Map<String, dynamic> && response.containsKey('id')) {
+      // Debug response
+      print('API Response: $response');
+
+      // Xử lý cả trường hợp response có hoặc không có key 'data'
+      final responseData = response.containsKey('data') ? response['data'] : response;
+
+      if (responseData.containsKey('id') || responseData.containsKey('user_id')) {
         return {
           'success': true,
           'message': 'Đăng ký thành công!',
-          'user_id': response['id']
+          'user_id': responseData['id'] ?? responseData['user_id'],
+          'phone': phone
         };
       } else {
+        // Nếu không có id, dùng phone làm identifier
         return {
-          'success': false,
-          'message': 'Lỗi: Không có user_id trong phản hồi.'
+          'success': true,
+          'message': 'Đăng ký thành công!',
+          'phone': phone
         };
       }
     } catch (e) {
-      print("Error in registerUser: $e");
+      print('Error in registerUser: $e');
       return {
         'success': false,
-        'message': 'Đăng ký thất bại. Vui lòng thử lại!'
+        'message': e.toString().contains('Exception:')
+            ? e.toString().split('Exception:')[1]
+            : 'Đăng ký thất bại'
       };
     }
   }
 
 
   Future<Map<String, dynamic>> updateUserProfile(
-      String userId,
+      String phone, // Nhận phone thay vì userId
       String name,
       String gender,
       String dob,
       String address,
-      dynamic avatar, // có thể là File (mobile) hoặc Uint8List (web)
+      dynamic avatar,
       ) async {
     try {
       final String apiUrl = "${ApiBaseUrl.baseUrl}/api/users/update";
@@ -102,23 +109,15 @@ class RegisterService {
         throw Exception("Invalid avatar type");
       }
 
-      // Tạo map các trường cần gửi
+      // Sử dụng phone thay vì userId trong fields
       Map<String, String> fields = {
-        "id": userId,
+        "phone": phone, // Thay id bằng phone
         "name": name,
         "gender": gender,
         "dob": dob,
         "address": address,
-        // "employee.id": userId,
-        // "employee.name": name,
-        // "employee.gender": gender,
-        // "employee.dob": dob,
-        // "employee.address": address,
       };
-      print("Fields gửi đi: $fields");
 
-
-      // Tạo multipart file từ avatarBytes
       var multipartFile = http.MultipartFile.fromBytes("avatar", avatarBytes, filename: filename);
 
       final response = await _apiService.postMultipart(
@@ -131,11 +130,11 @@ class RegisterService {
       if (response.statusCode == 200) {
         return {'success': true, 'message': 'Cập nhật thành công!'};
       } else {
-        return {'success': false, 'message': 'Cập nhật thất bại, vui lòng thử lại.'};
+        return {'success': false, 'message': 'Cập nhật thất bại'};
       }
     } catch (e) {
       print("Error in updateUserProfile: $e");
-      return {'success': false, 'message': 'Cập nhật thất bại.'};
+      return {'success': false, 'message': 'Lỗi hệ thống: $e'};
     }
   }
 }

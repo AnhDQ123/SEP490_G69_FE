@@ -90,17 +90,17 @@ class OrderListWidget extends StatelessWidget {
                   const SizedBox(height: 8),
                   // Danh sách món trong đơn
                   ListView.builder(
-                    itemCount: order.items.length,
+                    itemCount: order.orderItem.length,
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
                     itemBuilder: (context, itemIndex) {
-                      final item = order.items[itemIndex];
+                      final item = order.orderItem[itemIndex];
 
                       // Tách option và size từ danh sách options
                       final List<OrderItemOption> optionGroup =
-                      item.options.where((opt) => opt.typeId == 1).toList();
+                      item.orderItemOptions.where((opt) => opt.typeId == 1).toList();
                       final List<OrderItemOption> sizeGroup =
-                      item.options.where((opt) => opt.typeId == 2).toList();
+                      item.orderItemOptions.where((opt) => opt.typeId == 2).toList();
 
                       // Tính tổng giá của các option (chỉ typeId = 1)
                       double optionTotal = 0;
@@ -121,7 +121,7 @@ class OrderListWidget extends StatelessWidget {
                             ClipRRect(
                               borderRadius: BorderRadius.circular(6),
                               child: Image.network(
-                                item.imageUrl,
+                                item.image,
                                 width: 60,
                                 height: 60,
                                 fit: BoxFit.cover,
@@ -140,12 +140,12 @@ class OrderListWidget extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    item.dishName,
+                                    item.productName,
                                     style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w600),
                                     overflow: TextOverflow.ellipsis,
                                   ),
                                   // Hiển thị option và size: mỗi nhóm một dòng riêng biệt
-                                  if (item.options.isNotEmpty)
+                                  if (item.productName.isNotEmpty)
                                     Padding(
                                       padding: const EdgeInsets.only(top: 4.0),
                                       child: Column(
@@ -199,7 +199,7 @@ class OrderListWidget extends StatelessWidget {
                                   ),
                                   const SizedBox(height: 4),
                                   // Hiển thị giá: nếu có discount thì hiển thị giá cũ (basePrice) và giá mới (finalPrice) cùng phần trăm discount
-                                  if (item.discount > 0)
+                                  if (item.discount != null && item.discount!.isNotEmpty && item.discount!.first.amount > 0)
                                     Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
@@ -226,7 +226,7 @@ class OrderListWidget extends StatelessWidget {
                                             const Icon(Icons.percent, size: 10, color: Colors.red),
                                             const SizedBox(width: 4),
                                             Text(
-                                              "Giảm: ${(item.discount * 100).toStringAsFixed(0)}%",
+                                              "Giảm: ${(item.discount!.first.amount * 100).toStringAsFixed(0)}%",
                                               style: const TextStyle(fontSize: 8, color: Colors.red),
                                             ),
                                           ],

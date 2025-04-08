@@ -3,6 +3,10 @@ part of 'app_pages.dart';
 
 abstract class Routes {
   Routes._();
+  static const SHIPPER_REGISTER = _Paths.SHIPPER_REGISTER;
+  static const SHIPPER_HOME = _Paths.SHIPPER_HOME;
+  static const SHIPPER_ORDER_LIST = _Paths.SHIPPER_ORDER_LIST;
+  static const SHIPPER_ORDER_DETAIL = _Paths.SHIPPER_ORDER_DETAIL;
   static const SHOP = _Paths.SHOP;
   static const LOGIN = _Paths.LOGIN;
   static const REGISTER = _Paths.REGISTER;
@@ -51,10 +55,16 @@ abstract class Routes {
   static const SEND_REPORT = _Paths.SEND_REPORT;
   static const SHOP_REPORT_LIST = _Paths.SHOP_REPORT_LIST;
   static const SHOP_ADD_PRODUCT = _Paths.SHOP_ADD_PRODUCT;
+  static const SHOP_BANNER = _Paths.SHOP_BANNER;
+  static const SHOP_MANAGE_SHIPPER = _Paths.SHOP_MANAGE_SHIPPER;
 }
 
 abstract class _Paths {
   _Paths._();
+  static const SHIPPER_REGISTER = '/shipper-register';
+  static const SHIPPER_HOME = '/shipper-home';
+  static const SHIPPER_ORDER_LIST = '/shipper-order-list';
+  static const SHIPPER_ORDER_DETAIL = '/shipper-order-detail';
   static const LOGIN = '/login';
   static const REGISTER = '/register';
   static const VERIFY_METHOD = '/verify-method';
@@ -103,4 +113,6 @@ abstract class _Paths {
   static const SHOP_DETAIL = '/shop-detail';
   static const SHOP_PRODUCT_LIST = '/shop-product-list';
   static const SHOP_ADD_PRODUCT = '/shop-add-product';
+  static const SHOP_BANNER = '/shop-banner';
+  static const SHOP_MANAGE_SHIPPER = '/shop-manage-shipper';
 }

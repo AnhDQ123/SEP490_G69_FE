@@ -27,9 +27,11 @@ class FoodList extends StatelessWidget {
   }
 
   Widget _buildProductCard(BuildContext context, Product product) {
+    print('Product: ${product.name} - Discounts: ${product.discount}'); // Debug
     // Lấy discount có trạng thái ACTIVE
     Discount? activeDiscount;
     for (var discount in product.discount) {
+      print('Discount: ${discount.amount}%, Status: ${discount.status}'); // Debug
       if (discount.status == 'ACTIVE') {
         activeDiscount = discount;
         break; // Lấy discount đầu tiên có trạng thái ACTIVE
@@ -39,10 +41,13 @@ class FoodList extends StatelessWidget {
     // Nếu có discount có trạng thái ACTIVE, tính giá mới
     double discountValue = 0.0;
     if (activeDiscount != null) {
-      discountValue = activeDiscount.amount / 100;  // Phần trăm giảm giá
+      // Nếu amount < 1 (đang là dạng 0.15), nhân 100 để thành 15%
+      // Nếu amount >= 1 (đang là dạng 15), giữ nguyên
+      discountValue = activeDiscount.amount < 1 ? activeDiscount.amount * 100 : activeDiscount.amount;
+      discountValue = discountValue / 100; // Chuyển về dạng 0.15 để tính toán
     }
 
-    final double newPrice = product.defaultPrice * (1 - discountValue);  // Tính giá mới sau khi giảm
+    final double newPrice = product.defaultPrice * (1 - discountValue);
 
     return InkWell(
       onTap: () {
@@ -99,7 +104,7 @@ class FoodList extends StatelessWidget {
                           ),
                           child: TextConstant.subTile3(
                             context,
-                            text: '-${(activeDiscount.amount).toStringAsFixed(0)}%',
+                            text: '-${(activeDiscount.amount < 1 ? activeDiscount.amount * 100 : activeDiscount.amount).toStringAsFixed(0)}%',
                             size: 7,
                             fontWeight: FontWeight.bold,
                             color: Colors.white,

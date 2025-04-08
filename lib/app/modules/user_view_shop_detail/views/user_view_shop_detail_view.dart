@@ -11,7 +11,10 @@ class UserViewShopDetailView extends GetView<UserViewShopDetailController> {
       appBar: AppBar(
         title: const Text('Cơm rang Minh Nhật', style: TextStyle(fontSize: 16)),
         centerTitle: true,
-        leading: const Icon(Icons.arrow_back),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () => Get.back(),
+        ),
         actions: const [
           Icon(Icons.share),
           SizedBox(width: 8),
@@ -24,8 +27,8 @@ class UserViewShopDetailView extends GetView<UserViewShopDetailController> {
         child: Column(
           children: [
             _buildShopHeaderSection(),
-            // _buildDeliveryInfoCard(),
-            _buildBestSellerCard(),
+            _buildShopInfoSection(), // Thêm section thông tin cửa hàng
+            _buildRatingSection(), // Thêm section đánh giá            _buildBestSellerCard(),
             _buildContactCard(),
             _buildMenuCard(),
           ],
@@ -49,9 +52,9 @@ class UserViewShopDetailView extends GetView<UserViewShopDetailController> {
                   height: 200,
                   width: double.infinity,
                   color: Colors.grey[300],
-                  child: controller.shopBackgroundImage.value.isEmpty
+                  child: controller.shopBackgroundImage.value==null
                       ? const Center(child: Icon(Icons.image, size: 80)) // Nếu background trống, hiển thị icon
-                      : Image.network(controller.shopBackgroundImage.value, fit: BoxFit.cover), // Hiển thị ảnh background
+                      : Image.network(controller.shopBackgroundImage.value!, fit: BoxFit.cover), // Hiển thị ảnh background
                 );
               }),
               // Avatar nổi (logo shop)
@@ -67,9 +70,9 @@ class UserViewShopDetailView extends GetView<UserViewShopDetailController> {
                         color: Colors.grey,
                         shape: BoxShape.circle,
                       ),
-                      child: controller.shopLogo.value.isEmpty
+                      child: controller.shopLogo.value==null
                           ? const Icon(Icons.person, size: 28, color: Colors.white)  // Nếu logo trống, hiển thị icon
-                          : Image.network(controller.shopLogo.value, fit: BoxFit.cover),  // Hiển thị logo
+                          : Image.network(controller.shopLogo.value!, fit: BoxFit.cover),  // Hiển thị logo
                     ),
                   ),
                 );
@@ -96,28 +99,28 @@ class UserViewShopDetailView extends GetView<UserViewShopDetailController> {
                   );
                 }),
                 const SizedBox(height: 4),
-                Row(
-                  children: [
-                    // Hiển thị rating shop từ controller
-                    const Icon(Icons.star, size: 14, color: Colors.orange),
-                    SizedBox(width: 4),
-                    Obx(() {
-                      return Text('${controller.shopRate.value}', style: const TextStyle(fontSize: 13));
-                    }),
-                    const SizedBox(width: 4),
-                    SizedBox(width: 4),
-                    Icon(Icons.share, size: 16),
-                    SizedBox(width: 8),
-                    Icon(Icons.favorite_border, size: 16),
-                    SizedBox(width: 8),
-                    Icon(Icons.notifications_none, size: 16),
-                  ],
-                ),
+                // Row(
+                //   children: [
+                //     // Hiển thị rating shop từ controller
+                //     const Icon(Icons.star, size: 14, color: Colors.orange),
+                //     SizedBox(width: 4),
+                //     Obx(() {
+                //       return Text('${controller.shopRate.value}', style: const TextStyle(fontSize: 13));
+                //     }),
+                //     const SizedBox(width: 4),
+                //     SizedBox(width: 4),
+                //     Icon(Icons.share, size: 16),
+                //     SizedBox(width: 8),
+                //     Icon(Icons.favorite_border, size: 16),
+                //     SizedBox(width: 8),
+                //     Icon(Icons.notifications_none, size: 16),
+                //   ],
+                // ),
                 const SizedBox(height: 6),
                 // Hiển thị mô tả shop từ controller
                 Obx(() {
                   return Text(
-                    controller.shopDescription.value,
+                    controller.shopDescription.value ?? '',
                     style: const TextStyle(fontSize: 12, color: Colors.black54),
                   );
                 }),
@@ -130,20 +133,158 @@ class UserViewShopDetailView extends GetView<UserViewShopDetailController> {
     );
   }
 
-  // Widget _buildDeliveryInfoCard() {
-  //   return Card(
-  //     margin: const EdgeInsets.only(bottom: 12),
-  //     child: ListTile(
-  //       leading: const Icon(Icons.delivery_dining),
-  //       title: const Text('Giao hàng ngay bây giờ', style: TextStyle(fontSize: 14)),
-  //       subtitle: const Text('Dự kiến giao hàng lúc 17:15', style: TextStyle(fontSize: 13)),
-  //       trailing: TextButton(
-  //         onPressed: () {},
-  //         child: const Text('Thay đổi', style: TextStyle(fontSize: 13)),
-  //       ),
-  //     ),
-  //   );
-  // }
+  // Thêm section thông tin cửa hàng mới
+  Widget _buildShopInfoSection() {
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Thông tin cửa hàng',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+            ),
+            const SizedBox(height: 8),
+            _buildInfoRow(Icons.location_on, 'Địa chỉ', controller.shopAddress.value ?? 'Chưa cập nhật'),
+            _buildInfoRow(Icons.access_time, 'Giờ mở cửa', '08:00 - 22:00'), // Có thể thay bằng dữ liệu từ API
+            _buildInfoRow(Icons.delivery_dining, 'Giao hàng', 'Có giao hàng tận nơi'), // Có thể thêm logic kiểm tra
+            _buildInfoRow(Icons.credit_card, 'Thanh toán', 'Tiền mặt, Chuyển khoản, Ví điện tử'),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInfoRow(IconData icon, String title, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, size: 20, color: Colors.grey),
+          SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                SizedBox(height: 2),
+                Text(value, style: TextStyle(fontSize: 13)),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Thêm section đánh giá
+  Widget _buildRatingSection() {
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Đánh giá cửa hàng',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+            ),
+            const SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(Icons.star, color: Colors.orange),
+                        SizedBox(width: 4),
+                        Obx(() {
+                          return Text(
+                            '${controller.shopRate.value}/5',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          );
+                        }),
+                      ],
+                    ),
+                    Text('Dựa trên 120 đánh giá', style: TextStyle(fontSize: 12)),
+                  ],
+                ),
+                ElevatedButton(
+                  onPressed: _rateShop,
+                  child: Text('Đánh giá'),
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: Colors.white, backgroundColor: Colors.orange,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _rateShop() {
+    Get.bottomSheet(
+      Container(
+        padding: EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text('Đánh giá cửa hàng', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: List.generate(5, (index) {
+                return IconButton(
+                  icon: Icon(
+                    index < 3 ? Icons.star : Icons.star_border,
+                    color: Colors.orange,
+                    size: 40,
+                  ),
+                  onPressed: () {},
+                );
+              }),
+            ),
+            SizedBox(height: 20),
+            TextField(
+              decoration: InputDecoration(
+                hintText: 'Nhận xét của bạn...',
+                border: OutlineInputBorder(),
+              ),
+              maxLines: 3,
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                Get.back();
+                Get.snackbar('Thành công', 'Cảm ơn đánh giá của bạn!');
+              },
+              child: Text('Gửi đánh giá'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.orange,
+                minimumSize: Size(double.infinity, 50),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
 
   Widget _buildBestSellerCard() {
     return Card(
@@ -232,12 +373,18 @@ class UserViewShopDetailView extends GetView<UserViewShopDetailController> {
   Widget _buildContactCard() {
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
-      child: const ListTile(
-        leading: Icon(Icons.phone),
-        title: Text('Hotline: 0964937641', style: TextStyle(fontSize: 14)),
-      ),
+      child: Obx(() {
+        return ListTile(
+          leading: const Icon(Icons.phone),
+          title: Text(
+            'Hotline: ${controller.shopPhone.value ?? 'Không có số điện thoại'}',
+            style: const TextStyle(fontSize: 14),
+          ),
+        );
+      }),
     );
   }
+
 
   Widget _buildMenuCard() {
     return Card(
@@ -255,7 +402,7 @@ class UserViewShopDetailView extends GetView<UserViewShopDetailController> {
             const Divider(),
             // Sử dụng Obx để tự động cập nhật khi menuImage thay đổi
             Obx(() {
-              if (controller.menuImage.value.isEmpty) {
+              if (controller.menuImage.value == null) {
                 return const Center(child: CircularProgressIndicator());  // Nếu chưa có dữ liệu, hiển thị loading
               }
               return Padding(
@@ -263,7 +410,7 @@ class UserViewShopDetailView extends GetView<UserViewShopDetailController> {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(12),
                   child: Image.network(
-                    controller.menuImage.value,
+                    controller.menuImage.value!,
                     width: double.infinity,  // Chiều rộng toàn bộ
                     height: 250,             // Chiều cao ảnh lớn hơn
                     fit: BoxFit.cover,       // Đảm bảo ảnh bao phủ toàn bộ diện tích

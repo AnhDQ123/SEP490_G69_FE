@@ -8,6 +8,7 @@ import '../../../models/cart.dart';
 import '../../../models/cart_item.dart';
 import '../../../models/cart_item_option.dart';
 import '../../../models/discount.dart';
+import '../../../routes/app_pages.dart';
 
 class ProductDetailController extends GetxController {
   var _product = Rxn<Product>();
@@ -44,6 +45,7 @@ class ProductDetailController extends GetxController {
         shop: '',
         defaultPrice: 0.0,
         foodOptions: [],
+        shopId: 0
       );
 
   @override
@@ -52,79 +54,6 @@ class ProductDetailController extends GetxController {
     final userId = BaseCommon.instance.userId;
     print("👤 [ProductDetail] Đang đăng nhập với userId: $userId");
     fetchProductData();
-
-
-    // Các dữ liệu mẫu cho menuProducts, drinkProducts, reviews...
-    menuProducts.assignAll([
-      Product(
-        id: 1,
-        name: 'Thực đơn 1',
-        manufacturer: '',
-        supplier: '',
-        quantity: 1,
-        category: '',         // Giá trị mặc định
-        // discount: 0.12,        // Giá trị mặc định
-        discount: [],  // Để trống danh sách discount
-        image: 'https://images.squarespace-cdn.com/content/v1/53883795e4b016c956b8d243/1551438228969-H0FPV1FO3W5B0QL328AS/chup-anh-thuc-an-1.jpg',
-        description: '',      // Giá trị mặc định
-        rate: 5,
-        shop: 'Shop A',
-        defaultPrice: 50000,
-        foodOptions: [],
-      ),
-      Product(
-        id: 2,
-        name: 'Thực đơn 2',
-        manufacturer: '',
-        supplier: '',
-        quantity: 1,
-        category: '',
-        // discount: 0.12,
-        discount: [],  // Để trống danh sách discount
-        image: 'https://images.squarespace-cdn.com/content/v1/53883795e4b016c956b8d243/1551438228969-H0FPV1FO3W5B0QL328AS/chup-anh-thuc-an-1.jpg',
-        description: '',
-        rate: 5,
-        shop: 'Shop B',
-        defaultPrice: 60000,
-        foodOptions: [],
-      ),
-    ]);
-
-    drinkProducts.assignAll([
-      Product(
-        id: 3,
-        name: 'Đồ uống 1',
-        manufacturer: '',
-        supplier: '',
-        quantity: 1,
-        category: '',
-        // discount: 0.12,
-        discount: [],  // Để trống danh sách discount
-        image: 'https://images.squarespace-cdn.com/content/v1/53883795e4b016c956b8d243/1551438228969-H0FPV1FO3W5B0QL328AS/chup-anh-thuc-an-1.jpg',
-        description: '',
-        rate: 5,
-        shop: 'Shop C',
-        defaultPrice: 30000,
-        foodOptions: [],
-      ),
-      Product(
-        id: 4,
-        name: 'Đồ uống 2',
-        manufacturer: '',
-        supplier: '',
-        quantity: 1,
-        category: '',
-        // discount: 0.12,
-        discount: [],  // Để trống danh sách discount
-        image: 'https://images.squarespace-cdn.com/content/v1/53883795e4b016c956b8d243/1551438228969-H0FPV1FO3W5B0QL328AS/chup-anh-thuc-an-1.jpg',
-        description: '',
-        rate: 5,
-        shop: 'Shop D',
-        defaultPrice: 35000,
-        foodOptions: [],
-      ),
-    ]);
-
     reviews.assignAll([
       {
         'user': 'Nguyễn Văn A',
@@ -148,7 +77,14 @@ class ProductDetailController extends GetxController {
   }
 
   void fetchProductData() async {
+    _product.value = null;
+    quantity.value = 1;
+    selectedSizeIndex.value = 0;
+    extraOptions.clear();
+
     final productIdArg = Get.arguments;
+    print("🟡 Nhận được Product ID: $productIdArg");
+
     if (productIdArg == null) {
       print("❌ Error: Product ID is null. Cannot fetch product data.");
       return;
@@ -158,21 +94,24 @@ class ProductDetailController extends GetxController {
     try {
       Product detail = await apiService.getProductDetail(productId);
       _product.value = detail;
+      print("Fetched shopId: ${_product.value?.shopId}");
+      print("📦 Dữ liệu sản phẩm từ API: ${detail.toJson()}");
+      _product.value = detail;
 
       // 🧩 Mapping Extra Options
       extraOptions.assignAll(
         detail.foodOptions
-            .where((option) => option.typeId == 1)
-            .map((e) => ExtraOption(
+            ?.where((option) => option.typeId == 1) // Thêm ? để xử lý null
+            ?.map((e) => ExtraOption(
           id: e.id.toString(),
-          name: e.name,
-          price: e.price,
-          imageUrl: e.image?? null,
+          name: e.name ?? 'Không có tên',
+          price: e.price ?? 0,
+          imageUrl: e.image,
           unit: "suất",
           selected: false,
           quantity: 1,
         ))
-            .toList(),
+            ?.toList() ?? [], // Nếu null thì gán list rỗng
       );
 
       // ✂️ Rút gọn từ khóa để gọi similar
@@ -185,10 +124,40 @@ class ProductDetailController extends GetxController {
         print("🔍 Product ID: ${p.id}, Name: ${p.name}, Price: ${p.defaultPrice}, Shop: ${p.shop}");      }
 
       similarProducts.assignAll(similar);
+      await fetchMenuProducts(); // ← Thêm dòng này để gọi API lấy thực đơn từ shop
+      await fetchMenuProducts();
+
+
     } catch (e) {
       print("❌ Error fetching product data: $e");
     }
   }
+
+  Future<void> fetchMenuProducts() async {
+    try {
+      final shopId = _product.value?.shopId;
+      if (shopId == null || shopId == 0) return;
+
+      final products = await apiService.getProductsByShop(shopId.toString());
+      menuProducts.assignAll(products);
+    } catch (e) {
+      print("❌ Lỗi khi fetch menu thực đơn: $e");
+    }
+  }
+
+  Future<void> fetchDrinkProducts() async {
+    try {
+      final shopId = _product.value?.shopId;
+      if (shopId == null || shopId == 0) return;
+
+      final drinks = await apiService.getDrinksByShop(shopId.toString());
+      drinkProducts.assignAll(drinks);
+    } catch (e) {
+      print("❌ Lỗi khi fetch đồ uống của shop: $e");
+    }
+  }
+
+
 
 
   void incrementQuantity() {
@@ -204,82 +173,102 @@ class ProductDetailController extends GetxController {
   double get currentPrice {
     if (_product.value == null) return 0;
 
-    double basePrice = _product.value!.defaultPrice;
+    // Lấy danh sách size options (typeId = 2)
+    final sizeOptions = _product.value!.foodOptions.where((opt) => opt.typeId == 2).toList();
 
-    // Lọc discount có trạng thái ACTIVE và lấy discount đầu tiên
+    // Nếu không có size nào, trả về 0
+    if (sizeOptions.isEmpty) return 0;
+
+    // Lấy giá của size được chọn (mặc định là size đầu tiên nếu chưa chọn)
+    double sizePrice = sizeOptions[selectedSizeIndex.value].price;
+
+    // Tính discount (nếu có)
     final activeDiscount = _product.value!.discount.firstWhere(
           (discount) => discount.status == 'ACTIVE',
-      orElse: () => Discount(  // Nếu không tìm thấy discount, trả về discount mặc định
+      orElse: () => Discount(
         id: 0,
-        amount: 0.0,  // Mặc định là 0% giảm giá
+        amount: 0.0,
         startDate: '',
         endDate: '',
-        status: 'INACTIVE',  // Mặc định là INACTIVE
+        status: 'INACTIVE',
       ),
     );
 
-    // Nếu có discount ACTIVE, tính giá mới sau discount
-    basePrice = basePrice - (basePrice * (activeDiscount.amount / 100));
+    // Áp dụng discount
+    double discountValue = activeDiscount.amount < 1 ? activeDiscount.amount * 100 : activeDiscount.amount;
+    sizePrice = sizePrice - (sizePrice * (discountValue / 100));
 
-    List availableSizes = _product.value!.foodOptions
-        .where((option) => option.typeId == 2)
-        .toList();
-
-    if (availableSizes.isNotEmpty) {
-      int index = selectedSizeIndex.value;
-      if (index < availableSizes.length) {
-        return basePrice + availableSizes[index].price;
-      }
-    }
-
-    return basePrice;
+    // Thêm giá topping nếu có
+    return sizePrice + totalExtraPrice;
   }
+
+  double get originalPrice {
+    if (_product.value == null) return 0;
+
+    final sizeOptions = _product.value!.foodOptions.where((opt) => opt.typeId == 2).toList();
+    if (sizeOptions.isEmpty) return 0;
+
+    return sizeOptions[selectedSizeIndex.value].price;
+  }
+
 
 
   void selectSize(int index) {
     selectedSizeIndex.value = index;
   }
 
+  bool get hasSelectedSize {
+    return currentProduct.foodOptions.any((opt) => opt.typeId == 2);
+  }
   // Cập nhật hàm addToCartWithOptions để gửi discount và tính giá
   Future<void> addToCartWithOptions() async {
     try {
-      final double basePrice = currentProduct.defaultPrice;
-      final int qty = quantity.value;
-      double total = 0.0;
-
-      // Tính size
-      final sizeOptions = currentProduct.foodOptions.where((opt) => opt.typeId == 2).toList();
-      CartItemOptionDTO? selectedSizeOption;
-      if (sizeOptions.isNotEmpty && selectedSizeIndex.value < sizeOptions.length) {
-        final size = sizeOptions[selectedSizeIndex.value];
-        selectedSizeOption = CartItemOptionDTO(
-          optionId: size.id,
-          typeId: 2,
-          optionName: size.name,
-          image: size.image as String ?? '',
-          cartItemId: 0,
-          price: size.price,
-          totalPrice: size.price * qty,
-          quantity: 1,
-        );
-        total += size.price * qty;
+      // Kiểm tra nếu có size nhưng chưa chọn size
+      if (currentProduct.foodOptions.any((opt) => opt.typeId == 2) &&
+          selectedSizeIndex.value < 0) {
+        Get.snackbar("Thông báo", "Vui lòng chọn size trước khi thêm vào giỏ hàng");
+        return;
       }
 
-      // Lọc và tính giá từ discount có trạng thái ACTIVE
+      final int qty = quantity.value;
+
+      // Lấy size được chọn (typeId = 2)
+      final sizeOptions = currentProduct.foodOptions.where((opt) => opt.typeId == 2).toList();
+      if (sizeOptions.isEmpty) {
+        Get.snackbar("Lỗi", "Sản phẩm không có size");
+        return;
+      }
+
+      final selectedSize = sizeOptions[selectedSizeIndex.value];
+      double sizePrice = selectedSize.price;
+
+      // Tính discount
       final activeDiscount = _product.value!.discount.firstWhere(
             (discount) => discount.status == 'ACTIVE',
-        orElse: () => Discount(  // Nếu không tìm thấy discount, trả về discount mặc định
+        orElse: () => Discount(
           id: 0,
-          amount: 0.0,  // Mặc định là 0% giảm giá
+          amount: 0.0,
           startDate: '',
           endDate: '',
-          status: 'INACTIVE',  // Mặc định là INACTIVE
+          status: 'INACTIVE',
         ),
       );
 
-      final double discountedPrice = activeDiscount != null
-          ? basePrice - (basePrice * (activeDiscount.amount / 100))
-          : basePrice;
+      // Áp dụng discount cho giá size
+      double discountValue = activeDiscount.amount < 1 ? activeDiscount.amount * 100 : activeDiscount.amount;
+      sizePrice = sizePrice - (sizePrice * (discountValue / 100));
+
+      // Tạo option cho size
+      CartItemOptionDTO selectedSizeOption = CartItemOptionDTO(
+        optionId: selectedSize.id,
+        typeId: 2,
+        optionName: selectedSize.name,
+        image: selectedSize.image as String ?? '',
+        cartItemId: 0,
+        price: selectedSize.price, // Giá gốc của size (trước khi giảm giá)
+        totalPrice: selectedSize.price * qty, // Tổng giá size (trước giảm giá)
+        quantity: 1,
+      );
 
       // Tính topping
       final List<CartItemOptionDTO> extraOptionsList = extraOptions
@@ -296,26 +285,29 @@ class ProductDetailController extends GetxController {
       ))
           .toList();
 
-      total += extraOptionsList.fold(0.0, (sum, e) => sum + e.totalPrice);
+      // Tính tổng giá: (giá size sau discount + topping) * số lượng
+      double totalExtraPrice = extraOptionsList.fold(0.0, (sum, e) => sum + e.totalPrice);
+      double totalPrice = (sizePrice * qty) + totalExtraPrice;
 
-      // Tổng tiền = (base + size) * số lượng + topping
-      final double totalPrice = (discountedPrice * qty) + total;
+      // Gộp các option
+      final List<CartItemOptionDTO> allOptions = [selectedSizeOption];
+      allOptions.addAll(extraOptionsList);
 
-      // Gộp tất cả option lại
-      if (selectedSizeOption != null) {
-        extraOptionsList.insert(0, selectedSizeOption);
-      }
-
+      print('🟢 [1.USER SELECTED OPTIONS] Product: ${currentProduct.name} (ID:${currentProduct.id})');
+      print('   → Selected Size: ${selectedSize.name} (ID:${selectedSize.id})');
+      extraOptions.where((opt) => opt.selected).forEach((opt) {
+        print('   → Extra Option: ${opt.name} (ID:${opt.id})');
+      });
       // Tạo CartItemDTO
       final cartItem = CartItemDTO(
         cartId: 0,
         productId: currentProduct.id,
         productName: currentProduct.name,
         image: currentProduct.image,
-        price: discountedPrice,
+        price: sizePrice, // Giá sau discount
         totalPrice: totalPrice,
         quantity: qty,
-        cartItemOptionDTOList: extraOptionsList,
+        cartItemOptionDTOList: allOptions,
       );
 
       // Tạo CartDTO
@@ -336,6 +328,7 @@ class ProductDetailController extends GetxController {
       }
     } catch (e) {
       Get.snackbar("Lỗi", "Thêm vào giỏ hàng thất bại: $e");
+      print("Lỗi khi thêm vào giỏ hàng: $e");
     }
   }
 
@@ -365,7 +358,6 @@ class ProductDetailController extends GetxController {
 
   void addProductToCart(Product product) {
     print("Thêm sản phẩm tương tự vào giỏ: ${product.name} với số lượng ${product.quantity}");
-    // Bạn có thể tương tự xây dựng đối tượng CartDTO từ product này và gọi cartApiService.addToCart(...)
   }
 
   void toggleDescription() {
@@ -381,11 +373,34 @@ class ProductDetailController extends GetxController {
   }
 
   void reportProduct() {
-    print("Báo cáo sản phẩm");
-  }
+    // Lấy thông tin sản phẩm hiện tại
+    final product = currentProduct;
 
+    Get.toNamed(
+      Routes.SEND_REPORT,
+      arguments: {
+        'typeId': 6,
+        'itemId': product.id,
+        'itemName': product.name,
+      },
+    );
+  }
   void goToShop() {
-    print("Đi đến trang Shop");
+    final product = currentProduct;
+    print("🛍️ Đang chuyển sang trang cửa hàng. ShopID: ${product.shopId}, Tên cửa hàng: ${product.shop}");
+
+    if (product.shopId != null && product.shopId > 0) {
+      Get.toNamed(
+        Routes.USER_VIEW_SHOP_DETAIL,
+        arguments: {
+          'shopId': product.shopId,
+          'shopName': product.shop,
+        },
+      );
+    } else {
+      print("⚠️ Không có thông tin cửa hàng hợp lệ");
+      Get.snackbar("Thông báo", "Không có thông tin cửa hàng");
+    }
   }
 
   String extractKeyword(String fullName) {

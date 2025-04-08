@@ -11,6 +11,7 @@ class ProductDetailModel {
   final List<String> sizes;
   final List<FoodOptionModel> foodOptions;
 
+
   ProductDetailModel({
     required this.id,
     required this.name,

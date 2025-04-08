@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:get/get.dart';
 import '../base/api_base_url.dart';
 import '../models/user_profile.dart';
+import '../models/user_role_profile.dart';
 
 class UserService extends GetConnect {
   Future<UserProfile?> fetchUserProfile(int userId) async {
@@ -38,7 +39,6 @@ class UserService extends GetConnect {
     }
   }
 
-  // Fetch thông tin cửa hàng của người dùng
   Future<dynamic> fetchUserShop(int userId) async {
     final response = await get('${ApiBaseUrl.baseUrl}/api/users/shop?id=$userId');
 
@@ -62,6 +62,24 @@ class UserService extends GetConnect {
     }
   }
 
+  Future<UserRoleProfile?> fetchUserRoleProfile(int userId) async {
+    try {
+      final response = await get('${ApiBaseUrl.baseUrl}/api/users/profile/$userId');
+
+      if (response.statusCode == 200) {
+        return UserRoleProfile.fromJson(response.body);
+      } else if (response.statusCode == 404) {
+        print("User not found");
+        return null;
+      } else {
+        print("Error fetching user role profile: ${response.statusCode}");
+        return null;
+      }
+    } catch (e) {
+      print("Exception in fetchUserRoleProfile: $e");
+      return null;
+    }
+  }
 
 
 }

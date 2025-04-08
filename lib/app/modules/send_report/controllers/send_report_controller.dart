@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../models/report_create.dart';
@@ -26,24 +27,43 @@ class SendReportController extends GetxController {
   final Map<int, String> shops = {1: 'Cửa hàng ABC', 2: 'Cửa hàng XYZ'}; // Dữ liệu cửa hàng
   final Map<int, String> blogs = {1: 'Blog về ẩm thực', 2: 'Blog về du lịch'}; // Dữ liệu blog
 
-  // Cập nhật loại báo cáo từ cơ sở dữ liệu theo type_id và tên đối tượng
-  void updateReportTypeFromDB(int typeId, String itemName, int itemId) {
-    // Cập nhật loại báo cáo từ cơ sở dữ liệu
-    if (typeId == 4) {
-      reportType.value = 'Blog';
-      reportItem.value = blogs[itemId] ?? 'Không xác định'; // Lấy tên blog từ dữ liệu
-      relatedId.value = itemId; // Gán relatedId cho blog
-    } else if (typeId == 5) {
-      reportType.value = 'Cửa hàng';
-      reportItem.value = shops[itemId] ?? 'Không xác định'; // Lấy tên cửa hàng từ dữ liệu
-      relatedId.value = itemId; // Gán relatedId cho cửa hàng
-    } else if (typeId == 6) {
-      reportType.value = 'Sản phẩm';
-      reportItem.value = products[itemId] ?? 'Không xác định'; // Lấy tên sản phẩm từ dữ liệu
-      relatedId.value = itemId; // Gán relatedId cho sản phẩm
-    }
+
+  @override
+  void onInit() {
+    super.onInit();
+
+    // Nhận thông tin từ arguments
+    final arguments = Get.arguments as Map<String, dynamic>? ?? {};
+    final typeId = arguments['typeId'] ?? 0;
+    final itemId = arguments['itemId'] ?? 0;
+    final itemName = arguments['itemName'] ?? '';
+
+    // Cập nhật loại báo cáo
+    updateReportTypeFromDB(typeId, itemName, itemId);
   }
 
+  void removeImage(int index) {
+    if (index >= 0 && index < selectedImages.length) {
+      selectedImages.removeAt(index);
+      selectedImages.refresh(); // Cập nhật UI
+    }
+  }
+  // Cập nhật loại báo cáo từ cơ sở dữ liệu theo type_id và tên đối tượng
+  void updateReportTypeFromDB(int typeId, String itemName, int itemId) {
+    if (typeId == 4) {
+      reportType.value = 'Blog';
+      reportItem.value = itemName; // Dùng trực tiếp từ arguments
+      relatedId.value = itemId;
+    } else if (typeId == 5) {
+      reportType.value = 'Cửa hàng';
+      reportItem.value = itemName; // Dùng trực tiếp từ arguments
+      relatedId.value = itemId;
+    } else if (typeId == 6) {
+      reportType.value = 'Sản phẩm';
+      reportItem.value = itemName; // Dùng trực tiếp từ arguments
+      relatedId.value = itemId;
+    }
+  }
   // Chọn ảnh từ thiết bị (tối đa 5 ảnh)
   Future<void> pickImages() async {
     final picker = ImagePicker();
@@ -58,36 +78,70 @@ class SendReportController extends GetxController {
     }
   }
 
-  // Hàm gửi báo cáo
-  // Hàm gửi báo cáo
   void submitReport() async {
     try {
-      isLoading.value = true;  // Đánh dấu bắt đầu gửi báo cáo
+      // Kiểm tra điều kiện trước khi gửi
+      if (selectedOption.isEmpty && detailedReason.isEmpty) {
+        Get.snackbar(
+          'Lỗi',
+          'Vui lòng chọn lý do hoặc nhập mô tả chi tiết',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red[400],
+          colorText: Colors.white,
+        );
+        return;
+      }
 
-      String reason = selectedOption.value.isEmpty ? detailedReason.value : selectedOption.value;
+      isLoading.value = true;
+
+      String reason = selectedOption.value.isEmpty
+          ? detailedReason.value
+          : selectedOption.value;
+
       List<File> imagesToUpload = selectedImages.map((xFile) => File(xFile.path)).toList();
 
       ReportCreateDTO reportCreateDTO = ReportCreateDTO(
-        userId: 34, // Giả sử đây là ID của người báo cáo (có thể lấy từ session hoặc user)
-        relatedId: relatedId.value, // ID đối tượng liên quan (sản phẩm, blog, cửa hàng...)
-        typeId: getReportTypeId(reportType.value), // Lấy typeId từ tên loại báo cáo
+        userId: 34, // Nên thay bằng userId thực tế
+        relatedId: relatedId.value,
+        typeId: getReportTypeId(reportType.value),
         reason: reason,
-        options: [reason], // Gửi lý do dưới dạng một chuỗi duy nhất (không phải file)
+        options: [reason],
       );
 
       bool result = await reportService.createReport(reportCreateDTO, imagesToUpload);
 
       if (result) {
-        Get.snackbar('Thông báo', 'Báo cáo của bạn đã được gửi!', snackPosition: SnackPosition.BOTTOM);
+        Get.snackbar(
+          'Thành công',
+          'Báo cáo của bạn đã được gửi thành công!',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.green[400],
+          colorText: Colors.white,
+          duration: Duration(seconds: 3),
+        );
+        await Future.delayed(Duration(seconds: 1));
+        Get.back(); // Tự động quay lại sau khi gửi thành công
       } else {
-        Get.snackbar('Thông báo', 'Đã xảy ra lỗi khi gửi báo cáo.', snackPosition: SnackPosition.BOTTOM);
+        Get.snackbar(
+          'Lỗi',
+          'Không thể gửi báo cáo. Vui lòng thử lại sau',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red[400],
+          colorText: Colors.white,
+        );
       }
-
     } catch (e) {
-      print('Error occurred: $e');  // Log lỗi để debug
-      Get.snackbar('Thông báo', 'Đã xảy ra lỗi khi gửi báo cáo.', snackPosition: SnackPosition.BOTTOM);
+      print('Error occurred: $e');
+      Get.snackbar(
+        'Lỗi hệ thống',
+        'Đã xảy ra lỗi khi gửi báo cáo: ${e.toString()}',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red[400],
+        colorText: Colors.white,
+        duration: Duration(seconds: 5),
+      );
     } finally {
-      isLoading.value = false;  // Đánh dấu kết thúc quá trình gửi báo cáo
+      isLoading.value = false;
     }
   }
 

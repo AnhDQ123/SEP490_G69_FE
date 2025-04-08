@@ -26,14 +26,14 @@ class CartItemOptionDTO {
   factory CartItemOptionDTO.fromJson(Map<String, dynamic> json) {
     return CartItemOptionDTO(
       id: json['id'],
-      optionId: json['optionId'],
-      typeId: json['typeId'] ?? 0,
+      optionId: json['optionId'] ?? 0, // Thêm xử lý null
+      typeId: json['typeId'] ?? 0, // Thêm xử lý null
       optionName: json['optionName'] ?? '',
       image: json['image'] ?? '',
-      cartItemId: json['cartItemId'],
-      price: (json['price'] ?? 0).toDouble(),
-      totalPrice: (json['totalPrice'] ?? 0).toDouble(),
-      quantity: (json['quantity'] ?? 1) as int,
+      cartItemId: json['cartItemId'] ?? 0, // Thêm xử lý null
+      price: (json['price'] as num?)?.toDouble() ?? 0.0, // Sửa thành as num?
+      totalPrice: (json['totalPrice'] as num?)?.toDouble() ?? 0.0, // Sửa thành as num?
+      quantity: json['quantity'] ?? 1, // Thêm xử lý null
     );
   }
 

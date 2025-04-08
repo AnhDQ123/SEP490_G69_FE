@@ -2,75 +2,79 @@ import 'order_item.dart';
 
 class Order {
   final int id;
-  final String shopName;
   final int ownerId;
-  final int? shipperId;
+  final int? shipperId;  // Cho phép null
   final int shipMethodId;
   final int paymentMethodId;
   final int? voucherId;
   final double voucherAmount;
   final String address;
+  final String shopName;
+  final String? shopAddress;
+  final String phone;
+  final int shopId;
+  String status;
+  final String? image;
   final double total;
-  final DateTime createdAt;
-  final String status;
+  final DateTime? createdAt;
+  final List<OrderItem> orderItem;
   final String? reason;
-  final List<OrderItem> items;
-
-  final int shopId;      // ✅ Thêm
-  final String? image;    // ✅ Thêm
-
+  final String ownerName;
   final String? paymentProof;
-
 
   Order({
     required this.id,
-    required this.shopName,
     required this.ownerId,
-    this.shipperId,
+    this.shipperId,  // Bỏ required vì có thể null
     required this.shipMethodId,
     required this.paymentMethodId,
     this.voucherId,
     required this.voucherAmount,
     required this.address,
-    required this.total,
-    required this.createdAt,
+    required this.shopName,
+    this.shopAddress,
+    required this.phone,
+    required this.shopId,
     required this.status,
-    required this.items,
+    this.image,
+    required this.total,
+    this.createdAt,
+    required this.orderItem,
     this.reason,
-    required this.shopId,       // ✅ Gán vào constructor
-    this.image,        // ✅ Gán vào constructor
+    required this.ownerName,
     this.paymentProof,
-
   });
 
   factory Order.fromJson(Map<String, dynamic> json) {
     return Order(
       id: (json['id'] as int?) ?? (json['orderId'] as int?) ?? 0,
-      shopName: json['shopName'] ?? '',
       ownerId: (json['ownerId'] as int?) ?? 0,
-      shipperId: json['shipperId'] as int?,
+      shipperId: json['shipperId'] as int?,  // Cho phép null
       shipMethodId: (json['shipMethodId'] as int?) ?? 0,
       paymentMethodId: (json['paymentMethodId'] as int?) ?? 0,
       voucherId: json['voucherId'] as int?,
-      voucherAmount: (json['voucherAmount'] as num?)?.toDouble() ?? 0.0,
-      address: json['address'] ?? 'Không có địa chỉ',
-      total: (json['total'] as num?)?.toDouble() ?? 0.0,
-      createdAt: json['createdAt'] != null ? DateTime.parse(json['createdAt']) : DateTime.now(),
-      items: (json['orderItem'] as List?)
-          ?.map((item) => OrderItem.fromJson(item as Map<String, dynamic>))
-          .toList() ?? [],
-      status: json['status'] ?? 'UNKNOWN',
-      reason: json['reason'] ?? '',
+      voucherAmount: (json['voucherAmount'] ?? 0).toDouble(),
+      address: json['address'] as String? ?? '',  // Cho phép null và có giá trị mặc định
+      shopName: json['shopName'] as String? ?? '',
+      shopAddress: json['shopAddress'] as String?,
+      phone: json['phone'] as String? ?? '',  // Cho phép null và có giá trị mặc định
       shopId: (json['shopId'] as int?) ?? 0,
-      image: json['image'] as String?,          // ✅ Parse
+      status: json['status'] as String? ?? 'UNKNOWN',
+      image: json['image'] as String?,
+      total: (json['total'] ?? 0).toDouble(),
+      createdAt: json['createdAt'] != null ? DateTime.tryParse(json['createdAt']) : null,
+      reason: json['reason'] as String?,
+      ownerName: json['ownerName'] as String? ?? '',
+      orderItem: (json['orderItem'] as List<dynamic>?)
+          ?.map((item) => OrderItem.fromJson(item))
+          .toList() ?? [],  // Xử lý null cho orderItem
       paymentProof: json['paymentProof'] as String?,
-
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      // 'id': id,
       'shopName': shopName,
       'ownerId': ownerId,
       'shipperId': shipperId,
@@ -80,12 +84,12 @@ class Order {
       'voucherAmount': voucherAmount,
       'address': address,
       'total': total,
-      'createdAt': createdAt.toIso8601String(),
+      'createdAt': createdAt?.toIso8601String(), // Sửa ở đây - convert DateTime sang String
       'status': status,
-      'orderItem': items.map((item) => item.toJson()).toList(),
+      'orderItem': orderItem.map((item) => item.toJson()).toList(),
       'reason': reason,
-      'shopId': shopId,         // ✅ Xuất ra JSON nếu cần
-      'image': image,           // ✅ Xuất ra JSON nếu cần
+      'shopId': shopId,
+      'image': image,
       'paymentProof': paymentProof,
 
     };

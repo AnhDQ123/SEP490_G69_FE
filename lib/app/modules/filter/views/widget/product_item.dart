@@ -23,8 +23,10 @@ class ProductItem extends StatelessWidget {
     }
 
     final bool hasDiscount = activeDiscount != null;
-    final double finalPrice = hasDiscount ? originalPrice * (1 - (activeDiscount!.amount / 100)) : originalPrice;
-
+    final double discountValue = hasDiscount
+        ? (activeDiscount!.amount < 1 ? activeDiscount!.amount * 100 : activeDiscount!.amount) / 100
+        : 0;
+    final double finalPrice = originalPrice * (1 - discountValue);
     return InkWell(
       onTap: () {
         Get.toNamed('/product-detail', arguments: item.id);
@@ -81,8 +83,7 @@ class ProductItem extends StatelessWidget {
                               borderRadius: BorderRadius.circular(4),
                             ),
                             child: Text(
-                              '-${(activeDiscount!.amount).toStringAsFixed(0)}%',
-                              style: const TextStyle(
+                              '-${(activeDiscount!.amount < 1 ? activeDiscount!.amount * 100 : activeDiscount!.amount).toStringAsFixed(0)}%',                              style: const TextStyle(
                                 fontSize: 12,
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,

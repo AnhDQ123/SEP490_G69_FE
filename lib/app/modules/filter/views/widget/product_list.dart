@@ -12,11 +12,18 @@ class ProductList extends GetView<FilterController> {
     return Obx(() {
       final List<Product> products = controller.products;
 
+      // Nếu danh sách rỗng và đang load, hiển thị loading indicator
+      if (products.isEmpty && controller.isLoading.value) {
+        return const Center(child: CircularProgressIndicator());
+      }
+
+      // Nếu không có sản phẩm nào
       if (products.isEmpty) {
         return const Center(child: Text('Không có sản phẩm'));
       }
 
       return GridView.builder(
+        controller: controller.scrollController,
         padding: const EdgeInsets.all(8),
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
@@ -24,10 +31,14 @@ class ProductList extends GetView<FilterController> {
           crossAxisSpacing: 8,
           childAspectRatio: 0.6,
         ),
-        itemCount: products.length,
+        // Tăng thêm 1 item nếu còn dữ liệu để load (để hiển thị loading indicator)
+        itemCount: products.length + (controller.hasMore.value ? 1 : 0),
         itemBuilder: (context, index) {
-          final Product item = products[index];
-          return ProductItem(item: item); // Truyền đúng kiểu Product
+          if (index < products.length) {
+            return ProductItem(item: products[index]);
+          } else {
+            return const Center(child: CircularProgressIndicator());
+          }
         },
       );
     });

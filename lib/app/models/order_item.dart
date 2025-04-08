@@ -1,3 +1,4 @@
+import 'discount.dart';
 import 'order_item_option.dart';
 
 import 'order_item_option.dart';
@@ -6,29 +7,29 @@ class OrderItem {
   final int id;
   final int orderId;
   final int productId;
-  final String dishName; // Thêm
-  final String imageUrl; // Thêm
-  final int? discountId;       // mới thêm
+  final String productName;
+  final int? discountId;
+  final List<Discount>? discount; // Thay đổi từ discount/discountId sang danh sách
+  final String image;
   final double price;
+  final DateTime? createdAt;
   final int quantity;
   final double total;
-  final double discount; // Thêm
-  final DateTime createdAt;
-  final List<OrderItemOption> options; // Tùy chọn sản phẩm
+  final List<OrderItemOption> orderItemOptions;
 
   OrderItem({
     required this.id,
     required this.orderId,
     required this.productId,
-    required this.dishName, // Thêm
-    required this.imageUrl, // Thêm
-    required this.price,
+    required this.productName,
     this.discountId,
+    required this.discount,
+    required this.image,
+    required this.price,
+    this.createdAt,
     required this.quantity,
     required this.total,
-    required this.discount, // Thêm
-    required this.createdAt,
-    required this.options,
+    required this.orderItemOptions,
   });
 
   factory OrderItem.fromJson(Map<String, dynamic> json) {
@@ -36,17 +37,19 @@ class OrderItem {
       id: (json['id'] as int?) ?? 0, // Nếu null, gán 0
       orderId: (json['orderId'] as int?) ?? 0, // Nếu null, gán 0
       productId: (json['productId'] as int?) ?? 0, // Nếu null, gán 0
-      dishName: json['productName'] ?? 'Không có tên', // Nếu null, gán giá trị mặc định
-      imageUrl: json['image'] ?? 'https://image.pngaaa.com/305/269305-middle.png', // Nếu null, gán chuỗi rỗng
-      price: (json['price'] as num?)?.toDouble() ?? 0.0, // Nếu null, gán 0.0
-      discountId: (json['discountId'] as int?) ?? 0,
-      quantity: (json['quantity'] as int?) ?? 1, // Nếu null, gán 1
-      total: (json['total'] as num?)?.toDouble() ?? 0.0, // Nếu null, gán 0.0
-      discount: (json['discount'] as num?)?.toDouble() ?? 0.0, // Nếu null, gán 0.0
-      createdAt: json['createdAt'] != null ? DateTime.parse(json['createdAt']) : DateTime.now(), // Kiểm tra null
-      options: (json['orderItemOptions'] as List?)
-          ?.map((opt) => OrderItemOption.fromJson(opt as Map<String, dynamic>))
-          .toList() ?? [], // Nếu null, trả về danh sách rỗng
+      productName: json['productName'],
+      discountId: json['discountId'],
+      discount: (json['discount'] as List<dynamic>?)
+          ?.map((e) => Discount.fromJson(e))
+          .toList() ?? [], // Xử lý khi discounts null      image: json['image'],
+      image: json['image'] ?? '',
+      price: (json['price'] ?? 0).toDouble(),
+      createdAt: json['createdAt'] != null ? DateTime.tryParse(json['createdAt']) : null,
+      quantity: json['quantity'],
+      total: (json['total'] ?? 0).toDouble(),
+      orderItemOptions: (json['orderItemOptions'] as List)
+          .map((e) => OrderItemOption.fromJson(e))
+          .toList(),
     );
   }
 
@@ -54,18 +57,18 @@ class OrderItem {
 
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
-      'orderId': orderId,
+      // 'id': id,
+      // 'orderId': orderId,
       'productId': productId,
-      'productName': dishName, // Thêm
-      'image': imageUrl, // Thêm
+      'productName': productName, // Thêm
+      'image': image, // Thêm
       'price': price,
       'discountId': discountId,
       'quantity': quantity,
       'total': total,
-      'discount': discount, // Thêm
-      'createdAt': createdAt.toIso8601String(),
-      'orderItemOptions': options.map((opt) => opt.toJson()).toList(),
+      'discount': discount?.map((d) => d.toJson()).toList(), // Gửi danh sách discounts
+      'createdAt': createdAt?.toIso8601String(), // Sửa ở đây
+      'orderItemOptions': orderItemOptions.map((opt) => opt.toJson()).toList(),
     };
   }
 }

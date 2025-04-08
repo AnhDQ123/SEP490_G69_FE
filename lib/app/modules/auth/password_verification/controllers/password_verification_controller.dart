@@ -64,14 +64,13 @@ class PasswordVerificationController extends GetxController {
     }
 
     isLoading(true);
-    final response = await registerService.registerUser(phone, email, username, password);
-    if (response['success'] == true && response['user_id'] != null) {
-      // Lưu userId vào SharedPreferences thông qua BaseCommon
-      await BaseCommon.instance.saveUserId(response['user_id'].toString());
-      CustomSnackbar.showSuccess("Đăng ký thành công!");
+    final response = await registerService.registerUser(phone, email, password);
+
+    if (response['success'] == true) {
+      CustomSnackbar.showSuccess(response['message']);
       Get.toNamed('/user-info', arguments: {
-        "phone": phone,
-        "user_id": response['user_id'].toString()
+        'phone': phone,
+        'user_id': response['user_id'] ?? '' // Truyền cả phone và user_id nếu có
       });
     } else {
       CustomSnackbar.showError(response['message']);

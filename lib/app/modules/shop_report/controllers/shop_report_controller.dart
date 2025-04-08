@@ -11,7 +11,7 @@ class ShopReportController extends GetxController {
   var reason = ''.obs;
 
   // Khai báo biến cho thông tin báo cáo
-  var reportId = 1.obs;
+  var reportId = 0.obs;
   var report = Rxn<ReportViewDTO>();
   var evidenceImages = <XFile>[].obs;  // Biến lưu ảnh bằng chứng
 
@@ -20,7 +20,12 @@ class ShopReportController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    fetchReport(reportId.value);
+    // Nhận reportId từ arguments
+    final arguments = Get.arguments;
+    if (arguments != null && arguments['reportId'] != null) {
+      reportId.value = arguments['reportId'];
+      fetchReport(reportId.value);
+    }
   }
 
   // Lấy thông tin báo cáo từ API

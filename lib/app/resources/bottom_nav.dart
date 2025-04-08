@@ -80,71 +80,45 @@ class BottomNav extends StatelessWidget {
   }
 
   Widget _buildCartNavItem() {
-    return Obx(() {
-      final CartController controller = Get.find<CartController>();
-      int totalItems = controller.carts.fold(0, (sum, shop) {
-        return sum + shop.cartItemDTOList.fold(0, (itemSum, item) => itemSum + item.quantity.value);
-      });
-
-      return InkWell(
-        onTap: () {
-          onItemSelected(3);  // Cập nhật chỉ mục khi chọn giỏ hàng
-          _navigateToPage(3);  // Điều hướng đến trang giỏ hàng
-        },
-        child: Stack(
-          children: [
-            // Biểu tượng giỏ hàng
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
-              padding: const EdgeInsets.symmetric(vertical: 4.0),
-              decoration: BoxDecoration(
-                border: Border(
-                  top: BorderSide(
-                    color: currentIndex == 3 ? selectedColor : Colors.transparent,
-                    width: 3.0,
-                  ),
-                ),
-              ),
-              child: FittedBox(
-                fit: BoxFit.scaleDown,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      Icons.shopping_cart,
-                      size: 20.0,
-                      color: currentIndex == 3 ? selectedColor : unselectedColor,
-                    ),
-                    const SizedBox(height: 2.0),
-                    Text(
-                      "Giỏ hàng",
-                      style: TextStyle(
-                        fontSize: 10.0,
-                        color: currentIndex == 3 ? selectedColor : unselectedColor,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+    return InkWell(
+      onTap: () {
+        onItemSelected(3);
+        _navigateToPage(3);
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(vertical: 4.0),
+        decoration: BoxDecoration(
+          border: Border(
+            top: BorderSide(
+              color: currentIndex == 3 ? selectedColor : Colors.transparent,
+              width: 3.0,
             ),
-            // Số lượng sản phẩm trong giỏ hàng
-            if (totalItems > 0)
-              Positioned(
-                right: 0,
-                top: 0,
-                child: CircleAvatar(
-                  radius: 10,
-                  backgroundColor: Colors.red,
-                  child: Text(
-                    '$totalItems',
-                    style: TextStyle(fontSize: 12, color: Colors.white),
-                  ),
+          ),
+        ),
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.shopping_cart,
+                size: 20.0,
+                color: currentIndex == 3 ? selectedColor : unselectedColor,
+              ),
+              const SizedBox(height: 2.0),
+              Text(
+                "Giỏ hàng",
+                style: TextStyle(
+                  fontSize: 10.0,
+                  color: currentIndex == 3 ? selectedColor : unselectedColor,
                 ),
               ),
-          ],
+            ],
+          ),
         ),
-      );
-    });
+      ),
+    );
   }
 
   void _navigateToPage(int index) {

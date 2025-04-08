@@ -58,12 +58,9 @@ class ProductDetailApiService {
     }
   }
 
-
-
-  Future<List<Product>> getMenuByShopId(String shopId, {int page = 1, int size = 20}) async {
-    final uri = Uri.parse("$baseUrl/shop/$shopId").replace(queryParameters: {
-      "page": page.toString(),
-      "size": size.toString(),
+  Future<List<Product>> getDrinksByShop(String shopId) async {
+    final uri = Uri.parse('$baseUrl/shop/drink').replace(queryParameters: {
+      'shopId': shopId,
     });
 
     final response = await http.get(uri);
@@ -72,7 +69,7 @@ class ProductDetailApiService {
       final List<dynamic> data = jsonDecode(response.body);
       return data.map((json) => Product.fromJson(json)).toList();
     } else {
-      throw Exception("Failed to load menu by shop: ${response.statusCode}");
+      throw Exception('Failed to load drinks from shop: ${response.statusCode}');
     }
   }
 

@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import '../../../base/base_common.dart';
 import '../../../models/order.dart';
 import '../../../service/order_service.dart';
 
@@ -17,15 +18,23 @@ class MyOrderController extends GetxController {
   final shipPendingOrders = <Order>[].obs;
   final returnRejectedOrders = <Order>[].obs;
 
-  final OrderService _orderService = OrderService(); // Dùng OrderService
+  final OrderService _orderService = OrderService();
 
   late int userId; // Thêm biến userId
 
   @override
   void onInit() {
     super.onInit();
-    final int userId = Get.arguments as int;  // Chỉ cần nhận userId là int
-    this.userId = userId;  // Lưu vào biến userId
+    // Kiểm tra Get.arguments có giá trị hợp lệ không
+    final arg = Get.arguments;
+    if (arg != null) {
+      userId = arg as int;
+      print("✅ userId nhận được: $userId");
+    } else {
+      print("❌ Không có dữ liệu truyền qua arguments");
+      userId = 0;  // Gán giá trị mặc định nếu không có dữ liệu
+    }
+
     loadOrders();
   }
 
@@ -34,6 +43,12 @@ class MyOrderController extends GetxController {
   Future<void> loadOrders() async {
     try {
       isLoading.value = true;
+
+      // Đảm bảo userId không phải là null và có giá trị hợp lệ
+      if (userId == 0) {
+        print("❌ userId không hợp lệ!");
+        return;  // Dừng quá trình nếu userId không hợp lệ
+      }
 
       // Gọi API cho từng trạng thái và assign vào các danh sách tương ứng
       pendingOrders.assignAll(await _orderService.fetchOrdersByOwnerAndStatus(id: userId, status: "PENDING"));

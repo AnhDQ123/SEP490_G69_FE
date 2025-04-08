@@ -37,6 +37,8 @@ dependencies:
   fl_chart: ^0.70.2
   url_launcher: ^6.0.10  # Nếu bạn muốn mở PDF từ URL
   flutter_pdfview: ^1.2.1  # Thư viện để hiển thị PDF trong Flutter
+  flutter_image_compress: ^2.1.0
+
 
 
   # Develop
