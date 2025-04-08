@@ -1,8 +1,8 @@
 import 'package:get/get.dart';
 
-import '../controllers/blogdetail_controller.dart';
+import '../controllers/blog_detail_controller.dart';
 
-class BlogdetailBinding extends Bindings {
+class BlogDetailBinding extends Bindings {
   @override
   void dependencies() {
     Get.lazyPut<BlogDetailController>(

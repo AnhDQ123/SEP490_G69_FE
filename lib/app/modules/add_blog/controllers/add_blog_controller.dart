@@ -36,37 +36,67 @@ class AddBlogController extends GetxController {
     selectedAssets.removeAt(index);
   }
 
-  // Gọi BlogService để tạo blog mới
   Future<void> submitBlog() async {
     final content = contentController.text.trim();
-    if (content.isEmpty && selectedAssets.isEmpty) return;
 
-    // Chuyển đổi các AssetEntity thành File
-    List<File> files = [];
-    for (var asset in selectedAssets) {
-      final file = await asset.file;
-      files.add(file!); // Đảm bảo file không null
+    // Validate dữ liệu
+    if (content.isEmpty && selectedAssets.isEmpty) {
+      Get.snackbar(
+        'Thiếu thông tin',
+        'Vui lòng nhập nội dung hoặc thêm ảnh/video',
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.orange.withOpacity(0.9),
+        colorText: Colors.white,
+      );
+      return;
     }
 
     try {
-      isLoading.value = true; // Bắt đầu loading
-      // Gọi service để tạo blog
-      final blogService = BlogService();
-      await blogService.addBlog(content, files); // Tạo blog mới
+      isLoading.value = true;
 
-      // Khi tạo blog thành công
-      isLoading.value = false; // Dừng loading
-      Get.snackbar('Thành công', 'Bài viết đã được đăng!');
+      // Chuyển đổi AssetEntity thành File
+      final files = await Future.wait(
+          selectedAssets.map((asset) async => (await asset.file)!)
+      );
+
+      // Gọi API tạo blog
+      await BlogService().addBlog(content, files);
+
+      // Xử lý thành công
+      Get.back(); // Đóng màn hình hiện tại trước khi hiển thị thông báo
+
+      // Hiển thị thông báo thành công
+      Get.snackbar(
+        'Thành công',
+        'Bài viết đã được đăng thành công!',
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.green[600]!.withOpacity(0.9),
+        colorText: Colors.white,
+        duration: const Duration(seconds: 3),
+        icon: const Icon(Icons.check_circle, color: Colors.white),
+        shouldIconPulse: true,
+        margin: const EdgeInsets.all(10),
+        borderRadius: 8,
+      );
+
+      // Reset form
       contentController.clear();
       selectedAssets.clear();
 
-      // Quay lại trang Bloglist
-      Get.back(); // Quay lại trang trước
     } catch (e) {
-      // Nếu có lỗi
-      isLoading.value = false; // Dừng loading
-      Get.snackbar('Lỗi', 'Đã có lỗi xảy ra khi tạo bài viết');
-      print(e);
+      // Xử lý lỗi
+      Get.snackbar(
+        'Lỗi',
+        'Đăng bài thất bại: ${e.toString().replaceAll('Exception: ', '')}',
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.red[600]!.withOpacity(0.9),
+        colorText: Colors.white,
+        duration: const Duration(seconds: 3),
+        icon: const Icon(Icons.error_outline, color: Colors.white),
+      );
+      print('Lỗi khi đăng bài: $e');
+    } finally {
+      isLoading.value = false;
     }
   }
 }

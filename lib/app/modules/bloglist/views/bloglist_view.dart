@@ -4,8 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:photo_manager/photo_manager.dart';
+import 'package:photo_view/photo_view.dart';
+import 'package:photo_view/photo_view_gallery.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 import '../../../models/blog.dart';
+import '../../../routes/app_pages.dart';
 import '../controllers/bloglist_controller.dart';
 
 class BloglistView extends GetView<BloglistController> {
@@ -147,49 +150,7 @@ class BlogCard extends StatelessWidget {
 
             // Images if available (unchanged)
             if (blog.imageUrls.isNotEmpty) ...[
-              SizedBox(
-                height: 200,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: blog.imageUrls.length,
-                  itemBuilder: (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.only(right: 8),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: Image.network(
-                          blog.imageUrls[index],
-                          width: 200,
-                          fit: BoxFit.cover,
-                          loadingBuilder: (context, child, loadingProgress) {
-                            if (loadingProgress == null) return child;
-                            return Container(
-                              width: 200,
-                              color: Colors.grey[200],
-                              child: Center(
-                                child: CircularProgressIndicator(
-                                  value: loadingProgress.expectedTotalBytes !=
-                                      null
-                                      ? loadingProgress.cumulativeBytesLoaded /
-                                      loadingProgress.expectedTotalBytes!
-                                      : null,
-                                ),
-                              ),
-                            );
-                          },
-                          errorBuilder: (context, error, stackTrace) {
-                            return Container(
-                              width: 200,
-                              color: Colors.grey[200],
-                              child: const Icon(Icons.error),
-                            );
-                          },
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
+              _buildImageGrid(blog.imageUrls, context),
               const SizedBox(height: 12),
             ],
 
@@ -218,9 +179,10 @@ class BlogCard extends StatelessWidget {
                   child: TextButton.icon(
                     icon: const Icon(Icons.comment, size: 18),
                     label: Text('${blog.commentCount}'),
-                    onPressed: () {
-                      // Handle comment action
-                    },
+                    onPressed: () => Get.toNamed(
+                      R0outes.BLOG_DETAIL,
+                      arguments: blog,
+                    ),
                     style: TextButton.styleFrom(
                       foregroundColor: Colors.grey,
                       padding: EdgeInsets.zero,
@@ -249,6 +211,180 @@ class BlogCard extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildImageGrid(List<String> imageUrls, BuildContext context) {
+    final count = imageUrls.length;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final imageHeight = screenWidth * 0.6;
+
+    Widget buildContent() {
+      switch (count) {
+        case 1:
+          return GestureDetector(
+            onTap: () => _openImageGallery(context, 0),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: Image.network(
+                imageUrls[0],
+                width: double.infinity,
+                height: imageHeight * 1.2,
+                fit: BoxFit.cover,
+                loadingBuilder: (context, child, loadingProgress) =>
+                    _buildImageLoader(child, loadingProgress),
+                errorBuilder: (context, error, stackTrace) => _buildImageError(),
+              ),
+            ),
+          );
+
+        case 2:
+          return SizedBox(
+            height: imageHeight,
+            child: Row(
+              children: [
+                _buildGridImage(imageUrls[0], flex: 1, height: imageHeight, index: 0),
+                const SizedBox(width: 4),
+                _buildGridImage(imageUrls[1], flex: 1, height: imageHeight, index: 1),
+              ],
+            ),
+          );
+
+        case 3:
+          return SizedBox(
+            height: imageHeight,
+            child: Row(
+              children: [
+                _buildGridImage(imageUrls[0], flex: 3, height: imageHeight, index: 0),
+                const SizedBox(width: 4),
+                Expanded(
+                  flex: 3,
+                  child: Column(
+                    children: [
+                      _buildGridImage(imageUrls[1], height: imageHeight / 2 - 2, index: 1),
+                      const SizedBox(height: 4),
+                      _buildGridImage(imageUrls[2], height: imageHeight / 2 - 2, index: 2),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          );
+
+        case 4:
+          return SizedBox(
+            height: imageHeight,
+            child: Column(
+              children: [
+                Expanded(
+                  child: Row(
+                    children: [
+                      _buildGridImage(imageUrls[0], flex: 1, height: imageHeight / 2, index: 0),
+                      const SizedBox(width: 4),
+                      _buildGridImage(imageUrls[1], flex: 1, height: imageHeight / 2, index: 1),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Expanded(
+                  child: Row(
+                    children: [
+                      _buildGridImage(imageUrls[2], flex: 1, height: imageHeight / 2, index: 2),
+                      const SizedBox(width: 4),
+                      _buildGridImage(imageUrls[3], flex: 1, height: imageHeight / 2, index: 3),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          );
+
+        default: // 5+ images
+          return SizedBox(
+            height: imageHeight * 1.5,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Left column - 2 images
+                Expanded(
+                  flex: 3,
+                  child: Column(
+                    children: [
+                      _buildGridImage(imageUrls[0], height: imageHeight * 0.75, index: 0),
+                      const SizedBox(height: 4),
+                      _buildGridImage(imageUrls[1], height: imageHeight * 0.75, index: 1),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 4),
+                // Right column - 3 images
+                Expanded(
+                  flex: 3,
+                  child: Column(
+                    children: [
+                      _buildGridImage(imageUrls[2], height: imageHeight * 0.5, index: 2),
+                      const SizedBox(height: 4),
+                      _buildGridImage(imageUrls[3], height: imageHeight * 0.5, index: 3),
+                      const SizedBox(height: 4),
+                      _buildGridImage(imageUrls[4], height: imageHeight * 0.5, index: 4),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          );
+      }
+    }
+
+    return GestureDetector(
+      onTap: () => _openImageGallery(context, 0),
+      child: buildContent(),
+    );
+  }
+
+  Widget _buildGridImage(String imageUrl, {int flex = 1, double? height, int? index}) {
+    return Expanded(
+      flex: flex,
+      child: GestureDetector(
+        onTap: () {
+          if (index != null) {
+            _openImageGallery(Get.context!, index);
+          }
+        },
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(8),
+          child: Image.network(
+            imageUrl,
+            height: height,
+            fit: BoxFit.cover,
+            loadingBuilder: (context, child, loadingProgress) => _buildImageLoader(child, loadingProgress),
+            errorBuilder: (context, error, stackTrace) => _buildImageError(),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildImageLoader(Widget child, ImageChunkEvent? loadingProgress) {
+    if (loadingProgress == null) return child;
+    return Container(
+      color: Colors.grey[200],
+      child: Center(
+        child: CircularProgressIndicator(
+          value: loadingProgress.expectedTotalBytes != null
+              ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+              : null,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildImageError() {
+    return Container(
+      color: Colors.grey[200],
+      child: const Center(
+        child: Icon(Icons.error, color: Colors.red),
       ),
     );
   }
@@ -286,4 +422,35 @@ class BlogCard extends StatelessWidget {
       },
     );
   }
+
+  void _openImageGallery(BuildContext context, int initialIndex) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => Scaffold(
+          appBar: AppBar(
+            backgroundColor: Colors.black,
+            iconTheme: const IconThemeData(color: Colors.white),
+          ),
+          body: PhotoViewGallery.builder(
+            scrollPhysics: const BouncingScrollPhysics(),
+            builder: (BuildContext context, int index) {
+              return PhotoViewGalleryPageOptions(
+                imageProvider: NetworkImage(blog.imageUrls[index]),
+                initialScale: PhotoViewComputedScale.contained,
+                minScale: PhotoViewComputedScale.contained * 0.8,
+                maxScale: PhotoViewComputedScale.covered * 2,
+              );
+            },
+            itemCount: blog.imageUrls.length,
+            backgroundDecoration: const BoxDecoration(color: Colors.black),
+            pageController: PageController(initialPage: initialIndex),
+            onPageChanged: (index) {},
+          ),
+        ),
+      ),
+    );
+  }
+
+
 }

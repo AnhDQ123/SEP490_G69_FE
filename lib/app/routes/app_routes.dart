@@ -5,18 +5,14 @@ abstract class Routes {
   Routes._();
   static const BLOGLIST = _Paths.BLOGLIST;
   static const ADDBLOG = _Paths.ADDBLOG;
-  static const CART = _Paths.CART;
-  static const BLOGDETAIL = _Paths.BLOGDETAIL;
-  static const IMAGE_VIEWER = _Paths.IMAGE_VIEWER;
   static const ADD_BLOG = _Paths.ADD_BLOG;
+  static const BLOG_DETAIL = _Paths.BLOG_DETAIL;
 }
 
 abstract class _Paths {
   _Paths._();
   static const BLOGLIST = '/bloglist';
   static const ADDBLOG = '/addblog';
-  static const CART = '/cart';
-  static const BLOGDETAIL = '/blogdetail';
-  static const IMAGE_VIEWER = '/image-viewer';
   static const ADD_BLOG = '/add-blog';
+  static const BLOG_DETAIL = '/blog-detail';
 }
