@@ -31,8 +31,14 @@ dependencies:
   flutter:
     sdk: flutter
   image_picker: ^1.1.2
-  url_launcher: ^6.2.5
+  path_provider: ^2.1.5
+  permission_handler: ^11.4.0
+  share_plus:
+  fl_chart: ^0.70.2
+  url_launcher: ^6.0.10  # Nếu bạn muốn mở PDF từ URL
+  flutter_pdfview: ^1.2.1  # Thư viện để hiển thị PDF trong Flutter
   flutter_image_compress: ^2.1.0
+
 
 
   # Develop
@@ -46,9 +52,13 @@ dependencies:
 
   font_awesome_flutter:
   google_fonts: ^4.0.4
+  universal_platform: ^1.1.0
+  shared_preferences: ^2.5.2
+  qr_flutter:
 
   get:
   get_cli:
+  get_storage: ^2.1.1
   intl:
   envied:
   flutter_localization: ^0.2.2
@@ -56,28 +66,47 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
+  flutter_local_notifications: ^19.0.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
+  flutter_launcher_icons: ^0.14.3
   flutter_lints: ^5.0.0
+#  flutter_icons:
+#    android: true
+#    ios: true
+#    image_path: "assets/images/logo.png"
 
+#flutter_icons:
+#  android: true
+#  ios: true
+#  image_path: "assets/images/logo.png"
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
 # The following section is specific to Flutter packages.
 flutter:
+  assets:
+    - assets/images/banner1.avif
+    - assets/images/banner2.avif
+    - assets/images/banner3.avif
+    - assets/images/placeholder.png
+    - assets/images/logo.png
+    - assets/shop1_logo.png
+    - assets/terms_and_conditions.pdf
+    - assets/images/default_food.avif
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+
 
   # To add assets to your application, add an assets section, like this:
   # assets:

@@ -1,0 +1,195 @@
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:intl/intl.dart';
+import '../../../../models/discount.dart';
+import '../../../../models/product.dart';
+import '../../../../resources/util_common.dart';
+
+class ProductItem extends StatelessWidget {
+  final Product item;
+  const ProductItem({Key? key, required this.item}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final double originalPrice = item.defaultPrice;
+
+    // Lọc discount có trạng thái ACTIVE
+    Discount? activeDiscount;
+    for (var discount in item.discount) {
+      if (discount.status == 'ACTIVE') {
+        activeDiscount = discount;
+        break; // Lấy discount đầu tiên có trạng thái ACTIVE
+      }
+    }
+
+    final bool hasDiscount = activeDiscount != null;
+    final double discountValue = hasDiscount
+        ? (activeDiscount!.amount < 1 ? activeDiscount!.amount * 100 : activeDiscount!.amount) / 100
+        : 0;
+    final double finalPrice = originalPrice * (1 - discountValue);
+    return InkWell(
+      onTap: () {
+        Get.toNamed('/product-detail', arguments: item.id);
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(8),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.07),
+              blurRadius: 4,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Stack(
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  height: 150,
+                  width: double.infinity,
+                  child: Stack(
+                    children: [
+                      ClipRRect(
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(8),
+                          topRight: Radius.circular(8),
+                        ),
+                        child: item.image.isNotEmpty
+                            ? Image.network(
+                          item.image,
+                          width: double.infinity,
+                          height: 150,
+                          fit: BoxFit.cover,
+                        )
+                            : Container(
+                          height: 150,
+                          width: double.infinity,
+                          color: Colors.grey.shade200,
+                          child: const Icon(Icons.image, color: Colors.grey),
+                        ),
+                      ),
+                      if (hasDiscount)
+                        Positioned(
+                          top: 8,
+                          left: 8,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: Colors.red,
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Text(
+                              '-${(activeDiscount!.amount < 1 ? activeDiscount!.amount * 100 : activeDiscount!.amount).toStringAsFixed(0)}%',                              style: const TextStyle(
+                                fontSize: 12,
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: Text(
+                    item.name,
+                    style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  child: Row(
+                    children: [
+                      Flexible(
+                        child: Text(
+                          'Shop: ${item.shop.isNotEmpty ? item.shop : 'Không xác định'}',
+                          style: const TextStyle(
+                            fontSize: 10,
+                            color: Color.fromRGBO(212, 163, 115, 1),
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      const Icon(Icons.verified, size: 12, color: Colors.blue),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  child: Row(
+                    children: [
+                      if (hasDiscount)
+                        Text(
+                          UtilCommon.formatMoney(originalPrice),
+                          style: const TextStyle(
+                            fontSize: 10,
+                            color: Colors.grey,
+                            decoration: TextDecoration.lineThrough,
+                          ),
+                        ),
+                      if (hasDiscount) const SizedBox(width: 4),
+                      Text(
+                        UtilCommon.formatMoney(finalPrice),
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.red,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 8),
+              ],
+            ),
+            Positioned(
+              bottom: 8,
+              right: 8,
+              child: Container(
+                width: 26,
+                height: 26,
+                decoration: BoxDecoration(
+                  color: const Color.fromRGBO(212, 163, 115, 1),
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      blurRadius: 3,
+                      spreadRadius: 0.5,
+                      offset: const Offset(0, 1),
+                    ),
+                  ],
+                ),
+                child: IconButton(
+                  icon: const Icon(Icons.add_shopping_cart, color: Colors.white, size: 14),
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                  onPressed: () {
+                    Get.snackbar(
+                      "Thành công!",
+                      "${item.name} đã được thêm vào giỏ hàng.",
+                      backgroundColor: Colors.green,
+                      colorText: Colors.white,
+                      snackPosition: SnackPosition.TOP,
+                    );
+                  },
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+

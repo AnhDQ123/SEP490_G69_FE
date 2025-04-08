@@ -23,15 +23,28 @@ class OrderItemOption {
 
   factory OrderItemOption.fromJson(Map<String, dynamic> json) {
     return OrderItemOption(
-      id: json['id'],
-      orderItemId: json['orderItemId'],
-      optionId: json['optionId'],
-      optionName: json['optionName'],
+      id: (json['id'] as int?) ?? 0,
+      orderItemId: (json['orderItemId'] as int?) ?? 0,
+      optionId: (json['optionId'] as int?) ?? 0,
+      optionName: json['optionName'] as String , // Parse optionName từ JSON
       image: json['image'],
-      typeId: json['typeId'],
+      typeId: (json['typeId'] as int?) ?? 0,
       price: (json['price'] ?? 0).toDouble(),
       total: json['total'] != null ? (json['total'] as num).toDouble() : null,
-      quantity: json['quantity'],
+      quantity: (json['quantity'] as int?) ?? 0,
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      // 'id': id,
+      // 'orderItemId': orderItemId,
+      'optionId': optionId,
+      'typeId': typeId,
+      'optionName': optionName, // Xuất optionName
+      'price': price,
+      'total': total,
+      'quantity': quantity,
+    };
   }
 }

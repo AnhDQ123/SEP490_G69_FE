@@ -1,12 +1,13 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:ffb_fe_flutter/app/base/api_base_url.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import '../models/order.dart';
 
 class ShipperService {
   // final String baseUrl = "http://192.168.130.88:8080/api";
-  final String baseUrl = "http://10.0.2.2:8080/api";
+  final String baseUrl = ApiBaseUrl.baseUrl+"/api";
 
   Future<ApiResponse> registerShipper({
     required int userId, // ✅ Thêm userId vào API request
@@ -189,6 +190,43 @@ class ShipperService {
       return ApiResponse(success: false, message: "Lỗi kết nối đến server.");
     }
   }
+
+  Future<ApiResponse> setShipperBusy(int userId) async {
+    final url = Uri.parse('$baseUrl/shippers/isBusy/$userId');
+
+    try {
+      final response = await http.put(url); // Gọi PUT request
+
+      print("🛠 [setShipperBusy] Status: ${response.statusCode}");
+      print("🛠 [setShipperBusy] Body: ${response.body}");
+
+      if (response.statusCode == 200) {
+        return ApiResponse(success: true, message: "Đã cập nhật trạng thái BUSY cho shipper.");
+      } else {
+        return ApiResponse(
+            success: false,
+            message: "Cập nhật trạng thái thất bại: ${response.body}");
+      }
+    } catch (e) {
+      print("❌ Lỗi khi gọi setShipperBusy: $e");
+      return ApiResponse(success: false, message: "Lỗi kết nối đến server.");
+    }
+  }
+
+  Future<ApiResponse> setShipperAvailable(int userId) async {
+    final url = Uri.parse('$baseUrl/shippers/isAvailable/$userId');
+    try {
+      final response = await http.put(url);
+      if (response.statusCode == 200) {
+        return ApiResponse(success: true, message: "Đã cập nhật trạng thái AVAILABLE");
+      } else {
+        return ApiResponse(success: false, message: "Lỗi: ${response.body}");
+      }
+    } catch (e) {
+      return ApiResponse(success: false, message: "Lỗi kết nối: $e");
+    }
+  }
+
 }
 
 class ApiResponse {

@@ -12,7 +12,7 @@ class ShipperRegisterView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Shipper Register")),
+      appBar: AppBar(title: Text("Đăng kí người vận chuyển")),
       body: SingleChildScrollView(
         physics: BouncingScrollPhysics(),
         padding: const EdgeInsets.all(16),
@@ -108,12 +108,11 @@ class ShipperRegisterView extends StatelessWidget {
                           ? Color.fromRGBO(212, 163, 115, 1)
                           : Colors.grey[200],
                     ),
-                    onPressed: controller.isFormValid.value &&
-                            !controller.isLoading.value
-                        ? () => controller.submitRegistration(
-                            1) // ✅ Tránh bấm nhiều lần khi đang gửi request
-                        : null,
-                    child: controller.isLoading.value
+                onPressed: controller.isFormValid.value && !controller.isLoading.value
+                    ? () => controller.submitRegistration(controller.userId.value) // ✅ Truyền userId vào API
+                    : null,
+
+                child: controller.isLoading.value
                         ? SizedBox(
                             width: 24,
                             height: 24,

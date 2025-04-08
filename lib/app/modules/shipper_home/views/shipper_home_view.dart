@@ -67,17 +67,19 @@ class ShipperHomeView extends GetView<ShipperHomeController> {
   }
 
   Widget _buildBusyToggle() {
-    return Row(
+    return Obx(() => Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        const Text("Đang bận",
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
-        Obx(() => Switch(
-              value: controller.isBusy.value,
-              onChanged: (value) => controller.toggleBusy(value),
-            )),
+        Text(
+          controller.isBusy.value ? "Đang bận" : "Đang rảnh",
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+        ),
+        Switch(
+          value: controller.isBusy.value,
+          onChanged: (value) => controller.toggleBusyStatus(value),
+        ),
       ],
-    );
+    ));
   }
 
   Widget _buildOrderSummary(
@@ -99,6 +101,7 @@ class ShipperHomeView extends GetView<ShipperHomeController> {
           () => Get.toNamed(
             Routes.SHIPPER_ORDER_LIST,
             arguments: {
+              'userId': controller.userId,
               'orders': controller.orders,
               'status': 'SHIP_PENDING', // hoặc lấy từ state đang chọn
             },
@@ -111,6 +114,7 @@ class ShipperHomeView extends GetView<ShipperHomeController> {
           () => Get.toNamed(
             Routes.SHIPPER_ORDER_LIST,
             arguments: {
+              'userId': controller.userId,
               'orders': controller.orders,
               'status': 'SHIPPING', // hoặc lấy từ state đang chọn
             },
@@ -123,6 +127,7 @@ class ShipperHomeView extends GetView<ShipperHomeController> {
           () => Get.toNamed(
             Routes.SHIPPER_ORDER_LIST,
             arguments: {
+              'userId': controller.userId,
               'orders': controller.orders,
               'status': 'DELIVERED', // hoặc lấy từ state đang chọn
             },
@@ -141,7 +146,7 @@ class ShipperHomeView extends GetView<ShipperHomeController> {
       onTap: onTap,
       child: Container(
         width: itemWidth,
-        height: 100,
+        height: 110,
         padding: EdgeInsets.all(8),
         decoration: BoxDecoration(
           color: Colors.grey[300],
@@ -152,7 +157,7 @@ class ShipperHomeView extends GetView<ShipperHomeController> {
           children: [
             Text(
               count,
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 4),
             Text(
@@ -177,6 +182,7 @@ class ShipperHomeView extends GetView<ShipperHomeController> {
             await Get.toNamed(
               Routes.SHIPPER_ORDER_LIST,
               arguments: {
+                'userId': controller.userId,
                 'orders': controller.orders,
                 'status': 'SHIP_PENDING',
               },

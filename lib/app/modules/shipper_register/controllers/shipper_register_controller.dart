@@ -7,6 +7,7 @@ import '../../../service/shipper_service.dart';
 
 class ShipperRegisterController extends GetxController {
   RxBool isLoading = false.obs; // ✅ Trạng thái loading
+  var userId = 0.obs;
 
   // Các trường dữ liệu
   var fullName = ''.obs;
@@ -30,6 +31,17 @@ class ShipperRegisterController extends GetxController {
   final isFormValid = false.obs;
 
   final ImagePicker _picker = ImagePicker();
+
+  @override
+  void onInit() {
+    super.onInit();
+    // Lấy userId từ arguments khi màn hình được mở
+    var arguments = Get.arguments;
+    if (arguments != null && arguments['userId'] != null) {
+      userId.value = arguments['userId'];
+      print("User ID received: ${userId.value}");
+    }
+  }
 
   // Gọi để chọn ảnh từ thư viện
   Future<void> pickImageFromGallery(Rxn<File> imageController) async {
@@ -81,7 +93,7 @@ class ShipperRegisterController extends GetxController {
     isLoading.value = true; // ✅ Bắt đầu loading
 
     final response = await ShipperService().registerShipper(
-      userId: userId,
+      userId: userId, // Pass the userId received as parameter
       name: fullName.value,
       gender: gender.value,
       dob: formatDate(dateOfBirth.value),
@@ -108,6 +120,8 @@ class ShipperRegisterController extends GetxController {
       Get.snackbar("Thất bại", response.message);
     }
   }
+
+
 
   String formatDate(String date) {
     try {

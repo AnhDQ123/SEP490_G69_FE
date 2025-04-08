@@ -1,3 +1,6 @@
+import 'discount.dart';
+import 'order_item_option.dart';
+
 import 'order_item_option.dart';
 
 class OrderItem {
@@ -6,8 +9,8 @@ class OrderItem {
   final int productId;
   final String productName;
   final int? discountId;
-  final double discount;
-  final String? image;
+  final List<Discount>? discount; // Thay đổi từ discount/discountId sang danh sách
+  final String image;
   final double price;
   final DateTime? createdAt;
   final int quantity;
@@ -21,7 +24,7 @@ class OrderItem {
     required this.productName,
     this.discountId,
     required this.discount,
-    this.image,
+    required this.image,
     required this.price,
     this.createdAt,
     required this.quantity,
@@ -31,14 +34,16 @@ class OrderItem {
 
   factory OrderItem.fromJson(Map<String, dynamic> json) {
     return OrderItem(
-      id: json['id'],
-      orderId: json['orderId'],
-      productId: json['productId'],
+      id: (json['id'] as int?) ?? 0, // Nếu null, gán 0
+      orderId: (json['orderId'] as int?) ?? 0, // Nếu null, gán 0
+      productId: (json['productId'] as int?) ?? 0, // Nếu null, gán 0
       productName: json['productName'],
       discountId: json['discountId'],
-      discount: (json['discount'] ?? 0).toDouble(),
-      image: json['image'],
-      price: (json['price'] as num).toDouble(),
+      discount: (json['discount'] as List<dynamic>?)
+          ?.map((e) => Discount.fromJson(e))
+          .toList() ?? [], // Xử lý khi discounts null      image: json['image'],
+      image: json['image'] ?? '',
+      price: (json['price'] ?? 0).toDouble(),
       createdAt: json['createdAt'] != null ? DateTime.tryParse(json['createdAt']) : null,
       quantity: json['quantity'],
       total: (json['total'] ?? 0).toDouble(),
@@ -46,5 +51,24 @@ class OrderItem {
           .map((e) => OrderItemOption.fromJson(e))
           .toList(),
     );
+  }
+
+
+
+  Map<String, dynamic> toJson() {
+    return {
+      // 'id': id,
+      // 'orderId': orderId,
+      'productId': productId,
+      'productName': productName, // Thêm
+      'image': image, // Thêm
+      'price': price,
+      'discountId': discountId,
+      'quantity': quantity,
+      'total': total,
+      'discount': discount?.map((d) => d.toJson()).toList(), // Gửi danh sách discounts
+      'createdAt': createdAt?.toIso8601String(), // Sửa ở đây
+      'orderItemOptions': orderItemOptions.map((opt) => opt.toJson()).toList(),
+    };
   }
 }

@@ -69,7 +69,7 @@ class ShipperOrderListView extends GetView<ShipperOrderListController> {
         onTap: () => controller.setStatus(status),
         child: Container(
           width: 100,
-          height: 80,
+          height: 100,
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
             color: isSelected ? Colors.black : Colors.grey[300],
@@ -81,7 +81,7 @@ class ShipperOrderListView extends GetView<ShipperOrderListController> {
               Text(
                 count.toString(),
                 style: TextStyle(
-                  fontSize: 16,
+                  fontSize: 14,
                   fontWeight: FontWeight.bold,
                   color: isSelected ? Colors.white : Colors.black,
                 ),
@@ -309,9 +309,8 @@ class ShipperOrderListView extends GetView<ShipperOrderListController> {
             Get.snackbar("Từ chối", "Bạn đã từ chối đơn hàng.");
           }),
           _actionButton(Icons.check, "Xác nhận", onTap: () {
-            /// ⚠️ lấy từ auth
-            int shipperId = 3;
-            controller.handleAcceptOrder(order, shipperId);
+
+            controller.handleAcceptOrder(order);
           }),
         ],
       );
@@ -334,10 +333,8 @@ class ShipperOrderListView extends GetView<ShipperOrderListController> {
                   "Thiếu ảnh", "Vui lòng chụp ảnh trước khi xác nhận.");
               return;
             }
-            int userId = 3; // TODO: lấy từ Auth sau
             await controller.handleConfirmDelivered(
               order: order,
-              userId: userId,
               imageFile: file,
             );
           }),
