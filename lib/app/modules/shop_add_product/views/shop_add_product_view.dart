@@ -29,6 +29,7 @@ class ShopAddProductView extends GetView<ShopAddProductController> {
             _buildCard(_buildImagePicker()),
             _buildCard(_buildTextField(label: "Tên sản phẩm",value:  controller.productName)),
             _buildCard(_buildTextField(label: "Mô tả sản phẩm",value:  controller.productDescription)),
+            _buildCard(_buildExpiryDatePicker()),
             _buildCard(_buildQuantity()),
             _buildCard(_buildTypeDropdown()),
             _buildCard(_buildCategoryDropdown()), // Danh mục sản phẩm
@@ -177,6 +178,49 @@ class ShopAddProductView extends GetView<ShopAddProductController> {
       ],
     ));
   }
+
+  Widget _buildExpiryDatePicker() {
+    return Obx(() {
+      final date = controller.expiryDate.value;
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text("Ngày hết hạn *", style: TextStyle(fontWeight: FontWeight.bold)),
+          SizedBox(height: 8),
+          InkWell(
+            onTap: () async {
+              DateTime now = DateTime.now();
+              DateTime? pickedDate = await showDatePicker(
+                context: Get.context!,
+                initialDate: date ?? now,
+                firstDate: now,
+                lastDate: DateTime(now.year + 5),
+              );
+              if (pickedDate != null) {
+                controller.expiryDate.value = pickedDate;
+              }
+            },
+            child: Container(
+              width: double.infinity,  // Chỉnh sửa để chiếm toàn bộ chiều ngang
+              padding: EdgeInsets.symmetric(vertical: 14, horizontal: 12),
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                date != null
+                    ? "${date.day}/${date.month}/${date.year}"
+                    : "Chọn ngày...",
+                style: TextStyle(fontSize: 16),
+              ),
+            ),
+          ),
+          SizedBox(height: 12),
+        ],
+      );
+    });
+  }
+
 
   Widget _buildTypeDropdown() {
     return Column(

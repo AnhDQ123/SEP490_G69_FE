@@ -24,6 +24,8 @@ import 'dart:math';
     var manufacturer = "".obs;
     var supplier = "".obs;
     var type = "".obs;
+    var expiryDate = Rxn<DateTime>();
+
 
     var quantity = 0.obs;
     var quantityController = TextEditingController();
@@ -171,6 +173,11 @@ import 'dart:math';
         if (sizes.isEmpty) {
           throw "Vui lòng thêm ít nhất một kích cỡ sản phẩm!";
         }
+
+        if (expiryDate.value == null) {
+          throw "Vui lòng chọn ngày hết hạn!";
+        }
+
 
         // Kiểm tra avatar: Nếu avatar là file, ta gửi file, nếu là URL thì gửi URL
         String? avatarImagePath = avatarUrl.value;  // Nếu không có ảnh mới, dùng avatar cũ (URL)
