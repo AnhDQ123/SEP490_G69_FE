@@ -20,6 +20,10 @@ import '../modules/auth/splash_screen/bindings/splash_screen_binding.dart';
 import '../modules/auth/splash_screen/views/splash_screen_view.dart';
 import '../modules/auth/user_info/bindings/user_info_binding.dart';
 import '../modules/auth/user_info/views/user_info_view.dart';
+import '../modules/blog_detail/bindings/blog_detail_binding.dart';
+import '../modules/blog_detail/views/blog_detail_view.dart';
+import '../modules/blog_list/bindings/blog_list_binding.dart';
+import '../modules/blog_list/views/blog_list_view.dart';
 import '../modules/cart/bindings/cart_binding.dart';
 import '../modules/cart/views/cart_view.dart';
 import '../modules/check_out/bindings/check_out_binding.dart';
@@ -363,6 +367,16 @@ class AppPages {
       name: _Paths.SHOP_MANAGE_SHIPPER,
       page: () => ShopManageShipperView(),
       binding: ShopManageShipperBinding(),
+    ),
+    GetPage(
+      name: _Paths.BLOG_LIST,
+      page: () => const BlogListView(),
+      binding: BlogListBinding(),
+    ),
+    GetPage(
+      name: _Paths.BLOG_DETAIL,
+      page: () => BlogDetailView(),
+      binding: BlogDetailBinding(),
     ),
   ];
 }
