@@ -57,6 +57,8 @@ abstract class Routes {
   static const SHOP_ADD_PRODUCT = _Paths.SHOP_ADD_PRODUCT;
   static const SHOP_BANNER = _Paths.SHOP_BANNER;
   static const SHOP_MANAGE_SHIPPER = _Paths.SHOP_MANAGE_SHIPPER;
+  static const BLOG_LIST = _Paths.BLOG_LIST;
+  static const BLOG_DETAIL = _Paths.BLOG_DETAIL;
 }
 
 abstract class _Paths {
@@ -115,4 +117,6 @@ abstract class _Paths {
   static const SHOP_ADD_PRODUCT = '/shop-add-product';
   static const SHOP_BANNER = '/shop-banner';
   static const SHOP_MANAGE_SHIPPER = '/shop-manage-shipper';
+  static const BLOG_LIST = '/blog-list';
+  static const BLOG_DETAIL = '/blog-detail';
 }
