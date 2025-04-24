@@ -19,7 +19,7 @@ class ShipPendingOrderWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return OrderListWidget(
       orders: orders,
-      status: "Chờ xử lý",
+      status: "Chờ vận chuyển",
       getStatusColor: getStatusColor,
       actionWidgetBuilder: (order, total) {
         return ElevatedButton(

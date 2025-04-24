@@ -1,7 +1,7 @@
 import 'order_item_option.dart';
 
 class CartItemOptionDTO {
-  int? id;
+  int id;
   int optionId;
   int typeId;
   String optionName;
@@ -12,7 +12,7 @@ class CartItemOptionDTO {
   int quantity;
 
   CartItemOptionDTO({
-    this.id,
+    required this.id,
     required this.optionId,
     required this.typeId,
     required this.optionName,

@@ -108,9 +108,15 @@ class OrderListWidget extends StatelessWidget {
                         optionTotal += opt.price * opt.quantity;
                       }
                       // Giá gốc của món (chưa discount) = giá món + tổng giá option (chỉ typeId = 1)
-                      final double basePrice = item.price + optionTotal;
+                      final double basePrice = item.price;
                       // Giá mới (đã discount) được lấy từ back-end (item.total)
                       final double finalPrice = item.total;
+                      double discountedPrice = basePrice;
+                      if (item.discount != null && item.discount!.isNotEmpty && item.discount!.first.amount > 0) {
+                        discountedPrice = basePrice * (1 - item.discount!.first.amount);
+                      }
+                      final double itemSubtotal = discountedPrice + optionTotal;
+
 
                       return Padding(
                         padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -171,9 +177,9 @@ class OrderListWidget extends StatelessWidget {
                                                 "Size: " +
                                                     sizeGroup.map((opt) {
                                                       if (opt.quantity > 1) {
-                                                        return "x${opt.quantity} ${opt.optionName} (${formatPrice(opt.price * opt.quantity)})";
+                                                        return "x${opt.quantity} ${opt.optionName} ";
                                                       } else {
-                                                        return "${opt.optionName} (${formatPrice(opt.price)})";
+                                                        return "${opt.optionName} ";
                                                       }
                                                     }).join(', '),
                                                 style: const TextStyle(fontSize: 8, color: Colors.grey),
@@ -199,51 +205,51 @@ class OrderListWidget extends StatelessWidget {
                                   ),
                                   const SizedBox(height: 4),
                                   // Hiển thị giá: nếu có discount thì hiển thị giá cũ (basePrice) và giá mới (finalPrice) cùng phần trăm discount
-                                  if (item.discount != null && item.discount!.isNotEmpty && item.discount!.first.amount > 0)
-                                    Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Row(
-                                          children: [
-                                            Text(
-                                              "${formatPrice(basePrice)}",
-                                              style: const TextStyle(
-                                                fontSize: 8,
-                                                color: Colors.grey,
-                                                decoration: TextDecoration.lineThrough,
-                                              ),
-                                            ),
-                                            const SizedBox(width: 4),
-                                            Text(
-                                              "${formatPrice(finalPrice)}",
-                                              style: const TextStyle(fontSize: 8, fontWeight: FontWeight.w500),
-                                            ),
-                                          ],
-                                        ),
-                                        const SizedBox(height: 2),
-                                        Row(
-                                          children: [
-                                            const Icon(Icons.percent, size: 10, color: Colors.red),
-                                            const SizedBox(width: 4),
-                                            Text(
-                                              "Giảm: ${(item.discount!.first.amount * 100).toStringAsFixed(0)}%",
-                                              style: const TextStyle(fontSize: 8, color: Colors.red),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    )
-                                  else
-                                    Text(
-                                      "${formatPrice(basePrice)}",
-                                      style: const TextStyle(fontSize: 8, fontWeight: FontWeight.w500),
-                                    ),
+                                  // if (item.discount != null && item.discount!.isNotEmpty && item.discount!.first.amount > 0)
+                                  //   Column(
+                                  //     crossAxisAlignment: CrossAxisAlignment.start,
+                                  //     children: [
+                                  //       Row(
+                                  //         children: [
+                                  //           Text(
+                                  //             "${formatPrice(basePrice)}",
+                                  //             style: const TextStyle(
+                                  //               fontSize: 8,
+                                  //               color: Colors.grey,
+                                  //               decoration: TextDecoration.lineThrough,
+                                  //             ),
+                                  //           ),
+                                  //           const SizedBox(width: 4),
+                                  //           Text(
+                                  //             "${formatPrice(finalPrice)}",
+                                  //             style: const TextStyle(fontSize: 8, fontWeight: FontWeight.w500),
+                                  //           ),
+                                  //         ],
+                                  //       ),
+                                  //       const SizedBox(height: 2),
+                                  //       Row(
+                                  //         children: [
+                                  //           const Icon(Icons.percent, size: 10, color: Colors.red),
+                                  //           const SizedBox(width: 4),
+                                  //           Text(
+                                  //             "Giảm: ${(item.discount!.first.amount * 100).toStringAsFixed(0)}%",
+                                  //             style: const TextStyle(fontSize: 8, color: Colors.red),
+                                  //           ),
+                                  //         ],
+                                  //       ),
+                                  //     ],
+                                  //   )
+                                  // else
+                                  //   Text(
+                                  //     "${formatPrice(basePrice)}",
+                                  //     style: const TextStyle(fontSize: 8, fontWeight: FontWeight.w500),
+                                  //   ),
                                   const SizedBox(height: 4),
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.end,
                                     children: [
                                       Text(
-                                        "Thành tiền: ${formatPrice(finalPrice)}",
+                                        "Thành tiền: ${formatPrice(order.total)}", // Dùng itemSubtotal đã tính
                                         style: const TextStyle(fontSize: 8, fontWeight: FontWeight.w500),
                                       ),
                                     ],

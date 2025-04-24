@@ -98,7 +98,7 @@ class ProductHeader extends StatelessWidget {
                     }),
                     const SizedBox(width: 4),
                     Text(
-                      '${controller.currentProduct.rate}',
+                      '${controller.currentProduct.rate.toStringAsFixed(1)}',
                       style: const TextStyle(fontSize: 12),
                     ),
                   ],
@@ -169,7 +169,7 @@ class ProductHeader extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const Text(
-                    'Đánh giá sản phẩm (3)',
+                    'Đánh giá sản phẩm',
                     style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                   ),
                   Obx(() => IconButton(
@@ -183,15 +183,24 @@ class ProductHeader extends StatelessWidget {
                   )),
                 ],
               ),
+              // Thay đổi phần hiển thị review thành:
               Obx(() {
                 if (!controller.isReviewExpanded.value) return const SizedBox.shrink();
+                if (controller.reviews.isEmpty) return const Text('Chưa có đánh giá nào');
+
                 return Column(
                   children: [
-                    ReviewItem(review: controller.reviews[0]),
-                    const Divider(),
-                    ReviewItem(review: controller.reviews[1]),
-                    const Divider(),
-                    ReviewItem(review: controller.reviews[2]),
+                    ...controller.reviews.map((feedback) => Column(
+                      children: [
+                        ReviewItem(feedback: feedback, fallbackContent: '',),
+                        if (feedback != controller.reviews.last) const Divider(),
+                      ],
+                    )).toList(),
+                    if (controller.canLoadMoreFeedbacks.value)
+                      TextButton(
+                        onPressed: controller.loadProductFeedbacks,
+                        child: const Text('Xem thêm đánh giá'),
+                      ),
                   ],
                 );
               }),

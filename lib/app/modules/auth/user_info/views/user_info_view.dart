@@ -62,6 +62,20 @@ class UserInfoView extends GetView<UserInfoController> {
                         },
                       ),
                       SizedBox(height: 30),
+
+                      TextField(
+                        controller: controller.emailController,
+                        readOnly: true,                   //  ← hoặc bỏ nếu muốn sửa
+                        decoration: InputDecoration(
+                          labelText: "Email",
+                          prefixIcon: Icon(Icons.email),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 20),
+
                       // TextField nhập tên
                       TextField(
                         controller: controller.nameController,

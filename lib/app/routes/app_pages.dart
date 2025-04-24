@@ -2,8 +2,8 @@ import 'package:get/get.dart';
 
 import '../modules/add_banner/bindings/add_banner_binding.dart';
 import '../modules/add_banner/views/add_banner_view.dart';
-import '../modules/add_voucher/bindings/add_voucher_binding.dart';
-import '../modules/add_voucher/views/add_voucher_view.dart';
+import '../modules/add_blog/bindings/add_blog_binding.dart';
+import '../modules/add_blog/views/add_blog_view.dart';
 import '../modules/auth/forgot_password/bindings/forgot_password_binding.dart';
 import '../modules/auth/forgot_password/views/forgot_password_view.dart';
 import '../modules/auth/login/bindings/login_binding.dart';
@@ -26,18 +26,22 @@ import '../modules/blog_list/bindings/blog_list_binding.dart';
 import '../modules/blog_list/views/blog_list_view.dart';
 import '../modules/cart/bindings/cart_binding.dart';
 import '../modules/cart/views/cart_view.dart';
+import '../modules/category/bindings/category_binding.dart';
+import '../modules/category/views/category_view.dart';
 import '../modules/check_out/bindings/check_out_binding.dart';
 import '../modules/check_out/views/check_out_view.dart';
 import '../modules/filter/bindings/filter_binding.dart';
 import '../modules/filter/views/filter_view.dart';
+import '../modules/google_map_page/bindings/google_map_page_binding.dart';
+import '../modules/google_map_page/views/google_map_page_view.dart';
 import '../modules/home/bindings/home_binding.dart';
 import '../modules/home/views/home_view.dart';
+import '../modules/map_picker/bindings/map_picker_binding.dart';
+import '../modules/map_picker/views/map_picker_view.dart';
 import '../modules/my_order/bindings/my_order_binding.dart';
 import '../modules/my_order/views/my_order_view.dart';
 import '../modules/product_detail/bindings/product_detail_binding.dart';
 import '../modules/product_detail/views/product_detail_view.dart';
-import '../modules/product_selection/bindings/product_selection_binding.dart';
-import '../modules/product_selection/views/product_selection_view.dart';
 import '../modules/qr_payment/bindings/qr_payment_binding.dart';
 import '../modules/qr_payment/views/qr_payment_view.dart';
 import '../modules/return_order_detail_page/bindings/return_order_detail_page_binding.dart';
@@ -55,92 +59,54 @@ import '../modules/shipper_order_list/views/shipper_order_list_view.dart';
 import '../modules/shipper_register/bindings/shipper_register_binding.dart';
 import '../modules/shipper_register/views/shipper_register_view.dart';
 import '../modules/shop_add_discount/bindings/shop_add_discount_binding.dart';
-import '../modules/shop_add_discount/bindings/shop_add_discount_binding.dart';
-import '../modules/shop_add_discount/views/shop_add_discount_view.dart';
 import '../modules/shop_add_discount/views/shop_add_discount_view.dart';
 import '../modules/shop_add_product/bindings/shop_add_product_binding.dart';
-import '../modules/shop_add_product/bindings/shop_add_product_binding.dart';
-import '../modules/shop_add_product/views/shop_add_product_view.dart';
 import '../modules/shop_add_product/views/shop_add_product_view.dart';
 import '../modules/shop_banner/bindings/shop_banner_binding.dart';
 import '../modules/shop_banner/views/shop_banner_view.dart';
 import '../modules/shop_dashboard/bindings/shop_dashboard_binding.dart';
-import '../modules/shop_dashboard/bindings/shop_dashboard_binding.dart';
-import '../modules/shop_dashboard/views/shop_dashboard_view.dart';
 import '../modules/shop_dashboard/views/shop_dashboard_view.dart';
 import '../modules/shop_detail/bindings/shop_detail_binding.dart';
-import '../modules/shop_detail/bindings/shop_detail_binding.dart';
-import '../modules/shop_detail/views/shop_detail_view.dart';
 import '../modules/shop_detail/views/shop_detail_view.dart';
 import '../modules/shop_manage_shipper/bindings/shop_manage_shipper_binding.dart';
 import '../modules/shop_manage_shipper/views/shop_manage_shipper_view.dart';
 import '../modules/shop_menu/bindings/shop_binding.dart';
-import '../modules/shop_menu/bindings/shop_binding.dart';
-import '../modules/shop_menu/views/shop_view.dart';
 import '../modules/shop_menu/views/shop_view.dart';
 import '../modules/shop_order/bindings/shop_order_binding.dart';
 import '../modules/shop_order/views/shop_order_view.dart';
 import '../modules/shop_product_discount_list/bindings/product_discount_binding.dart';
-import '../modules/shop_product_discount_list/bindings/product_discount_binding.dart';
-import '../modules/shop_product_discount_list/views/product_discount_view.dart';
 import '../modules/shop_product_discount_list/views/product_discount_view.dart';
 import '../modules/shop_product_list/bindings/shop_product_list_binding.dart';
-import '../modules/shop_product_list/bindings/shop_product_list_binding.dart';
-import '../modules/shop_product_list/views/shop_product_list_view.dart';
 import '../modules/shop_product_list/views/shop_product_list_view.dart';
 import '../modules/shop_profile/bindings/shop_profile_binding.dart';
 import '../modules/shop_profile/views/shop_profile_view.dart';
 import '../modules/shop_register/bindings/shop_register_binding.dart';
-import '../modules/shop_register/bindings/shop_register_binding.dart';
-import '../modules/shop_register/views/shop_register_view.dart';
 import '../modules/shop_register/views/shop_register_view.dart';
 import '../modules/shop_report/bindings/shop_report_binding.dart';
 import '../modules/shop_report/views/shop_report_view.dart';
 import '../modules/shop_report_list/bindings/shop_report_list_binding.dart';
 import '../modules/shop_report_list/views/shop_report_list_view.dart';
 import '../modules/shop_voucher_add/bindings/shop_voucher_add_binding.dart';
-import '../modules/shop_voucher_add/bindings/shop_voucher_add_binding.dart';
-import '../modules/shop_voucher_add/views/shop_voucher_add_view.dart';
 import '../modules/shop_voucher_add/views/shop_voucher_add_view.dart';
 import '../modules/shop_voucher_list/bindings/shop_voucher_list_binding.dart';
-import '../modules/shop_voucher_list/bindings/shop_voucher_list_binding.dart';
-import '../modules/shop_voucher_list/views/shop_voucher_list_view.dart';
 import '../modules/shop_voucher_list/views/shop_voucher_list_view.dart';
 import '../modules/user_profile/change_password/bindings/change_password_binding.dart';
-import '../modules/user_profile/change_password/bindings/change_password_binding.dart';
-import '../modules/user_profile/change_password/bindings/change_password_binding.dart';
-import '../modules/user_profile/change_password/views/change_password_view.dart';
-import '../modules/user_profile/change_password/views/change_password_view.dart';
 import '../modules/user_profile/change_password/views/change_password_view.dart';
 import '../modules/user_profile/edit_profile/bindings/edit_profile_binding.dart';
-import '../modules/user_profile/edit_profile/bindings/edit_profile_binding.dart';
-import '../modules/user_profile/edit_profile/bindings/edit_profile_binding.dart';
-import '../modules/user_profile/edit_profile/views/edit_profile_view.dart';
-import '../modules/user_profile/edit_profile/views/edit_profile_view.dart';
 import '../modules/user_profile/edit_profile/views/edit_profile_view.dart';
 import '../modules/user_profile/profile/bindings/profile_binding.dart';
-import '../modules/user_profile/profile/bindings/profile_binding.dart';
-import '../modules/user_profile/profile/bindings/profile_binding.dart';
-import '../modules/user_profile/profile/views/profile_view.dart';
-import '../modules/user_profile/profile/views/profile_view.dart';
 import '../modules/user_profile/profile/views/profile_view.dart';
 import '../modules/user_profile/setting_logout/bindings/setting_logout_binding.dart';
-import '../modules/user_profile/setting_logout/bindings/setting_logout_binding.dart';
-import '../modules/user_profile/setting_logout/bindings/setting_logout_binding.dart';
-import '../modules/user_profile/setting_logout/views/setting_logout_view.dart';
-import '../modules/user_profile/setting_logout/views/setting_logout_view.dart';
 import '../modules/user_profile/setting_logout/views/setting_logout_view.dart';
 import '../modules/user_view_shop_detail/bindings/user_view_shop_detail_binding.dart';
 import '../modules/user_view_shop_detail/views/user_view_shop_detail_view.dart';
-import '../modules/voucher_list/bindings/voucher_list_binding.dart';
-import '../modules/voucher_list/views/voucher_list_view.dart';
 
 part 'app_routes.dart';
 
 class AppPages {
   AppPages._();
 
-  static const INITIAL = Routes.HOME;
+  static const INITIAL = Routes.LOGIN;
 
   static final routes = [
     GetPage(
@@ -249,11 +215,6 @@ class AppPages {
       binding: SplashScreenBinding(),
     ),
     GetPage(
-      name: _Paths.PRODUCT_SELECTION,
-      page: () => ProductSelectionView(),
-      binding: ProductSelectionBinding(),
-    ),
-    GetPage(
       name: _Paths.PRODUCT_DETAIL,
       page: () => const ProductDetailView(),
       binding: ProductDetailBinding(),
@@ -289,16 +250,6 @@ class AppPages {
       binding: ReturnOrderDetailPageBinding(),
     ),
     GetPage(
-      name: _Paths.VOUCHER_LIST,
-      page: () => const VoucherListView(),
-      binding: VoucherListBinding(),
-    ),
-    GetPage(
-      name: _Paths.ADD_VOUCHER,
-      page: () => const AddVoucherView(),
-      binding: AddVoucherBinding(),
-    ),
-    GetPage(
       name: _Paths.QR_PAYMENT,
       page: () => const QrPaymentView(),
       binding: QrPaymentBinding(),
@@ -315,7 +266,7 @@ class AppPages {
     ),
     GetPage(
       name: _Paths.USER_VIEW_SHOP_DETAIL,
-      page: () => const UserViewShopDetailView(),
+      page: () => UserViewShopDetailView(),
       binding: UserViewShopDetailBinding(),
     ),
     GetPage(
@@ -377,6 +328,36 @@ class AppPages {
       name: _Paths.BLOG_DETAIL,
       page: () => BlogDetailView(),
       binding: BlogDetailBinding(),
+    ),
+    GetPage(
+      name: _Paths.ADD_BLOG,
+      page: () => const AddBlogView(),
+      binding: AddBlogBinding(),
+    ),
+    GetPage(
+      name: _Paths.FORGOT_PASSWORD,
+      page: () => ForgotPasswordView(),
+      binding: ForgotPasswordBinding(),
+    ),
+    GetPage(
+      name: _Paths.RESET_PASSWORD,
+      page: () => const ResetPasswordView(),
+      binding: ResetPasswordBinding(),
+    ),
+    GetPage(
+      name: _Paths.CATEGORY,
+      page: () => const CategoryView(),
+      binding: CategoryBinding(),
+    ),
+    GetPage(
+      name: _Paths.MAP_PICKER,
+      page: () => OsmMapPickerScreen(),
+      binding: MapPickerBinding(),
+    ),
+    GetPage(
+      name: _Paths.GOOGLE_MAP_PAGE,
+      page: () => const GoogleMapPageView(),
+      binding: GoogleMapPageBinding(),
     ),
   ];
 }

@@ -49,9 +49,11 @@ class CheckOutView extends GetView<CheckOutController> {
                 const Divider(height: 1, thickness: 1),
                 OrderItemsSectionWidget(order: order),
                 const Divider(height: 1, thickness: 1),
-                VoucherSectionWidget(order: order),
+                // Hiển thị danh sách voucher nếu có
                 const SizedBox(height: 12),
-                ShippingMethodWidget(order: order),
+                VoucherSectionWidget(order: order), // Đã được cập nhật để hiển thị bottom sheet
+                const SizedBox(height: 12),
+                ShippingMethodWidget(controller: controller),
                 const SizedBox(height: 12),
                 ExtraToolWidget(order: order),
                 const SizedBox(height: 12),
@@ -60,7 +62,7 @@ class CheckOutView extends GetView<CheckOutController> {
                 const Divider(height: 1, thickness: 1),
                 CostSummaryWidget(order: order),
                 const SizedBox(height: 12),
-                PaymentMethodWidget(order: order),
+                PaymentMethodWidget(controller: controller), // Thay cho PaymentMethodWidget(order: order)
                 const SizedBox(height: 12),
                 const DisclaimerWidget(),
                 const SizedBox(height: 12),
@@ -98,10 +100,23 @@ class CheckOutView extends GetView<CheckOutController> {
               // },
               onPressed: controller.isLoading.value || controller.order.value == null
                   ? null
-                  : () {
-                final order = controller.order.value!;
-                Get.toNamed('/qr-payment', arguments: order); // ✅ dùng lại order đã có sẵn
+                  : () async {
+                // Kiểm tra paymentMethodId để quyết định chuyển hướng
+                if (controller.selectedPaymentMethod.value?.id == 2) {
+                  // Nếu paymentMethodId là 2 (Chuyển khoản ngân hàng), chuyển tới màn hình QR Payment
+                  await controller.updatePaymentMethodAndShipping();  // Cập nhật phương thức thanh toán và giao hàng
+                  Get.toNamed('/qr-payment', arguments: controller.order.value);
+                } else if (controller.selectedPaymentMethod.value?.id == 1) {
+                  // Nếu paymentMethodId là 1 (Tiền mặt), chuyển tới màn hình My Order
+                  await controller.updatePaymentMethodAndShipping();  // Cập nhật phương thức thanh toán và giao hàng
+                  Get.toNamed('/my-order', arguments: controller.order.value?.ownerId);
+                } else {
+                  // Nếu không chọn phương thức thanh toán hợp lệ
+                  Get.snackbar('Lỗi', 'Vui lòng chọn phương thức thanh toán.',
+                      snackPosition: SnackPosition.BOTTOM);
+                }
               },
+
 
 
               child: controller.isLoading.value

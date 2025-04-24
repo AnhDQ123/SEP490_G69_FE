@@ -26,14 +26,15 @@ class OrderItemOption {
       id: (json['id'] as int?) ?? 0,
       orderItemId: (json['orderItemId'] as int?) ?? 0,
       optionId: (json['optionId'] as int?) ?? 0,
-      optionName: json['optionName'] as String , // Parse optionName từ JSON
-      image: json['image'],
+      optionName: json['optionName'] ?? 'Chưa có tên tuỳ chọn',  // Nếu null, gán giá trị mặc định
+      image: json['image'] ?? '',  // Nếu null, gán chuỗi rỗng
       typeId: (json['typeId'] as int?) ?? 0,
       price: (json['price'] ?? 0).toDouble(),
-      total: json['total'] != null ? (json['total'] as num).toDouble() : null,
+      total: json['total'] != null ? (json['total'] as num).toDouble() : 0,
       quantity: (json['quantity'] as int?) ?? 0,
     );
   }
+
 
   Map<String, dynamic> toJson() {
     return {

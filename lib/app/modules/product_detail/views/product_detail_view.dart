@@ -1,4 +1,5 @@
 import 'package:ffb_fe_flutter/app/modules/cart/views/cart_view.dart';
+import 'package:ffb_fe_flutter/app/modules/product_detail/views/widget/review_item.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ffb_fe_flutter/app/modules/product_detail/views/widget/extra_options_sheet.dart';
@@ -15,7 +16,7 @@ class ProductDetailView extends GetView<ProductDetailController> {
     final controller = Get.find<ProductDetailController>();
 
     return DefaultTabController(
-      length: 3,
+      length: 4,
       child: Stack(
         children: [
           Scaffold(
@@ -52,6 +53,7 @@ class ProductDetailView extends GetView<ProductDetailController> {
                             Tab(text: 'Món ăn tương tự'),
                             Tab(text: 'Thực đơn'),
                             Tab(text: 'Đồ uống'),
+                            Tab(text: 'Đánh giá'),
                           ],
                         ),
                       ),
@@ -64,6 +66,67 @@ class ProductDetailView extends GetView<ProductDetailController> {
                   ProductListWidget(products: controller.similarProducts),
                   ProductListWidget(products: controller.menuProducts),
                   ProductListWidget(products: controller.drinkProducts),
+                  Obx(() {
+                    if (controller.reviews.isEmpty) {
+                      return Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: ElevatedButton(
+                              onPressed: controller.showFeedbackDialog,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color.fromRGBO(212, 163, 115, 1),
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                              child: const Text('Viết đánh giá'),
+                            ),
+                          ),
+                          const Center(child: Text('Chưa có đánh giá nào')),
+                        ],
+                      );
+                    }
+
+                    return ListView.builder(
+                      padding: const EdgeInsets.all(16),
+                      itemCount: controller.reviews.length + (controller.canLoadMoreFeedbacks.value ? 2 : 1),
+                      itemBuilder: (context, index) {
+                        if (index == 0) {
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 16),
+                            child: ElevatedButton(
+                              onPressed: controller.showFeedbackDialog,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color.fromRGBO(212, 163, 115, 1),
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                              child: const Text('Viết đánh giá'),
+                            ),
+                          );
+                        }
+
+                        final reviewIndex = index - 1;
+                        if (reviewIndex == controller.reviews.length && controller.canLoadMoreFeedbacks.value) {
+                          controller.loadProductFeedbacks();
+                          return const Center(child: CircularProgressIndicator());
+                        }
+
+                        return ReviewItem(
+                          feedback: controller.reviews[reviewIndex],
+                          fallbackContent: '',
+                        );
+                      },
+                    );
+                  })
+
+
                 ],
               ),
             ),
@@ -133,6 +196,7 @@ class ProductDetailView extends GetView<ProductDetailController> {
               ),
             ),
           ),
+
 
           // 🔥 Overlay loading indicator
           Obx(() {

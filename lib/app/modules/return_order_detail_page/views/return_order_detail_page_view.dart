@@ -14,7 +14,7 @@ class ReturnOrderDetailPageView extends GetView<ReturnOrderDetailController> {
   String getOwnerRole(int ownerId, ReturnOrderDetailController controller) {
     if (ownerId == controller.returnOrder.value?.order.ownerId) return "👤 Người mua";
     if (ownerId == controller.returnOrder.value?.order.shipperId) return "🚚 Shipper";
-    if (ownerId == controller.returnOrder.value?.order.shopId) return "🏪 Shop";
+    if (ownerId == controller.returnOrder.value?.order.shopId) return "🏪 Cửa hàng";
     return "❓ Không xác định";
   }
 
@@ -106,16 +106,7 @@ class ReturnOrderDetailPageView extends GetView<ReturnOrderDetailController> {
                                 Text("📏 Size: ${sizeGroup.map((e) => "${e.optionName}").join(', ')}", style: const TextStyle(fontSize: 10)),
                               Text("🔢 Số lượng: ${item.quantity}", style: const TextStyle(fontSize: 10)),
                               const SizedBox(height: 4),
-                              if (item.discount != null && item.discount!.isNotEmpty && item.discount!.first.amount > 0)
-                                Row(
-                                  children: [
-                                    Text(formatPrice(basePrice), style: const TextStyle(fontSize: 10, decoration: TextDecoration.lineThrough, color: Colors.grey)),
-                                    const SizedBox(width: 6),
-                                    Text(formatPrice(finalPrice), style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600)),
-                                  ],
-                                )
-                              else
-                                Text(formatPrice(basePrice), style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600)),
+
                             ],
                           ),
                         ),

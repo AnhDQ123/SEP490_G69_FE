@@ -237,7 +237,7 @@ class ExtraOptionsSheet extends StatelessWidget {
 
 
 
-                  icon: const Icon(Icons.shopping_cart, color: Colors.white, size: 18),
+                icon: const Icon(Icons.shopping_cart, color: Colors.white, size: 18),
                 label: const Text(
                   'Thêm vào giỏ hàng',
                   style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),

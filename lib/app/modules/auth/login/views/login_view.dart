@@ -38,9 +38,9 @@ class LoginView extends BaseView<LoginController> {
                   ),
                   SizedBox(height: 10),
 
-                  TextField(
+                  Obx(() => TextField(
                     controller: controller.passwordController,
-                    obscureText: true,
+                    obscureText: controller.isPasswordHidden.value, // 👈 Ẩn hoặc hiện mật khẩu
                     decoration: InputDecoration(
                       hintText: "Mật khẩu",
                       border: OutlineInputBorder(
@@ -48,24 +48,27 @@ class LoginView extends BaseView<LoginController> {
                         borderSide: BorderSide(color: Colors.grey),
                       ),
                       contentPadding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          controller.isPasswordHidden.value
+                              ? Icons.visibility_off
+                              : Icons.visibility,
+                          color: Colors.grey,
+                        ),
+                        onPressed: () {
+                          controller.isPasswordHidden.value =
+                          !controller.isPasswordHidden.value;
+                        },
+                      ),
                     ),
-                  ),
+                  )),
+
                   SizedBox(height: 10),
 
                   Obx(() => controller.errorMessage.isNotEmpty
                       ? Text(controller.errorMessage.value,
                       style: TextStyle(color: Colors.red, fontSize: 14))
                       : SizedBox.shrink()),
-
-                  // Checkbox "Ghi nhớ đăng nhập"
-                  // Obx(() => CheckboxListTile(
-                  //   title: Text("Ghi  nhớ đăng nhập"),
-                  //   value: controller.rememberMe.value,
-                  //   onChanged: (value) {
-                  //     controller.rememberMe.value = value ?? false;
-                  //   },
-                  //   controlAffinity: ListTileControlAffinity.leading,
-                  // )),
 
                   SizedBox(height: 20),
 

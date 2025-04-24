@@ -51,16 +51,16 @@ class MyOrderController extends GetxController {
       }
 
       // Gọi API cho từng trạng thái và assign vào các danh sách tương ứng
-      pendingOrders.assignAll(await _orderService.fetchOrdersByOwnerAndStatus(id: userId, status: "PENDING"));
-      preparingOrders.assignAll(await _orderService.fetchOrdersByOwnerAndStatus(id: userId, status: "PROCESSING"));
-      shippingOrders.assignAll(await _orderService.fetchOrdersByOwnerAndStatus(id: userId, status: "SHIPPING"));
-      deliveredOrders.assignAll(await _orderService.fetchOrdersByOwnerAndStatus(id: userId, status: "DELIVERED"));
-      canceledOrders.assignAll(await _orderService.fetchOrdersByOwnerAndStatus(id: userId, status: "CANCELLED"));
-      returnPendingOrders.assignAll(await _orderService.fetchOrdersByOwnerAndStatus(id: userId, status: "RETURN_PENDING"));
-      returnedOrders.assignAll(await _orderService.fetchOrdersByOwnerAndStatus(id: userId, status: "RETURNED"));
-      rejectedOrders.assignAll(await _orderService.fetchOrdersByOwnerAndStatus(id: userId, status: "REJECTED"));
-      shipPendingOrders.assignAll(await _orderService.fetchOrdersByOwnerAndStatus(id: userId, status: "SHIP_PENDING"));
-      returnRejectedOrders.assignAll(await _orderService.fetchOrdersByOwnerAndStatus(id: userId, status: "RETURN_REJECTED"));
+      pendingOrders.assignAll(await _orderService.fetchOrdersByOwnerAndStatus(ownerId: userId, status: "PENDING"));
+      preparingOrders.assignAll(await _orderService.fetchOrdersByOwnerAndStatus(ownerId: userId, status: "PROCESSING"));
+      shippingOrders.assignAll(await _orderService.fetchOrdersByOwnerAndStatus(ownerId: userId, status: "SHIPPING"));
+      deliveredOrders.assignAll(await _orderService.fetchOrdersByOwnerAndStatus(ownerId: userId, status: "DELIVERED"));
+      canceledOrders.assignAll(await _orderService.fetchOrdersByOwnerAndStatus(ownerId: userId, status: "CANCELLED"));
+      returnPendingOrders.assignAll(await _orderService.fetchOrdersByOwnerAndStatus(ownerId: userId, status: "RETURN_PENDING"));
+      returnedOrders.assignAll(await _orderService.fetchOrdersByOwnerAndStatus(ownerId: userId, status: "RETURNED"));
+      rejectedOrders.assignAll(await _orderService.fetchOrdersByOwnerAndStatus(ownerId: userId, status: "REJECTED"));
+      shipPendingOrders.assignAll(await _orderService.fetchOrdersByOwnerAndStatus(ownerId: userId, status: "SHIP_PENDING"));
+      returnRejectedOrders.assignAll(await _orderService.fetchOrdersByOwnerAndStatus(ownerId: userId, status: "RETURN_REJECTED"));
 
       print("📦 Đã nhận các đơn hàng theo trạng thái từ API");
     } catch (e) {

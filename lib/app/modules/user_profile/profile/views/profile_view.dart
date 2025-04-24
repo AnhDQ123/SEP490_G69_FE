@@ -40,7 +40,7 @@ class ProfileView extends GetView<ProfileController> {
                       final userIdStr = BaseCommon.instance.userId;
                       if (userIdStr != null) {
                         final userId = int.tryParse(userIdStr);
-                        if (userId != null) {
+                        if (controller.shopId.value != null) {
                           if (controller.shopStatus.value == Status.PENDING) {
                             Get.snackbar(
                               "Thông báo",
@@ -50,7 +50,7 @@ class ProfileView extends GetView<ProfileController> {
                           } else if (controller.shopStatus.value == Status.ACTIVE) {
                             final shopId = controller.shopId.value;
                             Get.toNamed(Routes.SHOP, arguments: {
-                              'userId': userId,
+                              // 'userId': userId,
                               'shopId': shopId,
                             });
                           } else {

@@ -6,7 +6,6 @@ import 'package:http_parser/http_parser.dart';
 import '../models/order.dart';
 
 class ShipperService {
-  // final String baseUrl = "http://192.168.130.88:8080/api";
   final String baseUrl = ApiBaseUrl.baseUrl+"/api";
 
   Future<ApiResponse> registerShipper({
@@ -224,6 +223,31 @@ class ShipperService {
       }
     } catch (e) {
       return ApiResponse(success: false, message: "Lỗi kết nối: $e");
+    }
+  }
+
+  // Phương thức để lấy doanh thu của shipper
+  Future<ApiResponse> getShipperRevenue(int userId) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/shippers/revenue/$userId'),
+      );
+
+      print("📈 [getShipperRevenue] Status: ${response.statusCode}");
+      print("📈 [getShipperRevenue] Body: ${response.body}");
+
+      if (response.statusCode == 200) {
+        // Trả về doanh thu dưới dạng BigDecimal (có thể là chuỗi số từ server)
+        final data = jsonDecode(response.body);
+        final revenue = data;  // Hoặc parse revenue từ data tùy vào cấu trúc API
+
+        return ApiResponse(success: true, message: "Doanh thu: $revenue");
+      } else {
+        return ApiResponse(success: false, message: "Không thể lấy doanh thu.");
+      }
+    } catch (e) {
+      print("❌ Lỗi khi gọi getShipperRevenue: $e");
+      return ApiResponse(success: false, message: "Lỗi kết nối tới server.");
     }
   }
 

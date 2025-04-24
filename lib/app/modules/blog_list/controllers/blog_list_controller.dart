@@ -105,4 +105,31 @@ class BlogListController extends GetxController {
     fetchBlogs(
         currentPage.value); // Gọi lại API để tải blog của trang tiếp theo
   }
+
+  Future<void> deleteBlogFromList(int blogId) async {
+    try {
+      isLoading.value = true;
+      await BlogService().deleteBlog(blogId);
+      blogs.removeWhere((b) => b.id == blogId); // Xoá blog khỏi danh sách hiển thị
+      Get.snackbar(
+        'Thành công',
+        'Bài viết đã được xoá',
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.green[600]!.withOpacity(0.9),
+        colorText: Colors.white,
+      );
+    } catch (e) {
+      Get.snackbar(
+        'Lỗi',
+        'Xoá bài viết thất bại',
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.red[600]!.withOpacity(0.9),
+        colorText: Colors.white,
+      );
+      print('❌ Lỗi xoá blog: $e');
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
 }

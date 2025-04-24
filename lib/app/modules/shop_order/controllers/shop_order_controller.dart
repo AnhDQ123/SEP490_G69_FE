@@ -22,7 +22,6 @@ class ShopOrderController extends GetxController {
   final OrderService _orderService = OrderService();
 
   @override
-  @override
   void onInit() {
     super.onInit();
     // Đảm bảo rằng shopId là kiểu int và được lấy chính xác

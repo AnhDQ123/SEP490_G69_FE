@@ -30,7 +30,7 @@ class UserService extends GetConnect {
     });
 
     final response =
-    await post('${ApiBaseUrl.baseUrl}/api/users/update', formData);
+    await put('${ApiBaseUrl.baseUrl}/api/users/update', formData);
     if (response.statusCode == 200) {
       return response.body;
     } else {
@@ -78,6 +78,38 @@ class UserService extends GetConnect {
     } catch (e) {
       print("Exception in fetchUserRoleProfile: $e");
       return null;
+    }
+  }
+
+
+  //moi them
+  Future<bool> forgotPassword({
+    required String phone,
+    required String password,
+    required String confirmPassword,
+  }) async {
+    final url = '${ApiBaseUrl.baseUrl}/api/users/forgot';
+    try {
+      final response = await put(
+        url,
+        null, // PUT không có body, chỉ dùng query parameters
+        query: {
+          'phone': phone,
+          'password': password,
+          'confirmPassword': confirmPassword,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        print('🔐 Đổi mật khẩu thành công');
+        return true;
+      } else {
+        print('❌ Đổi mật khẩu thất bại: ${response.body}');
+        return false;
+      }
+    } catch (e) {
+      print('⚠️ Lỗi khi gọi forgotPassword: $e');
+      return false;
     }
   }
 

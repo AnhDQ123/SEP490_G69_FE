@@ -20,7 +20,7 @@ class _BottomNavState extends State<BottomNav> {
   final Map<int, String> routeMapping = {
     // Nếu có route cho Blog hoặc Danh mục thì có thể thêm vào
     0: Routes.BLOG_LIST,
-    // 1: Routes.CATEGORY,
+    1: Routes.CATEGORY,
     2: Routes.HOME,
     4: Routes.PROFILE,
   };

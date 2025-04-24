@@ -27,7 +27,7 @@ class ShopService {
   Future<List<Bank>> fetchBanks() async {
     try {
       final response =
-          await http.get(Uri.parse('https://api.vietqr.io/v2/banks'));
+      await http.get(Uri.parse('https://api.vietqr.io/v2/banks'));
 
       if (response.statusCode == 200) {
         final List<dynamic> data = jsonDecode(response.body)['data'];
@@ -75,7 +75,7 @@ class ShopService {
     request.fields['taxCode'] = taxCode;
     request.fields['citizenIDNumber'] = citizenIDNumber;
     request.fields['citizenIDExpiredDate'] =
-        "${citizenIDExpiredDate.year}-${citizenIDExpiredDate.month.toString().padLeft(2, '0')}-${citizenIDExpiredDate.day.toString().padLeft(2, '0')}";
+    "${citizenIDExpiredDate.year}-${citizenIDExpiredDate.month.toString().padLeft(2, '0')}-${citizenIDExpiredDate.day.toString().padLeft(2, '0')}";
     request.fields['userId'] = userId;  // Sử dụng `userId` động ở đây
     request.fields['openTime'] = openTime; // Gửi giờ mở cửa
     request.fields['closeTime'] = closeTime; // Gửi giờ đóng cửa
@@ -267,7 +267,7 @@ class ShopService {
   Future<Map<String, int>> fetchOrderCounts(int shopId) async {
     try {
       final response =
-          await http.get(Uri.parse('$baseUrl/order/count?id=$shopId'));
+      await http.get(Uri.parse('$baseUrl/order/count?id=$shopId'));
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = json.decode(response.body);
@@ -627,6 +627,33 @@ class ShopService {
     } catch (e) {
       print('❌ Lỗi khi gọi API shipPayment: $e');
       throw Exception('Lỗi kết nối shipper');
+    }
+  }
+
+
+  Future<ApiResponse> rateShop({
+    required int shopId,
+    required double newRate,
+  }) async {
+    try {
+      final uri = Uri.parse('$baseUrl/shops/rate?shopId=$shopId&rate=$newRate');
+      final response = await http.put(uri);
+
+      if (response.statusCode == 200) {
+        return ApiResponse(success: true, message: 'Đánh giá thành công!');
+      } else {
+        final errorData = json.decode(response.body);
+        return ApiResponse(
+          success: false,
+          message: errorData['message'] ?? 'Lỗi khi đánh giá cửa hàng',
+        );
+      }
+    } catch (e) {
+      print('❌ Lỗi khi gọi API rateShop: $e');
+      return ApiResponse(
+        success: false,
+        message: 'Lỗi kết nối: $e',
+      );
     }
   }
 

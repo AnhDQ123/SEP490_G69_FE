@@ -56,7 +56,7 @@ class ProductService {
   }
 
   // Hàm gửi API tạo sản phẩm
-  static Future<bool> createProduct(ProductDiscount product, File? avatar, List<File> options, int shopId) async {
+  static Future<bool> createProduct(ProductDiscount product, File? avatar, List<File> options) async {
     try {
       var request = http.MultipartRequest("POST", Uri.parse("${ApiBaseUrl.baseUrl}/api/product/add"));
 
@@ -65,7 +65,7 @@ class ProductService {
       request.fields["description"] = product.description ?? "";
       request.fields["category"] = product.category.toString();
       request.fields["quantity"] = product.quantity.toString();
-      request.fields["shopId"] = shopId.toString();
+      request.fields["shopId"] =  Get.find<ShopController>().shopId.toString();
       request.fields["supplier"] = product.supplier ?? "";
       request.fields["manufacturer"] = product.manufacturer ?? "";
       request.fields["foodType"] = product.type.toString();
@@ -235,6 +235,25 @@ class ProductService {
       }
     } catch (e) {
       throw Exception("Error fetching products: $e");
+    }
+  }
+
+  Future<bool> deleteProduct(int id) async {
+    try {
+      final uri = Uri.parse("${ApiBaseUrl.baseUrl}/api/product/delete/$id");
+
+      final response = await http.put(uri);
+
+      if (response.statusCode == 200) {
+        print("✅ Sản phẩm đã được xóa: ID = $id");
+        return true;
+      } else {
+        print("❌ Lỗi khi xóa sản phẩm. Mã lỗi: ${response.statusCode}");
+        return false;
+      }
+    } catch (e) {
+      print("❌ Lỗi ngoại lệ khi xóa sản phẩm: $e");
+      return false;
     }
   }
 

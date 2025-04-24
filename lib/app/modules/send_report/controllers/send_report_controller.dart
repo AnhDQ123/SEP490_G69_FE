@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import '../../../base/base_common.dart';
 import '../../../models/report_create.dart';
 import '../../../service/report_service.dart'; // Dùng để chọn ảnh từ thư viện hoặc camera
 
@@ -13,6 +14,8 @@ class SendReportController extends GetxController {
   var relatedId = 0.obs; // ID đối tượng liên quan (sản phẩm, blog, cửa hàng)
   var selectedImages = <XFile>[].obs; // Danh sách ảnh đã chọn (tối đa 5 ảnh)
   var isLoading = false.obs;  // Biến theo dõi trạng thái loading
+  var userId = 0.obs;  // Biến để lưu trữ userId
+
 
 
   final ReportService reportService = ReportService(); // Sử dụng service để gửi báo cáo
@@ -21,11 +24,19 @@ class SendReportController extends GetxController {
   final productOptions = ['Chất lượng sản phẩm không tốt', 'Sản phẩm không giống mô tả', 'Giá không hợp lý', 'Sản phẩm hết hàng', 'Khác'].obs;
   final shopOptions = ['Chất lượng dịch vụ không tốt', 'Giao hàng không đúng hẹn', 'Giá không hợp lý', 'Giao tiếp với khách hàng kém', 'Khác'].obs;
   final blogOptions = ['Nội dung không đúng sự thật', 'Bài viết không phù hợp', 'Nội dung sai lệch', 'Quảng cáo quá mức', 'Khác'].obs;
+  final orderOptions = [
+    'Không nhận được đơn hàng',
+    'Sản phẩm bị hư hỏng',
+    'Thiếu sản phẩm',
+    'Giao hàng trễ hẹn',
+    'Khác'
+  ].obs;
 
   // Giả lập cơ sở dữ liệu (có thể là sản phẩm, cửa hàng, blog, v.v.)
   final Map<int, String> products = {1: 'Cơm Rang', 2: 'Phở', 3: 'Bánh Mì'}; // Dữ liệu sản phẩm
   final Map<int, String> shops = {1: 'Cửa hàng ABC', 2: 'Cửa hàng XYZ'}; // Dữ liệu cửa hàng
   final Map<int, String> blogs = {1: 'Blog về ẩm thực', 2: 'Blog về du lịch'}; // Dữ liệu blog
+
 
 
   @override
@@ -34,6 +45,7 @@ class SendReportController extends GetxController {
 
     // Nhận thông tin từ arguments
     final arguments = Get.arguments as Map<String, dynamic>? ?? {};
+    userId.value = int.tryParse(BaseCommon.instance.userId ?? '') ?? 0; // Lấy userId từ BaseCommon
     final typeId = arguments['typeId'] ?? 0;
     final itemId = arguments['itemId'] ?? 0;
     final itemName = arguments['itemName'] ?? '';
@@ -51,16 +63,20 @@ class SendReportController extends GetxController {
   // Cập nhật loại báo cáo từ cơ sở dữ liệu theo type_id và tên đối tượng
   void updateReportTypeFromDB(int typeId, String itemName, int itemId) {
     if (typeId == 4) {
-      reportType.value = 'Blog';
-      reportItem.value = itemName; // Dùng trực tiếp từ arguments
+      reportType.value = 'Đơn hàng';
+      reportItem.value = itemName;
       relatedId.value = itemId;
     } else if (typeId == 5) {
       reportType.value = 'Cửa hàng';
-      reportItem.value = itemName; // Dùng trực tiếp từ arguments
+      reportItem.value = itemName;
       relatedId.value = itemId;
     } else if (typeId == 6) {
       reportType.value = 'Sản phẩm';
-      reportItem.value = itemName; // Dùng trực tiếp từ arguments
+      reportItem.value = itemName;
+      relatedId.value = itemId;
+    } else if (typeId == 3) { // Giả sử 7 là typeId cho Blog
+      reportType.value = 'Blog';
+      reportItem.value = itemName;
       relatedId.value = itemId;
     }
   }
@@ -101,7 +117,7 @@ class SendReportController extends GetxController {
       List<File> imagesToUpload = selectedImages.map((xFile) => File(xFile.path)).toList();
 
       ReportCreateDTO reportCreateDTO = ReportCreateDTO(
-        userId: 34, // Nên thay bằng userId thực tế
+        userId: userId.value, // Nên thay bằng userId thực tế
         relatedId: relatedId.value,
         typeId: getReportTypeId(reportType.value),
         reason: reason,
@@ -147,14 +163,17 @@ class SendReportController extends GetxController {
 
   // Lấy typeId từ tên loại báo cáo
   int getReportTypeId(String reportTypeName) {
-    if (reportTypeName == 'Sản phẩm') {
-      return 6; // ID của loại báo cáo sản phẩm
-    } else if (reportTypeName == 'Cửa hàng') {
-      return 5; // ID của loại báo cáo cửa hàng
-    } else if (reportTypeName == 'Blog') {
-      return 4; // ID của loại báo cáo blog
-    } else {
-      return 0; // Default hoặc lỗi
+    switch (reportTypeName) {
+      case 'Đơn hàng':
+        return 4;
+      case 'Cửa hàng':
+        return 5;
+      case 'Sản phẩm':
+        return 6;
+      case 'Blog':
+        return 3;
+      default:
+        return 0;
     }
   }
 }

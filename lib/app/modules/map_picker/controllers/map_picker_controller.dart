@@ -1,7 +1,7 @@
 import 'package:get/get.dart';
 
-class ProductSelectionController extends GetxController {
-  //TODO: Implement ProductSelectionController
+class MapPickerController extends GetxController {
+  //TODO: Implement MapPickerController
 
   final count = 0.obs;
   @override

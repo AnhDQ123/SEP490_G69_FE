@@ -3,7 +3,9 @@ import 'package:get/get.dart';
 import '../controllers/user_view_shop_detail_controller.dart';
 
 class UserViewShopDetailView extends GetView<UserViewShopDetailController> {
-  const UserViewShopDetailView({super.key});
+  UserViewShopDetailView({super.key});
+  final RxInt selectedRating = 0.obs;
+
 
   @override
   Widget build(BuildContext context) {
@@ -206,7 +208,7 @@ class UserViewShopDetailView extends GetView<UserViewShopDetailController> {
                         SizedBox(width: 4),
                         Obx(() {
                           return Text(
-                            '${controller.shopRate.value}/5',
+                            '${controller.shopRate.value.toStringAsFixed(1)}/5',
                             style: TextStyle(fontWeight: FontWeight.bold),
                           );
                         }),
@@ -233,9 +235,13 @@ class UserViewShopDetailView extends GetView<UserViewShopDetailController> {
     );
   }
 
+
   void _rateShop() {
+    final TextEditingController commentController = TextEditingController();
+    selectedRating.value = 0;
+
     Get.bottomSheet(
-      Container(
+      Obx(() => Container(
         padding: EdgeInsets.all(20),
         decoration: BoxDecoration(
           color: Colors.white,
@@ -251,16 +257,19 @@ class UserViewShopDetailView extends GetView<UserViewShopDetailController> {
               children: List.generate(5, (index) {
                 return IconButton(
                   icon: Icon(
-                    index < 3 ? Icons.star : Icons.star_border,
+                    index < selectedRating.value ? Icons.star : Icons.star_border,
                     color: Colors.orange,
                     size: 40,
                   ),
-                  onPressed: () {},
+                  onPressed: () {
+                    selectedRating.value = index + 1;
+                  },
                 );
               }),
             ),
             SizedBox(height: 20),
             TextField(
+              controller: commentController,
               decoration: InputDecoration(
                 hintText: 'Nhận xét của bạn...',
                 border: OutlineInputBorder(),
@@ -271,7 +280,7 @@ class UserViewShopDetailView extends GetView<UserViewShopDetailController> {
             ElevatedButton(
               onPressed: () {
                 Get.back();
-                Get.snackbar('Thành công', 'Cảm ơn đánh giá của bạn!');
+                controller.submitShopRating(selectedRating.value.toDouble());
               },
               child: Text('Gửi đánh giá'),
               style: ElevatedButton.styleFrom(
@@ -281,9 +290,10 @@ class UserViewShopDetailView extends GetView<UserViewShopDetailController> {
             ),
           ],
         ),
-      ),
+      )),
     );
   }
+
 
 
   Widget _buildBestSellerCard() {

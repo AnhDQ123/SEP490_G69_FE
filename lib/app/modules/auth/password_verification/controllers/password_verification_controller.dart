@@ -70,6 +70,7 @@ class PasswordVerificationController extends GetxController {
       CustomSnackbar.showSuccess(response['message']);
       Get.toNamed('/user-info', arguments: {
         'phone': phone,
+        'email' : email,     //  ← thêm
         'user_id': response['user_id'] ?? '' // Truyền cả phone và user_id nếu có
       });
     } else {

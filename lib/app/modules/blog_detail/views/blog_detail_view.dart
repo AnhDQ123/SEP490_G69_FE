@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
+import '../../../base/base_common.dart';
 import '../../../models/comment.dart';
 import '../controllers/blog_detail_controller.dart';
 
@@ -377,6 +378,9 @@ class BlogDetailView extends GetView<BlogDetailController> {
         ? NetworkImage(comment.writer!.avatarUrl!)
         : const AssetImage('assets/default_avatar.png') as ImageProvider;
 
+    final currentUserId = controller.currentUserId;
+    final isOwner = comment.writer?.id == currentUserId;
+
     return Padding(
       padding: const EdgeInsets.all(12),
       child: Column(
@@ -406,13 +410,11 @@ class BlogDetailView extends GetView<BlogDetailController> {
                     const SizedBox(height: 6),
                     Text(comment.content),
                     const SizedBox(height: 8),
-                    // Dòng hiển thị số like, reply và các nút tương tác
                     Row(
                       children: [
-                        // Nút và số lượng like
                         InkWell(
                           onTap: () {
-                            // Logic like comment sẽ được thêm sau
+                            // Like comment
                           },
                           child: Row(
                             children: [
@@ -426,10 +428,9 @@ class BlogDetailView extends GetView<BlogDetailController> {
                           ),
                         ),
                         const SizedBox(width: 16),
-                        // Nút và số lượng reply
                         InkWell(
                           onTap: () {
-                            // Logic xem/trả lời comment sẽ được thêm sau
+                            // Reply
                           },
                           child: Row(
                             children: [
@@ -443,10 +444,9 @@ class BlogDetailView extends GetView<BlogDetailController> {
                           ),
                         ),
                         const Spacer(),
-                        // Nút phản hồi
                         InkWell(
                           onTap: () {
-                            // Logic phản hồi comment sẽ được thêm sau
+                            // Logic phản hồi
                           },
                           child: const Text(
                             'Phản hồi',
@@ -462,13 +462,48 @@ class BlogDetailView extends GetView<BlogDetailController> {
                   ],
                 ),
               ),
+              // 👇 Popup menu (dấu ...)
+              PopupMenuButton<String>(
+                onSelected: (value) async {
+                  if (value == 'delete') {
+                    final confirm = await showDialog<bool>(
+                      context: Get.context!,
+                      builder: (ctx) => AlertDialog(
+                        title: const Text('Xác nhận xoá'),
+                        content: const Text('Bạn có chắc chắn muốn xoá bình luận này?'),
+                        actions: [
+                          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Huỷ')),
+                          TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Xoá')),
+                        ],
+                      ),
+                    );
+
+                    if (confirm == true) {
+                      final controller = Get.find<BlogDetailController>();
+                      await controller.deleteCommentById(comment.id);
+                    }
+                  }
+                  else if (value == 'delete') {
+                    // TODO: Xử lý xoá comment
+                  } else if (value == 'report') {
+                    // TODO: Xử lý báo cáo comment
+                  }
+                },
+                itemBuilder: (context) => [
+                  if (isOwner) ...[
+                    const PopupMenuItem(value: 'edit', child: Text('Chỉnh sửa')),
+                    const PopupMenuItem(value: 'delete', child: Text('Xoá')),
+                  ],
+                  const PopupMenuItem(value: 'report', child: Text('Báo cáo')),
+                ],
+                icon: const Icon(Icons.more_vert, size: 20),
+              ),
             ],
           ),
         ],
       ),
     );
   }
-
 
   Widget _buildCommentInput() {
     return Container(

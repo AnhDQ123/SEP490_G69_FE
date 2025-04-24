@@ -13,7 +13,7 @@ class ShopReportListView extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Danh sách báo cáo',
+          'Danh sách khiếu nại',
           style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 20,

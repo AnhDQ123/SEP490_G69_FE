@@ -16,6 +16,8 @@ class BlogDetailController extends GetxController {
   final CommentService _commentService = CommentService();
   final isPostingComment = false.obs;
 
+  final currentUserId = int.tryParse(BaseCommon.instance.userId ?? '0');
+
   @override
   void onInit() {
     super.onInit();
@@ -37,7 +39,6 @@ class BlogDetailController extends GetxController {
       final result = await _commentService.fetchComments(
         blogId: blog.id,
         page: currentPage.value,
-        size: 5,
       );
 
       print('✅ Nhận được ${result.length} bình luận từ trang ${currentPage.value}');
@@ -121,5 +122,35 @@ class BlogDetailController extends GetxController {
       isPostingComment.value = false;
     }
   }
+
+  Future<void> deleteCommentById(int commentId) async {
+    try {
+      await _commentService.deleteComment(commentId);
+
+      // Xoá khỏi danh sách comment
+      comments.removeWhere((c) => c.id == commentId);
+
+      // Giảm số lượng comment trên blog
+      blog.commentCount = (blog.commentCount ?? 1) - 1;
+
+      Get.snackbar(
+        'Thành công',
+        'Đã xoá bình luận',
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.green[600]!.withOpacity(0.9),
+        colorText: Colors.white,
+        duration: const Duration(seconds: 2),
+      );
+    } catch (e) {
+      Get.snackbar(
+        'Lỗi',
+        'Không thể xoá bình luận: ${e.toString().replaceAll('Exception: ', '')}',
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.red[600]!.withOpacity(0.9),
+        colorText: Colors.white,
+      );
+    }
+  }
+
 
 }

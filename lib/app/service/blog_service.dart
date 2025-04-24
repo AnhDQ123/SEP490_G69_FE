@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import '../base/api_base_url.dart';
+import '../base/base_common.dart';
 import '../models/blog.dart';
 
 class BlogService {
@@ -19,18 +20,17 @@ class BlogService {
     }
   }
 
-  Future<void> addBlog(String content, List<File> files) async {
+  Future<void> addBlog(String content, List<File> files, int writerId) async {
     try {
-      final uri = Uri.parse('$baseUrl/blogs'); // Địa chỉ API tạo blog
+      final uri = Uri.parse('$baseUrl/api/blogs');
 
-      // Tạo một request multipart để gửi dữ liệu form
       var request = http.MultipartRequest('POST', uri);
 
-      // Thêm nội dung bài viết
-      request.fields['id'] = '1';
+      // Thêm các trường form đúng như backend mong đợi
       request.fields['content'] = content;
+      request.fields['writer.id'] = writerId.toString();
 
-      // Thêm các tệp đính kèm
+      // Thêm file ảnh nếu có
       for (var file in files) {
         final multipartFile = await http.MultipartFile.fromPath(
           'files', file.path,
@@ -38,13 +38,15 @@ class BlogService {
         request.files.add(multipartFile);
       }
 
-      // Gửi yêu cầu POST
+      // Gửi request
       final response = await request.send();
 
       if (response.statusCode == 201) {
-        // Được tạo thành công
         print('Blog created successfully');
       } else {
+        final respStr = await response.stream.bytesToString();
+        print('Failed with status: ${response.statusCode}');
+        print('Response body: $respStr');
         throw Exception('Failed to create blog');
       }
     } catch (e) {
@@ -52,4 +54,43 @@ class BlogService {
       throw Exception('Failed to create blog');
     }
   }
+
+  Future<void> deleteBlog(int blogId) async {
+    final response = await http.delete(Uri.parse('$baseUrl/api/blogs/$blogId'));
+
+    if (response.statusCode != 200 && response.statusCode != 204) {
+      throw Exception('Failed to delete blog');
+    }
+  }
+
+  Future<void> updateBlog({
+    required int blogId,
+    required String content,
+    required List<String> imageUrls,
+    required List<File> files,
+  }) async {
+    final uri = Uri.parse('$baseUrl/api/blogs/$blogId');
+    final request = http.MultipartRequest('PUT', uri);
+
+    request.fields['content'] = content;
+    request.fields['writer.id'] = BaseCommon.instance.userId ?? '0';
+
+    // Gửi imageUrls[] trong form
+    for (int i = 0; i < imageUrls.length; i++) {
+      request.fields['imageUrls[$i]'] = imageUrls[i];
+    }
+
+    // Gửi files mới
+    for (var file in files) {
+      final multipartFile = await http.MultipartFile.fromPath('files', file.path);
+      request.files.add(multipartFile);
+    }
+
+    final response = await request.send();
+    if (response.statusCode != 200) {
+      throw Exception('Cập nhật blog thất bại');
+    }
+  }
+
+
 }

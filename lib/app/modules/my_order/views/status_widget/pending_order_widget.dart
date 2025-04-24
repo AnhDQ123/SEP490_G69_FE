@@ -25,29 +25,29 @@ class PendingOrderWidget extends StatelessWidget {
       getStatusColor: getStatusColor,
       actionWidgetBuilder: (order, total) {
         return OutlinedButton(
-            onPressed: () async {
-              final reason = await showModalBottomSheet<String>(
-                context: context,
-                isScrollControlled: true,
-                shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-                ),
-                builder: (_) => CancelReasonSheet(),
-              );
+          onPressed: () async {
+            final reason = await showModalBottomSheet<String>(
+              context: context,
+              isScrollControlled: true,
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+              ),
+              builder: (_) => CancelReasonSheet(),
+            );
 
-              if (reason != null && reason.isNotEmpty) {
-                // 🧾 In ra lý do hoặc xử lý nội bộ
-                print("Lý do huỷ đơn: $reason");
+            if (reason != null && reason.isNotEmpty) {
+              // 🧾 In ra lý do hoặc xử lý nội bộ
+              print("Lý do huỷ đơn: $reason");
 
-                // Gọi huỷ đơn như cũ (không cần truyền lý do)
-                await OrderService().cancelOrder(order.id);
+              // Gọi huỷ đơn như cũ (không cần truyền lý do)
+              await OrderService().cancelOrder(order.id);
 
-                // Thông báo và load lại danh sách
-                Get.snackbar("Thông báo", "Đơn hàng đã được huỷ", snackPosition: SnackPosition.BOTTOM);
-                Get.find<MyOrderController>().loadOrders();
-              }
-            },
-            style: OutlinedButton.styleFrom(
+              // Thông báo và load lại danh sách
+              Get.snackbar("Thông báo", "Đơn hàng đã được huỷ", snackPosition: SnackPosition.BOTTOM);
+              Get.find<MyOrderController>().loadOrders();
+            }
+          },
+          style: OutlinedButton.styleFrom(
             side: BorderSide(color: Colors.redAccent, width: 2),
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             shape: RoundedRectangleBorder(

@@ -15,7 +15,8 @@ class CartController extends GetxController {
   var carts = <CartDTO>[].obs;
   var isLoading = true.obs;
   final CartApiService cartService = CartApiService();
-  final ProductDetailApiService productDetailService = ProductDetailApiService();
+  final ProductDetailApiService productDetailService =
+  ProductDetailApiService();
   var selectedItems = <int, List<int>>{}.obs;
   var productOptions = <int, List<CartItemOptionDTO>>{}.obs;
   var isLoadingOptions = false.obs;
@@ -23,14 +24,14 @@ class CartController extends GetxController {
   Future<void> fetchProductOptions(int productId) async {
     try {
       isLoadingOptions(true);
-      Product product = await productDetailService.getProductDetail(productId.toString());
+      Product product =
+      await productDetailService.getProductDetail(productId.toString());
       print("📥 [fetchProductOptions] Đang xử lý productId: $productId");
       print("   → Có ${product.foodOptions.length} foodOptions");
 
       for (var opt in product.foodOptions) {
         print("   - ${opt.name} | typeId: ${opt.typeId} | price: ${opt.price}");
       }
-
 
       if (product.foodOptions == null) {
         print("⚠️ Không có foodOptions cho productId: $productId");
@@ -41,6 +42,7 @@ class CartController extends GetxController {
       List<CartItemOptionDTO> sizes = product.foodOptions
           .where((opt) => opt.typeId == 2) // Lấy các size
           .map((opt) => CartItemOptionDTO(
+        id: 0,
         optionId: opt.id,
         typeId: opt.typeId ?? 0,
         optionName: opt.name,
@@ -56,6 +58,7 @@ class CartController extends GetxController {
       List<CartItemOptionDTO> toppings = product.foodOptions
           .where((opt) => opt.typeId == 1) // Lấy các topping
           .map((opt) => CartItemOptionDTO(
+        id: 0,
         optionId: opt.id,
         typeId: opt.typeId ?? 0,
         optionName: opt.name,
@@ -77,88 +80,99 @@ class CartController extends GetxController {
     }
   }
 
+  Future<void> updateSize(
+      int shopId, int cartItemOptionId, int newSizeId) async {
+    try {
+      var shop = carts.firstWhereOrNull((s) => s.shopId == shopId);
+      var item = shop?.cartItemDTOList.firstWhereOrNull((i) =>
+          i.cartItemOptionDTOList.any((opt) =>
+          opt.id ==
+              cartItemOptionId)); // Dùng cartItemOptionId để tìm đúng tùy chọn
+      if (item != null) {
+        // Tìm tùy chọn size trong cartItemOptionDTOList của item
+        var option = item.cartItemOptionDTOList
+            .firstWhereOrNull((opt) => opt.id == cartItemOptionId);
 
-  void updateSize(int shopId, int productId, CartItemOptionDTO newSize) {
-    var shop = carts.firstWhere((s) => s.shopId == shopId);
-    var item = shop.cartItemDTOList.firstWhere((item) => item.productId == productId);
-    item.cartItemOptionDTOList.removeWhere((opt) => opt.typeId == 2);
-    item.cartItemOptionDTOList.add(newSize);
-    item.totalPrice = newSize.price * item.quantity.value;
-    carts.refresh();
+        if (option != null) {
+          await cartService.changeSize(cartItemOptionId, newSizeId);
+          await fetchCart();
+        }
+      }
+    } catch (e) {
+      // Log lỗi nếu có sự cố xảy ra
+      print("❌ Lỗi khi thay đổi size: $e");
+    }
   }
 
-  void updateProductQuantity(int shopId, int productId, int quantity) {
-    if (quantity < 1) return;
-    var shop = carts.firstWhere((s) => s.shopId == shopId);
-    var item = shop.cartItemDTOList.firstWhere((item) => item.productId == productId);
-    item.quantity.value = quantity;
-    var selectedSize = item.cartItemOptionDTOList.firstWhereOrNull((opt) => opt.typeId == 2);
-    double sizePrice = selectedSize?.price ?? 0;
-    item.totalPrice = sizePrice * quantity;
-    carts.refresh();
-  }
-
-  void increaseQuantity(int shopId, int productId) {
+  // Tăng số lượng
+  void increaseQuantity(int shopId, int productId, int cartItemOptionId) async {
     var shop = carts.firstWhereOrNull((s) => s.shopId == shopId);
-    var item = shop?.cartItemDTOList.firstWhereOrNull((i) => i.productId == productId);
+    var item =
+    shop?.cartItemDTOList.firstWhereOrNull((i) => i.productId == productId);
+
     if (item != null) {
-      updateProductQuantity(shopId, productId, item.quantity.value + 1);
+      // Gọi API để tăng số lượng của sản phẩm trong DB
+      await cartService.increaseOptionQuantity(cartItemOptionId);
+
+      // Sau khi cập nhật số lượng trong DB, gọi lại fetchCart để lấy giỏ hàng mới từ server
+      await fetchCart(); // Fetch lại giỏ hàng
     }
   }
 
-  void decreaseQuantity(int shopId, int productId) {
+  void decreaseQuantity(int shopId, int productId, int cartItemOptionId) async {
     var shop = carts.firstWhereOrNull((s) => s.shopId == shopId);
-    var item = shop?.cartItemDTOList.firstWhereOrNull((i) => i.productId == productId);
-    if (item != null && item.quantity.value > 1) {
-      updateProductQuantity(shopId, productId, item.quantity.value - 1);
+    var item =
+    shop?.cartItemDTOList.firstWhereOrNull((i) => i.productId == productId);
+
+    if (item != null) {
+      // Gọi API để tăng số lượng của sản phẩm trong DB
+      await cartService.decreaseOptionQuantity(cartItemOptionId);
+
+      // Sau khi cập nhật số lượng trong DB, gọi lại fetchCart để lấy giỏ hàng mới từ server
+      await fetchCart(); // Fetch lại giỏ hàng
     }
   }
 
-  void updateOptionQuantity(int shopId, int productId, int optionId, int newQuantity) {
-    var shop = carts.firstWhere((s) => s.shopId == shopId);
-    var item = shop.cartItemDTOList.firstWhere((p) => p.productId == productId);
-    var option = item.cartItemOptionDTOList.firstWhereOrNull((opt) => opt.optionId == optionId);
-    if (option != null && newQuantity >= 0) {
-      option.quantity = newQuantity;
-      option.totalPrice = option.price * option.quantity;
-      item.totalPrice = _calculateTotalPrice(item);
+  Future<void> addFoodOptionToCart(
+      int shopId, int productId, int foodOptionId) async {
+    try {
+      // Lấy sản phẩm từ giỏ hàng dựa trên shopId và productId
+      var shop = carts.firstWhereOrNull((s) => s.shopId == shopId);
+      var item = shop?.cartItemDTOList
+          .firstWhereOrNull((i) => i.productId == productId);
+
+      if (item != null) {
+        // Gọi API để thêm tùy chọn vào sản phẩm
+        await cartService.addOptionToItem(item.id ?? 0, foodOptionId);
+
+        // Sau khi thêm tùy chọn thành công, làm mới giỏ hàng hoặc cập nhật lại số lượng option
+        await fetchCart();
+      }
+    } catch (e) {
+      print('❌ Lỗi khi thêm option vào sản phẩm: $e');
     }
-    carts.refresh();
-  }
-
-  void addFoodOption(int shopId, int productId, CartItemOptionDTO option) {
-    var shop = carts.firstWhere((s) => s.shopId == shopId);
-    var item = shop.cartItemDTOList.firstWhere((p) => p.productId == productId);
-    var existingOption = item.cartItemOptionDTOList.firstWhereOrNull((opt) => opt.optionId == option.optionId);
-
-    if (existingOption == null) {
-      item.cartItemOptionDTOList.add(option);
-    } else {
-      existingOption.quantity += 1;
-      existingOption.totalPrice = existingOption.price * existingOption.quantity;
-    }
-
-    item.totalPrice = _calculateTotalPrice(item);
-    carts.refresh();
   }
 
   double _calculateTotalPrice(CartItemDTO item) {
-    double sizePrice = item.cartItemOptionDTOList.firstWhereOrNull((opt) => opt.typeId == 2)?.price ?? 0;
+    double sizePrice = item.cartItemOptionDTOList
+        .firstWhereOrNull((opt) => opt.typeId == 2)
+        ?.price ??
+        0;
     double foodOptionsPrice = item.cartItemOptionDTOList
         .where((opt) => opt.typeId == 1)
         .fold(0.0, (sum, opt) => sum + (opt.price * opt.quantity));
 
-    double total = (sizePrice * item.quantity.value) + foodOptionsPrice;
+    double total = sizePrice * item.quantity.value;
 
     print("🧾 DEBUG [_calculateTotalPrice]");
     print("→ Sản phẩm: ${item.productName}");
-    print("→ Size price x quantity: ${sizePrice} x ${item.quantity.value} = ${sizePrice * item.quantity.value}");
+    print(
+        "→ Size price x quantity: ${sizePrice} x ${item.quantity.value} = ${sizePrice * item.quantity.value}");
     print("→ Food Options total: $foodOptionsPrice");
     print("→ Total = $total");
 
     return total;
   }
-
 
   double getTotalAmount() {
     double total = 0;
@@ -180,11 +194,9 @@ class CartController extends GetxController {
     return total;
   }
 
-
-
-
   String formatCurrency(double amount) {
-    return '${amount.toStringAsFixed(0).replaceAllMapped(RegExp(r'\B(?=(\d{3})+(?!\d))'), (match) => '.')}' 'đ';
+    return '${amount.toStringAsFixed(0).replaceAllMapped(RegExp(r'\B(?=(\d{3})+(?!\d))'), (match) => '.')}'
+        'đ';
   }
 
   @override
@@ -201,26 +213,28 @@ class CartController extends GetxController {
 
       var cartData = await cartService.getCartByOwner(userId);
       print('🔵 [5.FETCHED CART DATA]');
+
+      // Duyệt qua từng shop
       cartData.forEach((shop) {
         print('   Shop: ${shop.shopName} (ID:${shop.shopId})');
         shop.cartItemDTOList.forEach((item) {
           print('     Product: ${item.productName} (ID:${item.productId})');
           item.cartItemOptionDTOList.forEach((opt) {
-            print('       → OptionID: ${opt.optionId} | Name: ${opt.optionName}');
+            print(
+                '       → CartItemOptionID: ${opt.id} |OptionID: ${opt.optionId} | Name: ${opt.optionName} | Quantity: ${opt.quantity}');
+
+            // Cập nhật lại số lượng của từng option nếu cần
+            opt.quantity =
+                opt.quantity ?? 1; // Đảm bảo quantity luôn có giá trị
           });
         });
       });
       print("✅ Nhận được ${cartData.length} cart(s)");
 
       carts.assignAll(cartData);
-      for (var shop in carts) {
-        for (var item in shop.cartItemDTOList) {
-          print("🧮 DEBUG - ${item.productName}: item.totalPrice = ${item.totalPrice}, quantity = ${item.quantity.value}");
-        }
-      }
+      carts.refresh();
 
-
-      // Gửi notification nếu có sản phẩm
+      // Kiểm tra và thông báo nếu có sản phẩm trong giỏ
       int totalItems = 0;
       for (var shop in cartData) {
         totalItems += shop.cartItemDTOList.length;
@@ -241,11 +255,13 @@ class CartController extends GetxController {
             // 🛠️ Nếu chưa có size, tự gán size đầu tiên từ productOptions
             if (selectedSize == null) {
               final options = productOptions[item.productId] ?? [];
-              final defaultSize = options.firstWhereOrNull((opt) => opt.typeId == 2);
+              final defaultSize =
+              options.firstWhereOrNull((opt) => opt.typeId == 2);
 
               if (defaultSize != null) {
                 // Tạo bản sao với cartItemId hiện tại
                 final newSize = CartItemOptionDTO(
+                  id: 0,
                   optionId: defaultSize.optionId,
                   typeId: defaultSize.typeId,
                   optionName: defaultSize.optionName,
@@ -256,13 +272,14 @@ class CartController extends GetxController {
                   cartItemId: item.id ?? 0,
                 );
                 item.cartItemOptionDTOList.add(newSize);
-                print("🛠️ Gán size mặc định cho '${item.productName}': ${newSize.optionName}");
+                print(
+                    "🛠️ Gán size mặc định cho '${item.productName}': ${newSize.optionName}");
                 selectedSize = newSize;
               } else {
-                print("❗ [LỖI] Không tìm thấy size khả dụng cho sản phẩm: ${item.productName}");
+                print(
+                    "❗ [LỖI] Không tìm thấy size khả dụng cho sản phẩm: ${item.productName}");
               }
             }
-
 
             // item.totalPrice = selectedSize != null
             //     ? selectedSize.price * item.quantity.value
@@ -273,7 +290,6 @@ class CartController extends GetxController {
           }
         }
       }
-
     } catch (e, st) {
       print('❌ [ERROR] Lỗi trong fetchCart(): $e');
       print('📛 $st');
@@ -281,25 +297,19 @@ class CartController extends GetxController {
       isLoading(false);
       print("✅ Đã kết thúc fetchCart(), đóng loading");
     }
-
-    // Đảm bảo không bị override từ logic frontend nữa
-    for (var shop in carts) {
-      for (var item in shop.cartItemDTOList) {
-        // Không tính lại gì cả
-        // item.totalPrice = _calculateTotalPrice(item); // ❌ Đừng gọi
-        // Không set lại quantity
-      }
-    }
-
   }
-
 
   void toggleSelectAll(bool isSelected) {
     for (var shop in carts) {
       selectedItems[shop.shopId] = isSelected ? shop.cartItemDTOList.map((item) => item.productId).toList() : [];
     }
     selectedItems.refresh();
+
+    // Log trạng thái đã chọn tất cả
+    print("🔄 Đã thay đổi trạng thái chọn tất cả: ${isSelected ? 'Chọn tất cả' : 'Bỏ chọn tất cả'}");
+    print("📋 Tất cả sản phẩm đã chọn: $selectedItems");
   }
+
 
   bool isAllSelected() {
     for (var shop in carts) {
@@ -319,12 +329,18 @@ class CartController extends GetxController {
     var shop = carts.firstWhere((s) => s.shopId == shopId);
     selectedItems[shopId] = isSelected ? shop.cartItemDTOList.map((item) => item.productId).toList() : [];
     selectedItems.refresh();
+
+    // Log trạng thái cửa hàng đã chọn hoặc bỏ chọn
+    print("🔄 Đã thay đổi trạng thái cửa hàng $shopId: ${isSelected ? 'Chọn' : 'Bỏ chọn'}");
+    print("📋 Sản phẩm đã chọn trong cửa hàng $shopId: ${selectedItems[shopId]}");
   }
+
 
   void toggleItemSelection(int shopId, int productId, bool isSelected) {
     if (!selectedItems.containsKey(shopId)) {
       selectedItems[shopId] = [];
     }
+
     if (isSelected) {
       if (!selectedItems[shopId]!.contains(productId)) {
         selectedItems[shopId]!.add(productId);
@@ -332,7 +348,14 @@ class CartController extends GetxController {
     } else {
       selectedItems[shopId]!.remove(productId);
     }
+
     selectedItems.refresh();
+
+    // Log sản phẩm đã chọn hoặc bỏ chọn
+    print(
+        "🔄 Đã thay đổi trạng thái sản phẩm $productId trong cửa hàng $shopId: ${isSelected ? 'Chọn' : 'Bỏ chọn'}");
+    print(
+        "📋 Sản phẩm đã chọn trong cửa hàng $shopId: ${selectedItems[shopId]}");
   }
 
   void removeShop(int shopId) {
@@ -371,22 +394,46 @@ class CartController extends GetxController {
       return;
     }
 
-    // Gọi hàm log food option IDs để xem thông tin chi tiết
-    logFoodOptionIdsInSelectedCart();
+    // Lọc danh sách giỏ hàng đã chọn và chỉ giữ lại các sản phẩm được chọn trong mỗi cửa hàng
+    List<CartDTO> filteredSelectedCarts = [];
 
-    // Lọc danh sách giỏ hàng đã chọn
-    List<CartDTO> selectedCarts =
-    carts.where((shop) => selectedItems[shop.shopId]?.isNotEmpty ?? false).toList();
+    for (var shop in carts) {
+      if (selectedItems[shop.shopId]?.isNotEmpty ?? false) {
+        List<CartItemDTO> selectedItemsInShop = shop.cartItemDTOList
+            .where((item) => selectedItems[shop.shopId]!.contains(item.productId))
+            .toList();
 
-    if (selectedCarts.isEmpty) {
+        if (selectedItemsInShop.isNotEmpty) {
+          filteredSelectedCarts.add(CartDTO(
+            id: shop.id,
+            userId: shop.userId,
+            shopId: shop.shopId,
+            shopName: shop.shopName,
+            price: shop.price,
+            status: shop.status,
+            discountPrice: shop.discountPrice,
+            cartItemDTOList: selectedItemsInShop,
+          ));
+        }
+      }
+    }
+
+    if (filteredSelectedCarts.isEmpty) {
       Get.snackbar("Thông báo", "Không có sản phẩm được chọn",
           snackPosition: SnackPosition.BOTTOM);
       return;
     }
 
+    filteredSelectedCarts.forEach((shop) {
+      print("Cửa hàng: ${shop.shopName} (ID: ${shop.shopId})");
+      shop.cartItemDTOList.forEach((item) {
+        print("  - Sản phẩm đã chọn: ${item.productName} (ID: ${item.productId})");
+      });
+    });
+
     try {
-      // 🧾 Tạo Order từ dữ liệu giỏ hàng
-      Order newOrder = selectedCarts
+      // 🧾 Tạo Order từ danh sách giỏ hàng đã lọc
+      Order newOrder = filteredSelectedCarts
           .map((cart) => cart.toOrder(
         shipMethodId: 1,
         paymentMethodId: 1,
@@ -398,7 +445,7 @@ class CartController extends GetxController {
 
       if (createdOrders.isNotEmpty) {
         final createdOrder = createdOrders.first;
-        Get.toNamed(Routes.CHECK_OUT, arguments: createdOrder); // dùng đơn đã được gán id từ backend
+        Get.toNamed(Routes.CHECK_OUT, arguments: createdOrder);
       } else {
         Get.snackbar("Lỗi", "Không tạo được đơn hàng");
       }
@@ -410,6 +457,7 @@ class CartController extends GetxController {
   }
 
 
+
   void logFoodOptionIdsInSelectedCart() {
     int totalFoodOptionCount = 0;
     print("=== Thông tin Food Option IDs của các sản phẩm được chọn ===");
@@ -417,7 +465,8 @@ class CartController extends GetxController {
     // Duyệt qua từng cửa hàng trong carts
     for (var shop in carts) {
       // Kiểm tra xem cửa hàng có sản phẩm được chọn không
-      if (selectedItems.containsKey(shop.shopId) && selectedItems[shop.shopId]!.isNotEmpty) {
+      if (selectedItems.containsKey(shop.shopId) &&
+          selectedItems[shop.shopId]!.isNotEmpty) {
         print("Shop ID: ${shop.shopId}");
         // Duyệt qua từng sản phẩm trong cửa hàng
         for (var item in shop.cartItemDTOList) {
@@ -425,7 +474,8 @@ class CartController extends GetxController {
             print("  Product: ${item.productName} (ID: ${item.productId})");
             // Duyệt qua từng food option của sản phẩm
             for (var option in item.cartItemOptionDTOList) {
-              print("    - Food Option ID: ${option.optionId}, Name: ${option.optionName}");
+              print(
+                  "    - Food Option ID: ${option.optionId}, Name: ${option.optionName}");
               totalFoodOptionCount++;
             }
           }
@@ -434,7 +484,4 @@ class CartController extends GetxController {
     }
     print("Tổng số Food Option IDs truyền: $totalFoodOptionCount");
   }
-
-
-
 }

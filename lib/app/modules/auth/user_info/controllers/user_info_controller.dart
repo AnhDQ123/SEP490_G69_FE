@@ -10,9 +10,7 @@ import '../../../../resources/snackbar.dart';
 class UserInfoController extends GetxController {
   final nameController = TextEditingController();
   final addressController = TextEditingController();
-  // Loại bỏ genderController vì giờ dùng biến phản ứng cho Dropdown
-  // final genderController = TextEditingController();
-
+  final emailController = TextEditingController();   //  ← thêm
   // Sử dụng biến phản ứng để quản lý giá trị giới tính
   var selectedGender = 'Nam'.obs;
   final isLoading = false.obs;
@@ -27,9 +25,10 @@ class UserInfoController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    final phone = Get.arguments?['phone'] ?? '';
-    phoneController.text = phone; // Đúng cách gán giá trị cho TextEditingController
-    print("Phone nhận được: $phone");
+    final args = Get.arguments ?? {};
+    phoneController.text = args['phone']  ?? '';
+    emailController.text = args['email']  ?? '';
+    userId.value = args['user_id'] ?? '';
   }
 
   // Hàm chọn ảnh avatar từ thư viện
@@ -65,14 +64,17 @@ class UserInfoController extends GetxController {
     try {
       String dobStr = DateFormat('yyyy-MM-dd').format(dob.value!);
 
+
       final response = await RegisterService().updateUserProfile(
-        phoneController.text, // Đúng: lấy nội dung text từ controller
-        nameController.text,
-        selectedGender.value,
-        dobStr,
-        addressController.text,
-        avatarFile,
+        phone:    phoneController.text,
+        name:     nameController.text,
+        gender:   selectedGender.value,
+        dob:      dobStr,
+        address:  addressController.text,
+        email: emailController.text,
+        avatarFile: avatarFile,   // có thể null nếu chưa chọn ảnh
       );
+
 
       if (response['success']) {
         CustomSnackbar.showSuccess(response['message']);

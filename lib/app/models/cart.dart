@@ -11,7 +11,7 @@ class CartDTO {
   String shopName;
   double price;
   String status;
-  double? discountPrice; // ✅ THÊM DÒNG NÀY nếu chưa có
+  double? discountPrice;
   List<CartItemDTO> cartItemDTOList;
 
   CartDTO({
@@ -21,7 +21,7 @@ class CartDTO {
     required this.shopName,
     required this.price,
     required this.status,
-    this.discountPrice, // ✅ Đừng quên truyền ở constructor
+    this.discountPrice,
     required this.cartItemDTOList,
   });
 
@@ -149,6 +149,8 @@ class CartDTO {
       shopName: shopName,
       ownerId: userId,
       shipMethodId: shipMethodId,
+      shipMethodName: 'Delivery',
+      shippingFee: 0.0,
       paymentMethodId: paymentMethodId,
       voucherAmount: 0.0,
       voucherId: null,

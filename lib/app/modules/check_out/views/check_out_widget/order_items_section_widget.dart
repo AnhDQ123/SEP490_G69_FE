@@ -14,15 +14,20 @@ class OrderItemsSectionWidget extends StatelessWidget {
   }
 
   double _calculateDiscountedPrice(OrderItem item) {
-    // Kiểm tra discount có tồn tại và không rỗng
-    if (item.discount == null || item.discount!.isEmpty) {
-      return item.price * item.quantity; // Nếu không có discount, trả về giá gốc
+    // Ưu tiên sử dụng item.total nếu có
+    if (item.total != null && item.total != item.price * item.quantity) {
+      return item.total!;
     }
 
-    // Nếu có discount, áp dụng giảm giá
+    // Nếu không thì kiểm tra discount
+    if (item.discount == null || item.discount!.isEmpty) {
+      return item.price * item.quantity;
+    }
+
     final discountRate = (100 - (item.discount!.first.amount * 100)) / 100;
     return item.price * item.quantity * discountRate;
   }
+
 
 
   // Giá gốc của món
@@ -141,8 +146,7 @@ class OrderItemsSectionWidget extends StatelessWidget {
   }
 
   // Row hiển thị món chính: ảnh (với discount overlay), thông tin món (tên, quantity, size nếu có) và giá
-  Widget _buildMainItemRow(OrderItem item, double originalPrice, double discountedPrice,
-      OrderItemOption? sizeOption, BuildContext context) {
+  Widget _buildMainItemRow(OrderItem item, double originalPrice, double discountedPrice, OrderItemOption? sizeOption, BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6.0),
       child: Row(
@@ -203,14 +207,14 @@ class OrderItemsSectionWidget extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.only(top: 2.0),
                     child: Text(
-                      "Size: ${sizeOption.optionName}",
+                      "Kích thước: ${sizeOption.optionName}",
                       style: const TextStyle(fontSize: 8, color: Colors.black54),
                     ),
                   ),
               ],
             ),
           ),
-          // Hiển thị giá: nếu có discount thì hiển thị giá cũ bị gạch và giá mới
+          // Hiển thị giá: nếu có discount thì hiển thị giá cũ bị gạch và giá mới (discounted)
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
@@ -224,7 +228,7 @@ class OrderItemsSectionWidget extends StatelessWidget {
                   ),
                 ),
               Text(
-                _formatPrice(discountedPrice),
+                _formatPrice(discountedPrice), // Dùng giá đã giảm ở đây //originalprice
                 style: const TextStyle(fontSize: 10, color: Colors.black),
               ),
             ],
@@ -233,6 +237,7 @@ class OrderItemsSectionWidget extends StatelessWidget {
       ),
     );
   }
+
 
   // Row hiển thị 1 option (loại typeId == 1)
   Widget _buildOptionRow(OrderItemOption option, double optionPrice, BuildContext context) {

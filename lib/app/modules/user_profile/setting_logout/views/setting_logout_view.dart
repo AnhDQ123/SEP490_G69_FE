@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../../base/base_common.dart';
+
 class SettingLogoutView extends StatelessWidget {
   const SettingLogoutView({super.key});
 
@@ -39,7 +41,7 @@ class SettingLogoutView extends StatelessWidget {
 
               Center(
                 child: OutlinedButton(
-                  onPressed: () => Get.offAllNamed('/login'),
+                  onPressed: () => _showLogoutConfirmationDialog(context),
                   style: OutlinedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 12),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -49,7 +51,6 @@ class SettingLogoutView extends StatelessWidget {
                 ),
               ),
 
-
               const SizedBox(height: 20),
             ],
           ),
@@ -57,6 +58,36 @@ class SettingLogoutView extends StatelessWidget {
       ),
     );
   }
+
+  // Hiển thị hộp thoại xác nhận đăng xuất
+  void _showLogoutConfirmationDialog(BuildContext context) async {
+    Get.dialog(
+      AlertDialog(
+        title: const Text('Xác nhận'),
+        content: const Text('Bạn có chắc chắn muốn đăng xuất không?'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Get.back(); // Đóng hộp thoại
+            },
+            child: const Text('Hủy'),
+          ),
+          TextButton(
+            onPressed: () async {
+              // Xóa token và userId từ SharedPreferences
+              await BaseCommon.instance.removeToken();  // Xóa accessToken và refreshToken
+              await BaseCommon.instance.removeUserId();  // Xóa userId
+
+              // Sau khi xóa thông tin, chuyển hướng người dùng đến màn hình đăng nhập
+              Get.offAllNamed('/login'); // Đăng xuất và chuyển tới màn hình login
+            },
+            child: const Text('Đồng ý'),
+          ),
+        ],
+      ),
+    );
+  }
+
 
   Widget _buildSectionTitle(String title) {
     return Padding(

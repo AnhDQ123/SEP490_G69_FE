@@ -62,7 +62,7 @@ class MyOrderView extends GetView<MyOrderController> {
               tabs: const [
                 Tab(text: "Chờ xác nhận"),
                 Tab(text: "Đang chuẩn bị"),
-                Tab(text: "Chờ xử lý"),        // ✅ mới
+                Tab(text: "Chờ vận chuyển"),        // ✅ mới
                 Tab(text: "Đang giao"),
                 Tab(text: "Đã giao"),
                 Tab(text: "Đã huỷ"),

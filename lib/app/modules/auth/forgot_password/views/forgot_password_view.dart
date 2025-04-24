@@ -35,13 +35,13 @@ class ForgotPasswordView extends BaseView<ForgotPasswordController> {
                   child: const Text("Quay lại"),
                 ),
                 Obx(() => ElevatedButton(
-                      onPressed: controller.isLoading.value
-                          ? null
-                          : controller.sendResetRequest,
-                      child: controller.isLoading.value
-                          ? const CircularProgressIndicator(color: Colors.white)
-                          : const Text("Tiếp tục"),
-                    )),
+                  onPressed: controller.isLoading.value
+                      ? null
+                      : controller.sendResetRequest,
+                  child: controller.isLoading.value
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : const Text("Tiếp tục"),
+                )),
               ],
             ),
           ],

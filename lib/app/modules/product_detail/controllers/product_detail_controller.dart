@@ -8,7 +8,10 @@ import '../../../models/cart.dart';
 import '../../../models/cart_item.dart';
 import '../../../models/cart_item_option.dart';
 import '../../../models/discount.dart';
+import '../../../models/feedback.dart';
 import '../../../routes/app_pages.dart';
+import '../../../service/feedback_service.dart';
+import '../views/widget/feedback_dialog.dart';
 
 class ProductDetailController extends GetxController {
   var _product = Rxn<Product>();
@@ -20,10 +23,16 @@ class ProductDetailController extends GetxController {
   var selectedSizeIndex = 0.obs;
   var isDescriptionExpanded = false.obs;
   var isReviewExpanded = false.obs;
-  var reviews = <dynamic>[].obs;
+
+
+  var reviews = <Feedback>[].obs;
+  var currentFeedbackPage = 1.obs;
+  var canLoadMoreFeedbacks = true.obs;
 
   final ProductDetailApiService apiService = ProductDetailApiService();
   final CartApiService cartApiService = CartApiService(); // Thêm service giỏ hàng
+  final FeedbackService feedbackService = FeedbackService();
+
   final int parsedUserId = int.tryParse(BaseCommon.instance.userId ?? '') ?? 0;
   final isAddingToCart = false.obs;
 
@@ -31,21 +40,21 @@ class ProductDetailController extends GetxController {
   // Getter trả về sản phẩm hiện tại, nếu null thì trả về đối tượng mẫu
   Product get currentProduct => _product.value ??
       Product(
-        id: 0,
-        name: '',
-        manufacturer: '',
-        supplier: '',
-        quantity: 0,
-        category: '',
-        // discount: 0.0,
-        discount: [],  // Để trống danh sách discount
-        image: '',
-        description: '',
-        rate: 0.0,
-        shop: '',
-        defaultPrice: 0.0,
-        foodOptions: [],
-        shopId: 0
+          id: 0,
+          name: '',
+          manufacturer: '',
+          supplier: '',
+          quantity: 0,
+          category: '',
+          // discount: 0.0,
+          discount: [],  // Để trống danh sách discount
+          image: '',
+          description: '',
+          rate: 0.0,
+          shop: '',
+          defaultPrice: 0.0,
+          foodOptions: [],
+          shopId: 0
       );
 
   @override
@@ -55,24 +64,6 @@ class ProductDetailController extends GetxController {
     print("👤 [ProductDetail] Đang đăng nhập với userId: $userId");
     fetchProductData();
     reviews.assignAll([
-      {
-        'user': 'Nguyễn Văn A',
-        'avatar': 'https://via.placeholder.com/50',
-        'rating': 4.5,
-        'comment': 'Sản phẩm rất tốt, chất lượng vượt mong đợi!'
-      },
-      {
-        'user': 'Trần Thị B',
-        'avatar': '',
-        'rating': 3.0,
-        'comment': 'Chất lượng bình thường, cần cải thiện thêm.'
-      },
-      {
-        'user': 'Lê Văn C',
-        'avatar': 'https://via.placeholder.com/50',
-        'rating': 5.0,
-        'comment': 'Xuất sắc! Sẽ ủng hộ và mua lại.'
-      },
     ]);
   }
 
@@ -131,6 +122,8 @@ class ProductDetailController extends GetxController {
     } catch (e) {
       print("❌ Error fetching product data: $e");
     }
+    await loadProductFeedbacks();
+
   }
 
   Future<void> fetchMenuProducts() async {
@@ -157,7 +150,69 @@ class ProductDetailController extends GetxController {
     }
   }
 
+// Thêm hàm mới
+  Future<void> loadProductFeedbacks() async {
+    try {
+      if (!canLoadMoreFeedbacks.value) return;
 
+      final feedbacks = await feedbackService.getProductFeedbacks(
+        currentProduct.id,
+        page: currentFeedbackPage.value,
+      );
+
+      if (feedbacks.isEmpty) {
+        canLoadMoreFeedbacks.value = false;
+      } else {
+        reviews.addAll(feedbacks);
+        currentFeedbackPage.value++;
+      }
+    } catch (e) {
+      print("Error loading feedbacks: $e");
+    }
+  }
+
+  // Trong ProductDetailController
+  Future<bool> submitFeedback({
+    required double rating,
+    String? comment,
+    List<String>? imageUrls,
+  }) async {
+    try {
+      final userId = int.tryParse(BaseCommon.instance.userId ?? '');
+      if (userId == null) {
+        Get.snackbar("Lỗi", "Vui lòng đăng nhập để đánh giá");
+        return false;
+      }
+
+      final success = await feedbackService.createFeedback(
+        userId: userId,
+        productId: currentProduct.id,
+        rate: rating,
+        content: comment,
+        imageUrls: imageUrls,
+      );
+
+      if (success) {
+        // Làm mới danh sách feedback
+        reviews.clear();
+        currentFeedbackPage.value = 1;
+        canLoadMoreFeedbacks.value = true;
+        await loadProductFeedbacks();
+        return true;
+      }
+      return false;
+    } catch (e) {
+      print('Error submitting feedback: $e');
+      rethrow;
+    }
+  }
+
+  void showFeedbackDialog() {
+    Get.dialog(
+      FeedbackDialog(productId: currentProduct.id),
+      barrierDismissible: false,
+    );
+  }
 
 
   void incrementQuantity() {
@@ -260,6 +315,7 @@ class ProductDetailController extends GetxController {
 
       // Tạo option cho size
       CartItemOptionDTO selectedSizeOption = CartItemOptionDTO(
+        id: 0,
         optionId: selectedSize.id,
         typeId: 2,
         optionName: selectedSize.name,
@@ -274,6 +330,7 @@ class ProductDetailController extends GetxController {
       final List<CartItemOptionDTO> extraOptionsList = extraOptions
           .where((opt) => opt.selected)
           .map((opt) => CartItemOptionDTO(
+        id: 0,
         optionId: int.tryParse(opt.id) ?? 0,
         typeId: 1,
         optionName: opt.name,

@@ -144,9 +144,30 @@ class ShopProductListView extends GetView<ShopProductListController> {
 
                 IconButton(
                   icon: Icon(Icons.delete, color: Colors.red,),
-                  onPressed: () {
-                    controller.deleteProduct(product);
+                  onPressed: () async {
+                    final confirmed = await Get.dialog<bool>(
+                      AlertDialog(
+                        title: Text("Xác nhận xoá"),
+                        content: Text("Bạn có chắc chắn muốn xoá sản phẩm này không?"),
+                        actions: [
+                          TextButton(
+                            child: Text("Huỷ"),
+                            onPressed: () => Get.back(result: false),
+                          ),
+                          ElevatedButton(
+                            child: Text("Xoá"),
+                            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                            onPressed: () => Get.back(result: true),
+                          ),
+                        ],
+                      ),
+                    );
+
+                    if (confirmed == true) {
+                      controller.deleteProductFromServer(product);
+                    }
                   },
+
                 ),
               ],
             ),

@@ -25,7 +25,7 @@ class ShopOrderView extends GetView<ShopOrderController> {
         return Colors.orange;
       case "Đang chuẩn bị":
         return Colors.blue;
-      case "Chờ xử lý":
+      case "Chờ vận chuyển":
         return Colors.blue;
       case "Đang giao":
         return Colors.purple;
@@ -50,7 +50,7 @@ class ShopOrderView extends GetView<ShopOrderController> {
     final tabs = const [
       "Chờ xác nhận",
       "Đang chuẩn bị",
-      "Chờ xử lý",
+      "Chờ vận chuyển",
       "Đang giao",
       "Đã giao",
       "Đã huỷ",

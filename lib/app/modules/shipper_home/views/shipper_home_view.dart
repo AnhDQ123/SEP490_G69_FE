@@ -243,30 +243,37 @@ class ShipperHomeView extends GetView<ShipperHomeController> {
   }
 
   Widget buildEarningsSummary(ShipperHomeController controller) {
-    return Obx(() => Container(
-          padding: EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Colors.green[100],
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                "Doanh thu:",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              Text(
-                "${controller.totalEarnings.value}đ",
-                style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.green[800]),
-              ),
-            ],
-          ),
-        ));
+    return Obx(() {
+      // Định dạng doanh thu theo kiểu tiền tệ Việt Nam
+      final formattedEarnings = NumberFormat.currency(locale: 'vi_VN', symbol: '₫').format(controller.totalEarnings.value);
+
+      return Container(
+        padding: EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.green[100],
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              "Doanh thu:",
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+            Text(
+              formattedEarnings, // Hiển thị doanh thu đã định dạng
+              style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.green[800]),
+            ),
+          ],
+        ),
+      );
+    });
   }
+
+
 
   Widget _buildStatusLabel(String status) {
     Color color;

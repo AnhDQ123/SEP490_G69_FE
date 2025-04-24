@@ -1,7 +1,7 @@
 import 'package:get/get.dart';
 
-class AddVoucherController extends GetxController {
-  //TODO: Implement AddVoucherController
+class GoogleMapPageController extends GetxController {
+  //TODO: Implement GoogleMapPageController
 
   final count = 0.obs;
   @override

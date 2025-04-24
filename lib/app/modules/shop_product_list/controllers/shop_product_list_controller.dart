@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import '../../../models/product_discount.dart';
+import '../../../service/product_service.dart';
 import '../../../service/shop_service.dart';
 import '../../shop_menu/controllers/shop_controller.dart';
 
@@ -11,6 +12,8 @@ class ShopProductListController extends GetxController {
   final Rx<ProductSortType> sortType = ProductSortType.none.obs; // Sắp xếp mặc định theo tên tăng dần
 
   final shopService = ShopService();
+  final productService = ProductService(); // thêm dòng này
+
 
   @override
   void onInit() {
@@ -23,6 +26,21 @@ class ShopProductListController extends GetxController {
     final result = await shopService.fetchProductsByShop(shopId);
     products.assignAll(result);
     print(shopId);
+  }
+
+  Future<void> deleteProductFromServer(ProductDiscount product) async {
+    try {
+      final success = await productService.deleteProduct(product.id);
+      if (success) {
+        products.remove(product);
+        Get.snackbar("Thành công", "Đã xoá sản phẩm");
+      } else {
+        Get.snackbar("Thất bại", "Không thể xoá sản phẩm");
+      }
+    } catch (e) {
+      Get.snackbar("Lỗi", "Đã xảy ra lỗi khi xoá sản phẩm");
+      print("❌ Error deleting product: $e");
+    }
   }
 
   List<ProductDiscount> get filteredProducts {

@@ -11,10 +11,10 @@ class _ReturnReasonSheetState extends State<ReturnReasonSheet> {
   final TextEditingController customReasonController = TextEditingController();
 
   final List<String> reasons = [
-    "Sản phẩm bị lỗi",
-    "Sản phẩm không đúng mô tả",
-    "Không vừa / Không đúng kích thước",
-    "Thiếu phụ kiện / linh kiện",
+    "Có vấn đề về chất lượng",
+    "Món ăn không đúng mô tả",
+    "Không đúng kích cỡ món",
+    "Giao không đúng món",
     "Khác (vui lòng nhập lý do)"
   ];
 

@@ -100,13 +100,13 @@ class _SearchScreenState extends State<SearchScreenView> {
                 itemBuilder: (context, index) {
                   if (index < displayedResults.length) {
                     return ListTile(
-                      title: Text(
-                        displayedResults[index]['name'],
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.black,
+                        title: Text(
+                          displayedResults[index]['name'],
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.black,
+                          ),
                         ),
-                      ),
                         onTap: () {
                           String productName = displayedResults[index]['name'];
                           Get.toNamed('/filter', arguments: {'searchKeyword': productName});

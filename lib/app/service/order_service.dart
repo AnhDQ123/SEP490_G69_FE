@@ -34,13 +34,13 @@ class OrderService {
   }
 
   Future<List<Order>> fetchOrdersByOwnerAndStatus({
-    required int id,
+    required int ownerId,
     required String status,
     int page = 0,
     int size = 10,
   }) async {
     try {
-      final url = Uri.parse('$baseUrl/status?id=$id&status=$status&page=$page&size=$size');
+      final url = Uri.parse('$baseUrl/status?id=$ownerId&status=$status&page=$page&size=$size');
       final response = await http.get(url);
 
       print("🔥 [GET] $url");
@@ -176,7 +176,10 @@ class OrderService {
             ownerId: order.ownerId,
             shipperId: order.shipperId,
             shipMethodId: order.shipMethodId,
+            shipMethodName: order.shipMethodName,
+            shippingFee: order.shippingFee,
             paymentMethodId: order.paymentMethodId,
+            paymentMethodName: order.paymentMethodName,
             voucherId: order.voucherId,
             voucherAmount: order.voucherAmount,
             address: order.address,
@@ -411,6 +414,57 @@ class OrderService {
       rethrow;
     }
   }
+
+  /// 🧾 Cập nhật tổng tiền cho đơn hàng (sau khi áp dụng voucher, thay đổi phí,...)
+  Future<void> updateOrderTotal({
+    required int orderId,
+    required double newTotal,
+  }) async {
+    try {
+      final url = Uri.parse('$baseUrl/update/total?id=$orderId&total=$newTotal');
+      final response = await http.post(url);
+
+      print("💰 [POST] Cập nhật total đơn hàng: $url");
+      print("🔥 STATUS: ${response.statusCode}");
+      print("🔥 BODY: ${response.body}");
+
+      if (response.statusCode != 200) {
+        throw Exception("❌ Không thể cập nhật tổng tiền đơn hàng");
+      }
+    } catch (e) {
+      print("❌ Lỗi updateOrderTotal: $e");
+      rethrow;
+    }
+  }
+
+  Future<void> updatePaymentMethodAndShipping(int orderId, int shipId, int payId) async {
+    try {
+      final url = Uri.parse('$baseUrl/update');  // API endpoint
+
+      // Gửi yêu cầu POST với tham số `orderId`, `shipId` và `payId`
+      final response = await http.post(
+        url,
+        body: {
+          'orderId': orderId.toString(),
+          'shipId': shipId.toString(),
+          'payId': payId.toString(),
+        },
+      );
+
+      // Log các thông tin để kiểm tra
+      print("🔥 [POST] $url");
+      print("🔥 STATUS: ${response.statusCode}");
+      print("🔥 BODY: ${response.body}");
+
+      if (response.statusCode != 200) {
+        throw Exception('Không thể cập nhật phương thức giao hàng và thanh toán');
+      }
+    } catch (e) {
+      print("❌ Lỗi updatePaymentMethodAndShipping: $e");
+      rethrow;
+    }
+  }
+
 
 
 

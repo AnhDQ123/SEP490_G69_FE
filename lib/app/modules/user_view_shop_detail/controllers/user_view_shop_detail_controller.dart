@@ -21,8 +21,8 @@ class UserViewShopDetailController extends GetxController {
   final String? shopNameFromArgs = Get.arguments?['shopName'];
   final int? shopIdFromArgs = Get.arguments?['shopId'];
 
-  final ShopService shopService = ShopService();  // Tạo instance của ShopService
-  final ProductService productService = ProductService();  // Tạo instance của ProductService
+  final ShopService shopService = ShopService();
+  final ProductService productService = ProductService();
 
   @override
   void onInit() {
@@ -72,5 +72,19 @@ class UserViewShopDetailController extends GetxController {
       isLoading(false);  // Kết thúc loading
     }
   }
+
+  Future<void> submitShopRating(double rating) async {
+    if (shopIdFromArgs == null) return;
+    final result = await shopService.rateShop(shopId: shopIdFromArgs!, newRate: rating);
+
+    if (result.success) {
+      // Cập nhật lại dữ liệu cửa hàng sau khi đánh giá
+      await fetchShopDetails(shopIdFromArgs!);
+      Get.snackbar('Thành công', result.message);
+    } else {
+      Get.snackbar('Lỗi', result.message);
+    }
+  }
+
 }
 

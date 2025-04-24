@@ -9,7 +9,7 @@ class CostSummaryWidget extends StatelessWidget {
   const CostSummaryWidget({Key? key, required this.order}) : super(key: key);
 
   // Phí ship cố định là 0 đồng
-  double get shippingFee => 0;
+  double get shippingFee => order.shippingFee ?? 0;
 
   // Tính giá gốc của món: giá sản phẩm + giá các option (loại typeId == 1)
   // Tính giá gốc của món: giá sản phẩm + giá tất cả các option

@@ -13,6 +13,8 @@ class LoginController extends BaseController {
   final passwordController = TextEditingController();
   final errorMessage = ''.obs;
   final LoginService _loginService = LoginService();
+  final isPasswordHidden = true.obs;
+
 
   void login() async {
     final String username = accountController.text.trim();

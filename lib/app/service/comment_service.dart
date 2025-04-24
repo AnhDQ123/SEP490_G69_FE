@@ -9,9 +9,8 @@ class CommentService {
   Future<List<Comment>> fetchComments({
     required int blogId,
     int page = 0,     // ✅ Trang số (page index, bắt đầu từ 0)
-    int size = 5,    // ✅ Số comment mỗi trang
   }) async {
-    final uri = Uri.parse('$baseUrl/api/comments/$blogId?page=$page&size=$size');
+    final uri = Uri.parse('$baseUrl/api/comments/$blogId?offset=$page');
     print('🌐 Fetching comments from: $uri');
 
     final response = await http.get(uri, headers: {
@@ -57,5 +56,13 @@ class CommentService {
       throw Exception('Không thể tạo bình luận');
     }
   }
+
+  Future<void> deleteComment(int commentId) async {
+    final response = await http.delete(Uri.parse('$baseUrl/api/comments/$commentId'));
+    if (response.statusCode != 200) {
+      throw Exception('Không thể xoá bình luận');
+    }
+  }
+
 
 }

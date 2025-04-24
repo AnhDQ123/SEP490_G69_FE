@@ -11,6 +11,7 @@ class OtpVerificationController extends BaseController {
   final isLoading = false.obs;
   final RegisterService _registerService = RegisterService();
 
+
   List<TextEditingController> textControllers =
   List.generate(6, (_) => TextEditingController());
   List<FocusNode> focusNodes = List.generate(6, (_) => FocusNode());

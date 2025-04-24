@@ -4,11 +4,22 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <application
         android:label="ffb_fe_flutter"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+
+        <!--        <meta-data-->
+        <!--            android:name="com.mapbox.v2.mapboxAccessToken"-->
+        <!--            android:value="sk.eyJ1IjoiZ3VlbnQiLCJhIjoiY204bnpsZ2V3MDQwNTJzc2hrYW1vMWxjZSJ9.vTsSI4QlgQ5-8D3nqsbIzg" />-->
+        <meta-data android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyAj-j17eIO3U-QeTHrW_Ucy37HRHi5wej4"/>
+
         <activity
             android:name=".MainActivity"
             android:exported="true"

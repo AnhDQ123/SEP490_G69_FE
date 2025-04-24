@@ -59,6 +59,10 @@ abstract class Routes {
   static const SHOP_MANAGE_SHIPPER = _Paths.SHOP_MANAGE_SHIPPER;
   static const BLOG_LIST = _Paths.BLOG_LIST;
   static const BLOG_DETAIL = _Paths.BLOG_DETAIL;
+  static const ADD_BLOG = _Paths.ADD_BLOG;
+  static const CATEGORY = _Paths.CATEGORY;
+  static const MAP_PICKER = _Paths.MAP_PICKER;
+  static const GOOGLE_MAP_PAGE = _Paths.GOOGLE_MAP_PAGE;
 }
 
 abstract class _Paths {
@@ -119,4 +123,8 @@ abstract class _Paths {
   static const SHOP_MANAGE_SHIPPER = '/shop-manage-shipper';
   static const BLOG_LIST = '/blog-list';
   static const BLOG_DETAIL = '/blog-detail';
+  static const ADD_BLOG = '/add-blog';
+  static const CATEGORY = '/category';
+  static const MAP_PICKER = '/map-picker';
+  static const GOOGLE_MAP_PAGE = '/google-map-page';
 }

@@ -72,7 +72,7 @@ class ShipperOrderListView extends GetView<ShipperOrderListController> {
           height: 100,
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: isSelected ? Colors.black : Colors.grey[300],
+            color: isSelected ? Color.fromRGBO(212, 163, 115, 1) : Colors.grey[300],
             borderRadius: BorderRadius.circular(12),
           ),
           child: Column(

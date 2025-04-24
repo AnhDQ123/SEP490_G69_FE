@@ -216,7 +216,7 @@ class ShopView extends GetView<ShopController> {
         _buildGridItem(Icons.category, 'Sản phẩm', () => Get.toNamed(Routes.SHOP_PRODUCT_LIST)),
         _buildGridItem(Icons.pie_chart, 'Thống kê', () => Get.toNamed(Routes.SHOP_DASHBOARD)),
         _buildGridItem(Icons.percent, 'Giảm giá', () => Get.toNamed(Routes.PRODUCT_DISCOUNT)),
-        _buildGridItem(Icons.description, 'Báo cáo', () {
+        _buildGridItem(Icons.description, 'Khiếu nại', () {
           Get.toNamed(Routes.SHOP_REPORT_LIST, arguments: {'shopId': controller.shopId});
         }),        _buildGridItem(Icons.local_offer, 'Voucher', () => Get.toNamed(Routes.SHOP_VOUCHER_LIST)),
         _buildGridItem(Icons.campaign, 'Banner', () {

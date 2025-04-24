@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:get/get_connect/http/src/multipart/form_data.dart';
@@ -86,56 +87,105 @@ class RegisterService {
       };
     }
   }
-
-
-  Future<Map<String, dynamic>> updateUserProfile(
-      String phone, // Nhận phone thay vì userId
-      String name,
-      String gender,
-      String dob,
-      String address,
-      dynamic avatar,
-      ) async {
+  Future<Map<String, dynamic>> updateUserProfile({
+    required String phone,
+    required String name,
+    required String gender,
+    required String dob,
+    required String address,
+    required String email,
+    File? avatarFile,
+  }) async {
     try {
-      final String apiUrl = "${ApiBaseUrl.baseUrl}/api/users/update";
+      var uri = Uri.parse('${ApiBaseUrl.baseUrl}/api/users/update');
+      var request = http.MultipartRequest('PUT', uri);
 
-      Uint8List avatarBytes;
-      String filename = "avatar.jpg";
-      if (avatar is File) {
-        avatarBytes = await avatar.readAsBytes();
-      } else if (avatar is Uint8List) {
-        avatarBytes = avatar;
-      } else {
-        throw Exception("Invalid avatar type");
+      // Thêm các trường dữ liệu
+      request.fields['phone'] = phone;
+      request.fields['name'] = name;
+      request.fields['gender'] = gender;
+      request.fields['dob'] = dob;
+      request.fields['address'] = address;
+      request.fields['email'] = email;
+
+      // Thêm file avatar nếu có
+      if (avatarFile != null) {
+        request.files.add(
+          await http.MultipartFile.fromPath(
+            'avatar',
+            avatarFile.path,
+          ),
+        );
       }
 
-      // Sử dụng phone thay vì userId trong fields
-      Map<String, String> fields = {
-        "phone": phone, // Thay id bằng phone
-        "name": name,
-        "gender": gender,
-        "dob": dob,
-        "address": address,
-      };
-
-      var multipartFile = http.MultipartFile.fromBytes("avatar", avatarBytes, filename: filename);
-
-      final response = await _apiService.postMultipart(
-        apiUrl,
-        fields: fields,
-        files: [multipartFile],
-        isUsingToken: false,
-      );
+      var response = await request.send();
+      var responseData = await response.stream.bytesToString();
+      var jsonResponse = jsonDecode(responseData);
 
       if (response.statusCode == 200) {
-        return {'success': true, 'message': 'Cập nhật thành công!'};
+        return {
+          'success': true,
+          'message': 'Cập nhật thành công',
+          'data': jsonResponse
+        };
       } else {
-        return {'success': false, 'message': 'Cập nhật thất bại'};
+        return {
+          'success': false,
+          'message': jsonResponse['message'] ?? 'Cập nhật thất bại'
+        };
       }
     } catch (e) {
-      print("Error in updateUserProfile: $e");
-      return {'success': false, 'message': 'Lỗi hệ thống: $e'};
+      return {
+        'success': false,
+        'message': 'Lỗi kết nối: ${e.toString()}'
+      };
     }
   }
+
+  Future<Map<String, dynamic>> forgotPassword({
+    required String phone,
+    required String password,
+    required String confirmPassword,
+  }) async {
+    try {
+      final uri  = Uri.parse('${ApiBaseUrl.baseUrl}/api/users/forgot');
+      final resp = await http.put(uri, body: {
+        'phone'          : phone,
+        'password'       : password,
+        'confirmPassword': confirmPassword,
+      });
+
+      // Nếu BE trả về empty hoặc plain‑text, xử lý an toàn
+      String body = resp.body.trim();
+      String message;
+      if (body.isEmpty) {
+        message = resp.statusCode == 200
+            ? 'Đặt lại mật khẩu thành công'
+            : 'Có lỗi xảy ra';
+      } else {
+        // Thử parse JSON, nếu lỗi thì coi body là chuỗi thông báo
+        try {
+          final json = jsonDecode(body);
+          message = json is Map && json.containsKey('message')
+              ? json['message']
+              : body;
+        } catch (_) {
+          message = body;
+        }
+      }
+
+      return {
+        'success': resp.statusCode == 200,
+        'message': message,
+      };
+    } catch (e) {
+      return {
+        'success': false,
+        'message': 'Lỗi kết nối: $e',
+      };
+    }
+  }
+
+
 }
 
