@@ -142,7 +142,7 @@ class ShopService {
       var responseBody = await response.stream.bytesToString();
 
       print("📥 HTTP Status Code: ${response.statusCode}");
-      print("📥 Response Body: $responseBody"); // ✅ Debug dữ liệu API trả về
+      print("📥 Response Body: $responseBody");
 
       if (response.statusCode == 201 || response.statusCode == 200) {
         return ApiResponse(success: true, message: "Đăng ký thành công!");

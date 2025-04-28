@@ -89,7 +89,10 @@ class MyOrderView extends GetView<MyOrderController> {
               controller.canceledOrders.isEmpty &&
               controller.returnPendingOrders.isEmpty &&
               controller.returnedOrders.isEmpty &&
-              controller.rejectedOrders.isEmpty) {
+              controller.rejectedOrders.isEmpty&&
+              controller.returnRejectedOrders.isEmpty&&
+              controller.shipPendingOrders.isEmpty
+          ) {
             return const Center(
               child: Text("Không có đơn hàng nào!"),
             );
