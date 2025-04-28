@@ -47,6 +47,11 @@ dependencies:
   geocoding: ^2.1.0
   location: ^5.0.3
   google_maps_flutter: ^2.12.1
+  flutter_polyline_points: ^2.1.0   # hoặc bản mới nhất trên pub.dev
+
+
+  firebase_core:
+  firebase_messaging:
 
   # Develop
   flutter_spinkit: ^5.2.1

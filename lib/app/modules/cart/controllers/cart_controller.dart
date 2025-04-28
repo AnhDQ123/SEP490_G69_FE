@@ -437,6 +437,7 @@ class CartController extends GetxController {
           .map((cart) => cart.toOrder(
         shipMethodId: 1,
         paymentMethodId: 1,
+        address: '',
       ))
           .first;
 

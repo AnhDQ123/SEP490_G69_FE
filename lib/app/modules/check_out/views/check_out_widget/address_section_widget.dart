@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-import '../../../../models/order.dart';
+import '../../../../models/user_profile.dart';  // Đảm bảo bạn import đúng model UserProfile
 
 class AddressSectionWidget extends StatelessWidget {
-  final Order order;
-  const AddressSectionWidget({Key? key, required this.order}) : super(key: key);
+  final UserProfile userProfile;  // Nhận đối tượng UserProfile
+  final Function? onAddressSelected;  // Callback khi chọn địa chỉ mới
+
+  const AddressSectionWidget({Key? key, required this.userProfile,this.onAddressSelected,}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +28,7 @@ class AddressSectionWidget extends StatelessWidget {
               ),
               const SizedBox(height: 2),
               Text(
-                order.address,
+                userProfile.address.isNotEmpty ? userProfile.address : 'Địa chỉ chưa được cập nhật',  // Hiển thị địa chỉ từ UserProfile
                 style: const TextStyle(
                   fontSize: 8,
                   color: Colors.grey,
@@ -35,6 +37,7 @@ class AddressSectionWidget extends StatelessWidget {
             ],
           ),
         ),
+
       ],
     );
   }

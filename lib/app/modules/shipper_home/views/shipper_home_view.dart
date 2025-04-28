@@ -70,8 +70,8 @@ class ShipperHomeView extends GetView<ShipperHomeController> {
     return Obx(() => Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          controller.isBusy.value ? "Đang bận" : "Đang rảnh",
+        const Text(
+          "Đang bận",
           style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
         ),
         Switch(
@@ -81,6 +81,7 @@ class ShipperHomeView extends GetView<ShipperHomeController> {
       ],
     ));
   }
+
 
   Widget _buildOrderSummary(
       BuildContext context, ShipperHomeController controller) {

@@ -20,8 +20,8 @@ class ShipperOrderListController extends GetxController {
 
   Future<void> refreshOrders() async {
     try {
-      final updated = await ShipperService().fetchOrdersByShipper(userId);
-      orders.assignAll(updated); // Cập nhật danh sách
+      final updated = await ShipperService().fetchOrdersByShipperAndStatus(userId, selectedStatus.value);
+      orders.assignAll(updated);
       orders.refresh(); // ⚠️ BẮT BUỘC: thông báo Obx rebuild lại
     } catch (e) {
       Get.snackbar("Lỗi", "Không thể làm mới danh sách đơn hàng");

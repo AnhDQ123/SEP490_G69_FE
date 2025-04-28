@@ -63,6 +63,7 @@ abstract class Routes {
   static const CATEGORY = _Paths.CATEGORY;
   static const MAP_PICKER = _Paths.MAP_PICKER;
   static const GOOGLE_MAP_PAGE = _Paths.GOOGLE_MAP_PAGE;
+  static const USER_MAP = _Paths.USER_MAP;
 }
 
 abstract class _Paths {
@@ -127,4 +128,5 @@ abstract class _Paths {
   static const CATEGORY = '/category';
   static const MAP_PICKER = '/map-picker';
   static const GOOGLE_MAP_PAGE = '/google-map-page';
+  static const USER_MAP = '/user-map';
 }

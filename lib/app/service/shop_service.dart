@@ -62,6 +62,8 @@ class ShopService {
     required File? menu,
     required String selectedBankBin,
     required String bankInfo,
+    required String phoneNumber,
+
   }) async
   {
     var uri = Uri.parse('$baseUrl/shops/register');
@@ -81,6 +83,7 @@ class ShopService {
     request.fields['closeTime'] = closeTime; // Gửi giờ đóng cửa
     request.fields['bankCode'] = selectedBankBin;
     request.fields['accountNumber'] = bankInfo;
+    request.fields['phone'] = phoneNumber;
 
     // Upload file ảnh (nếu có)
     if (logo != null) {

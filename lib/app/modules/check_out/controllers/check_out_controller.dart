@@ -1,11 +1,14 @@
 import 'package:get/get.dart';
+import '../../../base/base_common.dart';
 import '../../../models/delivery.dart';
 import '../../../models/order.dart';
 import '../../../models/payment.dart';
+import '../../../models/user_profile.dart';
 import '../../../models/voucher.dart';
 import '../../../service/delivery_method_service.dart';
 import '../../../service/order_service.dart';
 import '../../../service/payment_service.dart';
+import '../../../service/user_service.dart';
 import '../../../service/voucher_service.dart';
 
 class CheckOutController extends GetxController {
@@ -13,6 +16,10 @@ class CheckOutController extends GetxController {
   final VoucherService voucherService = VoucherService();
   final DeliveryMethodService deliveryMethodService = DeliveryMethodService();
   final PaymentService paymentService = PaymentService();
+  final UserService userService = UserService();  // Giả sử bạn có service để lấy user profile
+  var userProfile = Rxn<UserProfile>();
+
+
 
 
 
@@ -47,8 +54,27 @@ class CheckOutController extends GetxController {
       fetchDeliveryMethods(passedOrder.shopId);
       fetchVouchers(passedOrder.shopId);
       fetchPaymentMethods(); // Thêm dòng này
+      fetchUserProfile();
+
     } else {
       errorMessage.value = "Không có dữ liệu đơn hàng được truyền sang.";
+    }
+  }
+
+  Future<void> fetchUserProfile() async {
+    try {
+      final userIdStr = BaseCommon.instance.userId;
+      if (userIdStr != null) {
+        final userId = int.tryParse(userIdStr);
+        if (userId != null) {
+          final data = await userService.fetchUserProfile(userId);
+          if (data != null) {
+            userProfile.value = data;
+          }
+        }
+      }
+    } catch (e) {
+      print('Error fetching user profile: $e');
     }
   }
 

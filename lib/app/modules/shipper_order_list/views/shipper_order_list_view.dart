@@ -193,6 +193,33 @@ class ShipperOrderListView extends GetView<ShipperOrderListController> {
               ],
             ),
           ),
+          // Thêm nút để chuyển qua màn hình bản đồ
+          const SizedBox(height: 10),
+          if (order.status == 'SHIP_PENDING')
+            ElevatedButton.icon(
+              onPressed: () {
+                // Mở màn hình GoogleMapPageView và truyền địa chỉ shop vào
+                Get.toNamed(
+                  Routes.GOOGLE_MAP_PAGE, // Đảm bảo bạn đã khai báo route này trong app_pages.dart
+                  arguments: {
+                    'destination': order.shopAddress, // Truyền địa chỉ shop vào phần điểm đến
+                  },
+                );
+              },
+              icon: Icon(Icons.map, color: Colors.white), // Thêm icon bản đồ
+              label: Text(
+                'Xem Bản Đồ',
+                style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+              ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color(0xFF4CAF50), // Màu xanh lá cây đậm
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30), // Góc bo tròn
+                  ),
+                  padding: EdgeInsets.symmetric(vertical: 14, horizontal: 20), // Padding cho nút
+                  elevation: 5, // Thêm độ bóng cho nút
+          ),
+            ),
           if (order.status == 'SHIPPING')
             buildOrderImagePicker(
               orderId: order.id,

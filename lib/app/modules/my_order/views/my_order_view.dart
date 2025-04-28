@@ -106,7 +106,10 @@ class MyOrderView extends GetView<MyOrderController> {
               ReturnPendingOrderWidget(orders: controller.returnPendingOrders, getStatusColor: _getStatusColor),
               ReturnedOrderWidget(orders: controller.returnedOrders, getStatusColor: _getStatusColor),
               RejectedOrderWidget(orders: controller.rejectedOrders, getStatusColor: _getStatusColor),
-              ReturnRejectedOrderWidget(orders: controller.returnRejectedOrders, getStatusColor: _getStatusColor), // ✅
+              ReturnRejectedOrderWidget(
+                orders: controller.returnRejectedOrders,
+                getStatusColor: _getStatusColor,
+              ) // Để OrderListWidget tự lấy order.status để map
             ],
           );
 

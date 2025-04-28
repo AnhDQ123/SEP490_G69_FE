@@ -333,6 +333,8 @@ class SendReportView extends StatelessWidget {
             options = reportController.shopOptions;
           } else if (reportController.reportType.value == 'Blog') {
             options = reportController.blogOptions;
+          } else if (reportController.reportType.value == 'Đơn hàng') { // 👉 Thêm dòng này
+            options = reportController.orderOptions;
           }
 
           return Column(

@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import 'package:ffb_fe_flutter/app/models/product_discount.dart';
 import '../../../models/discount.dart';
 import '../../../service/shop_service.dart';
+import '../../shop_menu/controllers/shop_controller.dart';
 
 enum SortType {
   none,
@@ -24,18 +25,22 @@ class ProductDiscountController extends GetxController {
 
   // Sắp xếp
   final sortType = SortType.none.obs;
+  final shopController = Get.find<ShopController>();
+  late int shopId;
+
 
   final ShopService shopService = ShopService();
 
   @override
   void onInit() {
     super.onInit();
+    shopId = shopController.shopId; // Lấy shopId từ ShopController
     fetchProducts();
   }
 
   Future<void> fetchProducts() async {
     try {
-      final products = await shopService.fetchProductsByShop(1);// truyen shopId
+      final products = await shopService.fetchProductsByShop(shopId);
 
       _originalActiveProducts.clear();
       _originalScheduledProducts.clear();

@@ -4,7 +4,7 @@ import '../../../models/shop_profile.dart';
 import '../../../service/shop_service.dart';
 
 class ShopController extends GetxController {
-  var isFreeShipping = false.obs; // RxBool
+  var isFreeShipping = true.obs; // RxBool
   var isShopClosed = false.obs; // RxBool
 
   var orderCounts = <String, int>{}.obs; // RxMap để lưu số lượng đơn

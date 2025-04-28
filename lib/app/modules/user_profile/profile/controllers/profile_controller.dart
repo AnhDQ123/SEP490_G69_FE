@@ -43,14 +43,13 @@ class ProfileController extends GetxController {
     fetchData();
   }
 
-  void fetchData() async {
+  Future<void> fetchData() async {
     isLoadingShopInfo.value = true;
 
-    await Future.wait([
-      fetchProfile(),
-      fetchUserShop(),
-      checkUserRoles(),
-    ]);
+    // Thực hiện tuần tự thay vì song song
+    await fetchProfile();
+    await fetchUserShop();
+    await checkUserRoles();
 
     isLoadingShopInfo.value = false;
   }

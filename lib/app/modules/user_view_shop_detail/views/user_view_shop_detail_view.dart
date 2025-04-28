@@ -29,8 +29,9 @@ class UserViewShopDetailView extends GetView<UserViewShopDetailController> {
         child: Column(
           children: [
             _buildShopHeaderSection(),
-            _buildShopInfoSection(), // Thêm section thông tin cửa hàng
-            _buildRatingSection(), // Thêm section đánh giá            _buildBestSellerCard(),
+            _buildShopInfoSection(),
+            _buildRatingSection(),
+            _buildBestSellerCard(),
             _buildContactCard(),
             _buildMenuCard(),
           ],

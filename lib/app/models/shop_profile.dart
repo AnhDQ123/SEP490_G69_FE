@@ -54,7 +54,7 @@ class ShopProfile {
       foodSafetyCertificate: json['foodSafetyCertificate'],
       address: json['address'] ?? '',
       isActive: json['isActive'],
-      rate: (json['rate'] as num).toDouble(),
+      rate: (json['rate'] ?? 0).toDouble(),
       viewCount: json['viewCount'],
       isShipping: json['isShipping'],
       isOpening: json['isOpening'],

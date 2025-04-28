@@ -103,16 +103,18 @@ class ShipperHomeController extends GetxController {
       print("🔄 Bắt đầu fetch đơn hàng...");
       isBusy.value = true;
 
-      final result = await ShipperService().fetchOrdersByShipper(userId);
-      print("✅ Đã fetch ${result.length} đơn hàng");
+      final result1 = await ShipperService().fetchOrdersByShipperAndStatus(userId,'SHIP_PENDING');
+      final result2 = await ShipperService().fetchOrdersByShipperAndStatus(userId,'SHIPPING');
+      final result3 = await ShipperService().fetchOrdersByShipperAndStatus(userId,'DELIVERED');
 
-      orders.value = result;
+
+      orders.value = result1 + result2 + result3;
 
       // Thống kê
-      doneOrders.value = result.where((o) => o.status == "DELIVERED").length;
-      deliveringOrders.value = result.where((o) => o.status == "SHIPPING").length;
-      ship_pendingOrders.value = result.where((o) => o.status == "SHIP_PENDING").length;
-      revenue.value = result.fold(0.0, (sum, o) => sum + (o.total));
+      doneOrders.value = result3.where((o) => o.status == "DELIVERED").length;
+      deliveringOrders.value = result2.where((o) => o.status == "SHIPPING").length;
+      ship_pendingOrders.value = result1.where((o) => o.status == "SHIP_PENDING").length;
+      revenue.value = result3.fold(0.0, (sum, o) => sum + (o.total));
 
       print("📦 Đơn giao thành công: ${doneOrders.value}");
       print("🚚 Đơn đang giao: ${deliveringOrders.value}");

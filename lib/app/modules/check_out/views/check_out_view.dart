@@ -42,7 +42,8 @@ class CheckOutView extends GetView<CheckOutController> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                AddressSectionWidget(order: order),
+                if (controller.userProfile.value != null)
+                  AddressSectionWidget(userProfile: controller.userProfile.value!),
                 const SizedBox(height: 12),
                 DeliveryTimeWidget(order: order),
                 const SizedBox(height: 12),

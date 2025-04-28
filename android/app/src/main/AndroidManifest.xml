@@ -10,7 +10,7 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <application
-        android:label="ffb_fe_flutter"
+        android:label="Fast F&amp;B"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
 
@@ -18,7 +18,7 @@
         <!--            android:name="com.mapbox.v2.mapboxAccessToken"-->
         <!--            android:value="sk.eyJ1IjoiZ3VlbnQiLCJhIjoiY204bnpsZ2V3MDQwNTJzc2hrYW1vMWxjZSJ9.vTsSI4QlgQ5-8D3nqsbIzg" />-->
         <meta-data android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyAj-j17eIO3U-QeTHrW_Ucy37HRHi5wej4"/>
+            android:value="AIzaSyAGDAELiUbJ9bBOUk4F0Apu9WF6FAWAUSA"/>
 
         <activity
             android:name=".MainActivity"

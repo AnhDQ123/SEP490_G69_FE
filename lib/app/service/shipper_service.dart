@@ -13,8 +13,8 @@ class ShipperService {
     required String name,
     required String gender,
     required String dob, // yyyy-MM-dd
-    required String phone,
-    required String email,
+    required String accountNumber,
+    required String bankCode,
     required String citizenIDNumber,
     required String citizenIDExpiredDate, // yyyy-MM-dd
     required String drivingLicenseExpiredDate, // yyyy-MM-dd
@@ -32,8 +32,8 @@ class ShipperService {
     request.fields['name'] = name;
     request.fields['gender'] = gender;
     request.fields['dob'] = dob;
-    request.fields['phone'] = phone;
-    request.fields['email'] = email;
+    request.fields['accountNumber'] = accountNumber;
+    request.fields['bankCode'] = bankCode;
     request.fields['citizenIDNumber'] = citizenIDNumber;
     request.fields['citizenIDExpiredDate'] = citizenIDExpiredDate;
     request.fields['drivingLicenseExpiredDate'] = drivingLicenseExpiredDate;
@@ -106,15 +106,15 @@ class ShipperService {
     }
   }
 
-  Future<List<Order>> fetchOrdersByShipper(int userId) async {
+  Future<List<Order>> fetchOrdersByShipperAndStatus(int userId, String status) async {
     try {
       final response = await http.get(
-        Uri.parse('$baseUrl/order/shipper?id=$userId'),
+        Uri.parse('$baseUrl/order/shipper?id=$userId&status=$status'),
       );
 
       if (response.statusCode == 200) {
         final data =
-            jsonDecode(utf8.decode(response.bodyBytes)); // ✅ decode đúng UTF-8
+        jsonDecode(utf8.decode(response.bodyBytes)); // ✅ decode đúng UTF-8
 
         // Lấy danh sách đơn hàng từ trường "content"
         final List<dynamic> ordersJson = data['content'];
@@ -132,7 +132,7 @@ class ShipperService {
   Future<ApiResponse> acceptShipping(
       {required int orderId, required int userId}) async {
     final url =
-        Uri.parse('$baseUrl/order/acceptShip?id=$orderId&userId=$userId');
+    Uri.parse('$baseUrl/order/acceptShip?id=$orderId&userId=$userId');
 
     try {
       final response = await http.post(url);

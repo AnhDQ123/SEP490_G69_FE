@@ -90,6 +90,8 @@ import '../modules/shop_voucher_add/bindings/shop_voucher_add_binding.dart';
 import '../modules/shop_voucher_add/views/shop_voucher_add_view.dart';
 import '../modules/shop_voucher_list/bindings/shop_voucher_list_binding.dart';
 import '../modules/shop_voucher_list/views/shop_voucher_list_view.dart';
+import '../modules/user_map/bindings/user_map_binding.dart';
+import '../modules/user_map/views/user_map_view.dart';
 import '../modules/user_profile/change_password/bindings/change_password_binding.dart';
 import '../modules/user_profile/change_password/views/change_password_view.dart';
 import '../modules/user_profile/edit_profile/bindings/edit_profile_binding.dart';
@@ -349,15 +351,20 @@ class AppPages {
       page: () => const CategoryView(),
       binding: CategoryBinding(),
     ),
-    GetPage(
-      name: _Paths.MAP_PICKER,
-      page: () => OsmMapPickerScreen(),
-      binding: MapPickerBinding(),
-    ),
+    // GetPage(
+    //   name: _Paths.MAP_PICKER,
+    //   page: () => OsmMapPickerScreen(),
+    //   binding: MapPickerBinding(),
+    // ),
     GetPage(
       name: _Paths.GOOGLE_MAP_PAGE,
-      page: () => const GoogleMapPageView(),
+      page: () => GoogleMapPageView(),
       binding: GoogleMapPageBinding(),
+    ),
+    GetPage(
+      name: _Paths.USER_MAP,
+      page: () =>  UserMapView(),
+      binding: UserMapBinding(),
     ),
   ];
 }

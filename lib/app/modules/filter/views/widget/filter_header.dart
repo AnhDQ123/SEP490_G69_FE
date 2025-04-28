@@ -104,7 +104,7 @@ class FilterHeader extends GetView<FilterController> {
           // Nút bộ lọc
           OutlinedButton.icon(
             icon: const Icon(Icons.filter_list, size: 20),
-            label: const Text("Bộ lọc"),
+            label: const Text("Kết quả:"),
             onPressed: () => _showFilterDialog(),
           ),
           SizedBox(width: 12),

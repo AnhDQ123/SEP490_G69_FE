@@ -2,11 +2,12 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../controllers/shipper_register_controller.dart';
 
 class ShipperRegisterView extends StatelessWidget {
   final ShipperRegisterController controller =
-      Get.put(ShipperRegisterController());
+  Get.put(ShipperRegisterController());
   final RxString emailError = ''.obs;
 
   @override
@@ -29,9 +30,9 @@ class ShipperRegisterView extends StatelessWidget {
             _buildDropdownField(controller.gender,
                 label: "Giới tính", items: ["Nam", "Nữ"]),
             _buildDatePicker(controller.dateOfBirth, label: "Ngày sinh"),
-            _buildTextField(controller.phone,
-                label: "Số điện thoại", isRequired: true, isNumeric: true),
-            _buildEmailField(controller.email),
+            // _buildTextField(controller.phone,
+            //     label: "Số điện thoại", isRequired: true, isNumeric: true),
+            // _buildEmailField(controller.email),
             _buildTextField(controller.idNumber,
                 label: "Số CMND/Căn cước", isRequired: true, isNumeric: true),
             _buildDatePicker(controller.expiryDate,
@@ -57,10 +58,10 @@ class ShipperRegisterView extends StatelessWidget {
               onRemove: () => controller.removeImage(controller.idBackImage),
             ),
             const SizedBox(height: 12),
-            _buildTextField(controller.licenseNumber,
-                label: "Giấy phép lái xe", isRequired: true, isNumeric: true),
+            // _buildTextField(controller.licenseNumber,
+            //     label: "Giấy phép lái xe", isRequired: true, isNumeric: true),
             _buildDatePicker(controller.licenseExpiry,
-                label: "Ngày hết hạn", isFutureOnly: true),
+                label: "Ngày hết hạn giấy phép lái xe", isFutureOnly: true),
             _buildImageUploader(
               label: "Ảnh mặt trước của giấy phép lái xe",
               imageController: controller.licenseFrontImage,
@@ -94,38 +95,76 @@ class ShipperRegisterView extends StatelessWidget {
                   controller.removeImage(controller.legalRecordImage),
               isPortrait: true, // Ảnh Lý Lịch Tư Pháp theo chiều dọc
             ),
+            RichText(
+              text: TextSpan(
+                  text: "Chọn ngân hàng",
+                  style: GoogleFonts.montserrat( // Áp dụng GoogleFonts cho text
+                      fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
+                  children: [
+                    TextSpan(
+                      text: " *",
+                      style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.red),
+                    ),
+                  ]),
+            ),
+            const SizedBox(height: 4),
+            Obx(() => controller.isLoadingBanks.value
+                ? Center(child: CircularProgressIndicator())
+                : DropdownButtonFormField(
+              value: controller.selectedBank.value,
+              isExpanded: true,
+              items: controller.bankList.map((bank) {
+                return DropdownMenuItem(
+                  value: bank,
+                  child: Text(bank.shortName,
+                      overflow: TextOverflow.ellipsis),
+                );
+              }).toList(),
+              onChanged: (value) {
+                controller.selectedBank.value = value;
+                controller.selectedBankBin.value = value?.bin ?? '';
+              },
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                hintText: "Chọn ngân hàng",
+              ),
+            )),
+            const SizedBox(height: 12),
+            _buildTextField(controller.bankInfo,
+                label: "Số tài khoản ngân hàng", isRequired: true),
             const SizedBox(height: 20),
             Center(
               child: Obx(() => OutlinedButton(
-                    style: OutlinedButton.styleFrom(
-                      side: BorderSide(color: Colors.black),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 40, vertical: 12),
-                      backgroundColor: controller.isFormValid.value
-                          ? Color.fromRGBO(212, 163, 115, 1)
-                          : Colors.grey[200],
-                    ),
+                style: OutlinedButton.styleFrom(
+                  side: BorderSide(color: Colors.black),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  padding: EdgeInsets.symmetric(horizontal: 40, vertical: 12),
+                  backgroundColor: controller.isFormValid.value
+                      ? Color.fromRGBO(212, 163, 115, 1)
+                      : Colors.grey[200],
+                ),
                 onPressed: controller.isFormValid.value && !controller.isLoading.value
-                    ? () => controller.submitRegistration(controller.userId.value) // ✅ Truyền userId vào API
+                    ? () => controller.submitRegistration() // Truyền userId vào API
                     : null,
-
                 child: controller.isLoading.value
-                        ? SizedBox(
-                            width: 24,
-                            height: 24,
-                            child: CircularProgressIndicator(
-                              color: Colors.black, // ✅ Màu loading
-                              strokeWidth: 2,
-                            ),
-                          )
-                        : Text(
-                            "Đăng ký",
-                            style: TextStyle(fontSize: 16, color: Colors.black),
-                          ),
-                  )),
+                    ? SizedBox(
+                  width: 24,
+                  height: 24,
+                  child: CircularProgressIndicator(
+                    color: Colors.black, // Màu loading
+                    strokeWidth: 2,
+                  ),
+                )
+                    : Text(
+                  "Đăng ký",
+                  style: TextStyle(fontSize: 16, color: Colors.black),
+                ),
+              )),
             ),
           ],
         ),
@@ -175,53 +214,53 @@ class ShipperRegisterView extends StatelessWidget {
   }
 
 
-  Widget _buildEmailField(RxString controllerValue) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        RichText(
-          text: TextSpan(
-            text: "Email",
-            style: TextStyle(
-                fontSize: 14, fontWeight: FontWeight.bold, color: Colors.black),
-            children: [
-              TextSpan(text: " *", style: TextStyle(color: Colors.red))
-            ],
-          ),
-        ),
-        SizedBox(height: 4),
-        TextField(
-          keyboardType: TextInputType.emailAddress,
-          onChanged: (value) {
-            controllerValue.value = value;
-            controller.validateForm();
-          },
-          onEditingComplete: () {
-            if (controllerValue.value.isNotEmpty &&
-                !GetUtils.isEmail(controllerValue.value)) {
-              emailError.value = "Email không hợp lệ";
-            } else {
-              emailError.value = "";
-            }
-          },
-          decoration: InputDecoration(
-            border: OutlineInputBorder(),
-            contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          ),
-        ),
-        Obx(() => emailError.value.isNotEmpty
-            ? Padding(
-                padding: const EdgeInsets.only(top: 4.0),
-                child: Text(
-                  emailError.value,
-                  style: TextStyle(color: Colors.red, fontSize: 12),
-                ),
-              )
-            : SizedBox()),
-        SizedBox(height: 8),
-      ],
-    );
-  }
+  // Widget _buildEmailField(RxString controllerValue) {
+  //   return Column(
+  //     crossAxisAlignment: CrossAxisAlignment.start,
+  //     children: [
+  //       RichText(
+  //         text: TextSpan(
+  //           text: "Email",
+  //           style: TextStyle(
+  //               fontSize: 14, fontWeight: FontWeight.bold, color: Colors.black),
+  //           children: [
+  //             TextSpan(text: " *", style: TextStyle(color: Colors.red))
+  //           ],
+  //         ),
+  //       ),
+  //       SizedBox(height: 4),
+  //       TextField(
+  //         keyboardType: TextInputType.emailAddress,
+  //         onChanged: (value) {
+  //           controllerValue.value = value;
+  //           controller.validateForm();
+  //         },
+  //         onEditingComplete: () {
+  //           if (controllerValue.value.isNotEmpty &&
+  //               !GetUtils.isEmail(controllerValue.value)) {
+  //             emailError.value = "Email không hợp lệ";
+  //           } else {
+  //             emailError.value = "";
+  //           }
+  //         },
+  //         decoration: InputDecoration(
+  //           border: OutlineInputBorder(),
+  //           contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+  //         ),
+  //       ),
+  //       Obx(() => emailError.value.isNotEmpty
+  //           ? Padding(
+  //               padding: const EdgeInsets.only(top: 4.0),
+  //               child: Text(
+  //                 emailError.value,
+  //                 style: TextStyle(color: Colors.red, fontSize: 12),
+  //               ),
+  //             )
+  //           : SizedBox()),
+  //       SizedBox(height: 8),
+  //     ],
+  //   );
+  // }
 
   Widget _buildDropdownField(RxString controllerValue,
       {required String label, required List<String> items}) {
@@ -240,22 +279,22 @@ class ShipperRegisterView extends StatelessWidget {
         ),
         SizedBox(height: 4),
         Obx(() => DropdownButtonFormField(
-              value:
-                  controllerValue.value.isEmpty ? null : controllerValue.value,
-              items: items
-                  .map((item) =>
-                      DropdownMenuItem(value: item, child: Text(item)))
-                  .toList(),
-              onChanged: (value) {
-                controllerValue.value = value as String;
-                controller.validateForm();
-              },
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                contentPadding:
-                    EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              ),
-            )),
+          value:
+          controllerValue.value.isEmpty ? null : controllerValue.value,
+          items: items
+              .map((item) =>
+              DropdownMenuItem(value: item, child: Text(item)))
+              .toList(),
+          onChanged: (value) {
+            controllerValue.value = value as String;
+            controller.validateForm();
+          },
+          decoration: InputDecoration(
+            border: OutlineInputBorder(),
+            contentPadding:
+            EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          ),
+        )),
         SizedBox(height: 8),
       ],
     );
@@ -287,29 +326,29 @@ class ShipperRegisterView extends StatelessWidget {
             );
             if (pickedDate != null) {
               controllerValue.value =
-                  "${pickedDate.day}/${pickedDate.month}/${pickedDate.year}";
+              "${pickedDate.day}/${pickedDate.month}/${pickedDate.year}";
               controller.validateForm();
             }
           },
           child: Obx(() => Container(
-                width: double.infinity,
-                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey),
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: Text(
-                  controllerValue.value.isNotEmpty
-                      ? controllerValue.value
-                      : "Chọn ngày",
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: controllerValue.value.isNotEmpty
-                        ? Colors.black87
-                        : Colors.grey,
-                  ),
-                ),
-              )),
+            width: double.infinity,
+            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.grey),
+              borderRadius: BorderRadius.circular(4),
+            ),
+            child: Text(
+              controllerValue.value.isNotEmpty
+                  ? controllerValue.value
+                  : "Chọn ngày",
+              style: TextStyle(
+                fontSize: 16,
+                color: controllerValue.value.isNotEmpty
+                    ? Colors.black87
+                    : Colors.grey,
+              ),
+            ),
+          )),
         ),
         SizedBox(height: 8),
       ],
@@ -356,7 +395,7 @@ class ShipperRegisterView extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius:
-                          BorderRadius.vertical(top: Radius.circular(16)),
+                      BorderRadius.vertical(top: Radius.circular(16)),
                     ),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
@@ -383,47 +422,47 @@ class ShipperRegisterView extends StatelessWidget {
                 );
               },
               child: Obx(() => Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      Container(
+                alignment: Alignment.center,
+                children: [
+                  Container(
+                    width: width,
+                    height: height,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.grey),
+                    ),
+                    child: imageController.value == null
+                        ? Icon(Icons.add_a_photo,
+                        size: 40, color: Colors.grey)
+                        : ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: Image.file(
+                        imageController.value!,
                         width: width,
                         height: height,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: Colors.grey),
-                        ),
-                        child: imageController.value == null
-                            ? Icon(Icons.add_a_photo,
-                                size: 40, color: Colors.grey)
-                            : ClipRRect(
-                                borderRadius: BorderRadius.circular(12),
-                                child: Image.file(
-                                  imageController.value!,
-                                  width: width,
-                                  height: height,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
+                        fit: BoxFit.cover,
                       ),
-                      if (imageController.value != null)
-                        Positioned(
-                          top: 4,
-                          right: 4,
-                          child: GestureDetector(
-                            onTap: onRemove,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: Colors.red,
-                                shape: BoxShape.circle,
-                              ),
-                              padding: EdgeInsets.all(4),
-                              child: Icon(Icons.close,
-                                  size: 16, color: Colors.white),
-                            ),
+                    ),
+                  ),
+                  if (imageController.value != null)
+                    Positioned(
+                      top: 4,
+                      right: 4,
+                      child: GestureDetector(
+                        onTap: onRemove,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.red,
+                            shape: BoxShape.circle,
                           ),
+                          padding: EdgeInsets.all(4),
+                          child: Icon(Icons.close,
+                              size: 16, color: Colors.white),
                         ),
-                    ],
-                  )),
+                      ),
+                    ),
+                ],
+              )),
             ),
           ],
         );

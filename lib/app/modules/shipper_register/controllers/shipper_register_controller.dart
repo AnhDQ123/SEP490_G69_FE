@@ -2,8 +2,10 @@ import 'dart:io';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../../models/bank.dart';
 import '../../../routes/app_pages.dart';
 import '../../../service/shipper_service.dart';
+import '../../../service/shop_service.dart';
 
 class ShipperRegisterController extends GetxController {
   RxBool isLoading = false.obs; // ✅ Trạng thái loading
@@ -30,6 +32,12 @@ class ShipperRegisterController extends GetxController {
   // Trạng thái hợp lệ của form
   final isFormValid = false.obs;
 
+  var bankList = <Bank>[].obs;
+  var selectedBank = Rxn<Bank>();
+  var selectedBankBin = ''.obs;
+  var isLoadingBanks = true.obs;
+  var bankInfo = ''.obs;
+
   final ImagePicker _picker = ImagePicker();
 
   @override
@@ -41,6 +49,13 @@ class ShipperRegisterController extends GetxController {
       userId.value = arguments['userId'];
       print("User ID received: ${userId.value}");
     }
+    fetchBanks();
+  }
+
+  void fetchBanks() async {
+    isLoadingBanks.value = true;
+    bankList.value = await ShopService().fetchBanks();
+    isLoadingBanks.value = false;
   }
 
   // Gọi để chọn ảnh từ thư viện
@@ -70,21 +85,17 @@ class ShipperRegisterController extends GetxController {
     isFormValid.value = fullName.value.isNotEmpty &&
         gender.value.isNotEmpty &&
         dateOfBirth.value.isNotEmpty &&
-        phone.value.isNotEmpty &&
-        email.value.isNotEmpty &&
-        GetUtils.isEmail(email.value) &&
         idNumber.value.isNotEmpty &&
         expiryDate.value.isNotEmpty &&
         idFrontImage.value != null &&
         idBackImage.value != null &&
-        licenseNumber.value.isNotEmpty &&
         licenseExpiry.value.isNotEmpty &&
         licenseFrontImage.value != null &&
         licenseBackImage.value != null &&
         legalRecordImage.value != null;
   }
 
-  void submitRegistration(int userId) async {
+  void submitRegistration() async {
     if (!isFormValid.value) {
       Get.snackbar("Lỗi", "Vui lòng điền đầy đủ thông tin");
       return;
@@ -93,12 +104,12 @@ class ShipperRegisterController extends GetxController {
     isLoading.value = true; // ✅ Bắt đầu loading
 
     final response = await ShipperService().registerShipper(
-      userId: userId, // Pass the userId received as parameter
+      userId: userId.value, // Pass the userId received as parameter
       name: fullName.value,
       gender: gender.value,
       dob: formatDate(dateOfBirth.value),
-      phone: phone.value,
-      email: email.value,
+      accountNumber: bankInfo.value,
+      bankCode: selectedBankBin.value,
       citizenIDNumber: idNumber.value,
       citizenIDExpiredDate: formatDate(expiryDate.value),
       drivingLicenseExpiredDate: formatDate(licenseExpiry.value),
@@ -114,7 +125,7 @@ class ShipperRegisterController extends GetxController {
     if (response.success) {
       Get.snackbar("Thành công", response.message);
       Future.delayed(Duration(seconds: 1), () {
-        Get.offAllNamed(Routes.SHIPPER_HOME); // ✅ Chuyển trang khi thành công
+        Get.offAllNamed(Routes.PROFILE); // ✅ Chuyển trang khi thành công
       });
     } else {
       Get.snackbar("Thất bại", response.message);

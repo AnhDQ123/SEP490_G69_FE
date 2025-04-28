@@ -36,6 +36,33 @@ class OrderListWidget extends StatelessWidget {
     return formatter.format(price);
   }
 
+  String _mapStatusToText(String status) {
+    switch (status) {
+      case "PENDING":
+        return "Chờ xác nhận";
+      case "PROCESSING":
+        return "Đang chuẩn bị";
+      case "SHIP_PENDING":
+        return "Chờ vận chuyển";
+      case "SHIPPING":
+        return "Đang giao";
+      case "DELIVERED":
+        return "Đã giao";
+      case "CANCELLED":
+        return "Đã huỷ";
+      case "RETURN_PENDING":
+        return "Đang trả hàng";
+      case "RETURNED":
+        return "Đã trả hàng";
+      case "REJECTED":
+        return "Bị tứ chối";
+      case "RETURN_REJECTED":
+        return "Từ chối trả";
+      default:
+        return status;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     if (orders.isEmpty) {

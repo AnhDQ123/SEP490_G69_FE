@@ -154,6 +154,7 @@ class ShopRegisterController extends GetxController {
         closeTime: formatTime(closeTime.value),
         address: address.value,
         description: description.value,
+        phoneNumber: phoneNumber.value,
 
         //Step 4
         citizenIDNumber: idCard.value,

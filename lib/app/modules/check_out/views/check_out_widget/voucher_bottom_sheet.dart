@@ -107,7 +107,7 @@ class VoucherBottomSheet extends StatelessWidget {
                           // Tính toán lại tổng tiền sau khi áp dụng voucher
                           double total = controller.order.value?.total ?? 0;
                           double discountAmount = total * voucher.discountValue;
-                          double newTotal = total - discountAmount + (controller.order.value?.shippingFee ?? 0);
+                          double newTotal = total - discountAmount;
 
                           // Gọi API cập nhật total
                           await controller.updateOrderTotal(newTotal);
