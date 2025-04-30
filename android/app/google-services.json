@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "983322795813",
+    "project_id": "fastfb-d2a39",
+    "storage_bucket": "fastfb-d2a39.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:983322795813:android:522fc0c7a291734b1cc4cc",
+        "android_client_info": {
+          "package_name": "com.example.ffb_fe_flutter"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD69oE97FZKBdHmqiYSezhD-wgL3yL5Scc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

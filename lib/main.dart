@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
@@ -10,6 +12,19 @@ import 'app/service/notification_service.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await BaseCommon.instance.init(); // Khởi tạo BaseCommon để lấy thông tin lưu trữ (token, userId)
+//   await Firebase.initializeApp(); // ✅ BẮT BUỘC: Khởi tạo Firebase
+  await NotificationService.init(); // ✅ BẮT BUỘC: Init notification local (flutter_local_notifications)
+//
+// // ✅ Lấy FCM Token
+//   final fcmToken = await FirebaseMessaging.instance.getToken();
+//   print("📩 FCM Token: $fcmToken");
+//   // ✅ Lắng nghe tin nhắn từ FCM
+//   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+//     print('📨 Tin nhắn đến: ${message.notification?.title} - ${message.notification?.body}');
+//     if (message.notification != null) {
+//       NotificationService.showOrderSuccessNotification(message.notification!.body ?? '');
+//     }
+//   });
 
   // Kiểm tra xem token đã được lưu trong SharedPreferences hay chưa
   final token = BaseCommon.instance.accessToken;

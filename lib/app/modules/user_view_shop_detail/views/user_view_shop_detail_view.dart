@@ -150,8 +150,18 @@ class UserViewShopDetailView extends GetView<UserViewShopDetailController> {
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
             ),
             const SizedBox(height: 8),
-            _buildInfoRow(Icons.location_on, 'Địa chỉ', controller.shopAddress.value ?? 'Chưa cập nhật'),
-            _buildInfoRow(Icons.access_time, 'Giờ mở cửa', '08:00 - 22:00'), // Có thể thay bằng dữ liệu từ API
+            Obx(() => _buildInfoRow(
+              Icons.location_on,
+              'Địa chỉ',
+              controller.shopAddress.value ?? 'Chưa cập nhật',
+            )),
+
+            Obx(() => _buildInfoRow(
+              Icons.access_time,
+              'Giờ mở cửa',
+              '${controller.shopOpenTime.value.isNotEmpty ? controller.shopOpenTime.value : '??'} - ${controller.shopCloseTime.value.isNotEmpty ? controller.shopCloseTime.value : '??'}',
+            )),
+
             _buildInfoRow(Icons.delivery_dining, 'Giao hàng', 'Có giao hàng tận nơi'), // Có thể thêm logic kiểm tra
             _buildInfoRow(Icons.credit_card, 'Thanh toán', 'Tiền mặt, Chuyển khoản, Ví điện tử'),
           ],
@@ -323,11 +333,12 @@ class UserViewShopDetailView extends GetView<UserViewShopDetailController> {
                   itemBuilder: (context, index) {
                     final product = controller.topSellingProducts[index];
                     return _bestSellerItem(
-                      imageUrl: 'https://via.placeholder.com/150',  // Có thể thay bằng hình ảnh thực tế nếu có
-                      title: product['name'],
-                      price: 'Giá: ${product['totalQuantity']} sản phẩm',  // Thay đổi cách hiển thị giá nếu cần
-                      sold: 'Đã bán: ${product['totalQuantity']} hôm nay',
+                      imageUrl: 'https://via.placeholder.com/150',  // hoặc sửa sau
+                      title: product.name,
+                      price: 'Giá trị: ${product.totalValue.toStringAsFixed(0)}đ',
+                      sold: 'Đã bán: ${product.totalQuantity} hôm nay',
                     );
+
                   },
                 ),
               );

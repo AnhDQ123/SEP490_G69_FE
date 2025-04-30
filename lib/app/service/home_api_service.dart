@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import '../base/api_base_url.dart';
+import '../models/banner.dart';
 import '../models/category.dart';
 import '../models/product.dart';
 
@@ -76,6 +77,16 @@ class HomeApiService extends GetConnect {
     } else {
       final List<dynamic> rawData = response.body;
       return rawData.map((json) => Product.fromJson(json)).toList();
+    }
+  }
+
+  Future<List<BannerDTO>> fetchBanners() async {
+    final response = await get('/api/shops/banner/homepage');
+    if (response.status.hasError) {
+      return Future.error('Error fetching banners: ${response.statusText}');
+    } else {
+      final List<dynamic> rawData = response.body;
+      return rawData.map((json) => BannerDTO.fromJson(json)).toList();
     }
   }
 

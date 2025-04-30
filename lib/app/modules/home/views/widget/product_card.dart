@@ -68,19 +68,42 @@ class ProductCard extends StatelessWidget {
         Row(
           children: [
             // Ảnh sản phẩm bên trái với kích thước lớn hơn
-            ClipRRect(
-              borderRadius: BorderRadius.circular(UtilsReponsive.width(6, context)),
-              child: Image.network(
-                getFullImageUrl(product.image),
-                width: imageSize,
-                height: imageSize,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return Image.asset('assets/images/default_food.avif', fit: BoxFit.cover);
-                },
-              ),
+            Stack(
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(UtilsReponsive.width(6, context)),
+                  child: Image.network(
+                    getFullImageUrl(product.image),
+                    width: imageSize,
+                    height: imageSize,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Image.asset('assets/images/default_food.avif', fit: BoxFit.cover);
+                    },
+                  ),
+                ),
+                // 🔥 Nếu đây là Best Seller, thì hiện nhãn
+                Positioned(
+                  top: 4,
+                  left: 4,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: Colors.redAccent,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: const Text(
+                      '🔥Bán chạy',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
-
             SizedBox(width: UtilsReponsive.width(20, context)),
             // Thông tin sản phẩm bên phải
             Expanded( // Thêm Expanded để phần thông tin chiếm phần còn lại
@@ -119,7 +142,7 @@ class ProductCard extends StatelessWidget {
                   SizedBox(
                     width: double.infinity,
                     child: Text(
-                      "Đã bán: ${product.quantity}",
+                      "Còn lại: ${product.quantity}",
                       style: TextStyle(
                         fontSize: fontSize - 1,
                         color: Colors.green,

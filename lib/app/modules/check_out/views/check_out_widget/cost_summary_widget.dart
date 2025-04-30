@@ -39,7 +39,8 @@ class CostSummaryWidget extends StatelessWidget {
 
   // Tổng tạm tính: tổng giá của tất cả các món sau discount
   double get computedSubTotal {
-    return order.total;
+    return (order.total - shippingFee).clamp(0, double.infinity);
+
   }
 
   // // Giả sử order.voucherAmount là số phần trăm (ví dụ: 0.20 tương đương 20%)

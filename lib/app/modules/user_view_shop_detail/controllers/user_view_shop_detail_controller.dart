@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import 'package:ffb_fe_flutter/app/service/shop_service.dart';
 
+import '../../../models/top_product.dart';
 import '../../../service/product_service.dart';  // Import ShopService
 
 class UserViewShopDetailController extends GetxController {
@@ -14,9 +15,12 @@ class UserViewShopDetailController extends GetxController {
   var shopAddress = Rx<String?>(null); // Thêm nullable
   var shopPhone = Rx<String?>(null);
   var isLoading = true.obs;
+  var shopOpenTime = ''.obs;
+  var shopCloseTime = ''.obs;
+
 
   // Các biến để lưu trữ thông tin sản phẩm bán chạy
-  var topSellingProducts = <Map<String, dynamic>>[].obs;
+  var topSellingProducts = <TopProduct>[].obs;
 
   final String? shopNameFromArgs = Get.arguments?['shopName'];
   final int? shopIdFromArgs = Get.arguments?['shopId'];
@@ -42,6 +46,10 @@ class UserViewShopDetailController extends GetxController {
     try {
       isLoading(true);
       final shopData = await shopService.fetchShopProfile(shopId);
+      print('📦 shopData.openTime: ${shopData.openTime}');
+      print('📦 shopData.closeTime: ${shopData.closeTime}');
+      print('📦 shopData.address: ${shopData.address}');
+
 
       // Xử lý các trường có thể null
       shopName.value = shopData.name ?? 'Không có tên';
@@ -52,6 +60,9 @@ class UserViewShopDetailController extends GetxController {
       menuImage.value = shopData.menu; // Có thể null
       shopAddress.value = shopData.address; // Có thể null
       shopPhone.value = shopData.phone; // Có thể null
+      shopOpenTime.value = shopData.openTime.substring(0, 5);
+      shopCloseTime.value = shopData.closeTime.substring(0, 5);
+
     } catch (e) {
       print('Error: $e');
       Get.snackbar('Lỗi', 'Không thể tải thông tin cửa hàng');
@@ -63,15 +74,17 @@ class UserViewShopDetailController extends GetxController {
   // Hàm gọi API để lấy sản phẩm bán chạy trong tháng
   Future<void> fetchTopSellingProducts(String shopId) async {
     try {
-      isLoading(true);  // Bắt đầu loading
-      final products = await productService.getTopSellingProductsThisMonth(shopId);  // Gọi API
-      topSellingProducts.value = products;  // Cập nhật danh sách sản phẩm bán chạy
+      isLoading(true);
+      final products = await productService.getTopSellingProductsThisMonth(shopId);
+      topSellingProducts.value = products;
     } catch (e) {
       print('Error: $e');
+      Get.snackbar('Lỗi', 'Không thể tải sản phẩm bán chạy');
     } finally {
-      isLoading(false);  // Kết thúc loading
+      isLoading(false);
     }
   }
+
 
   Future<void> submitShopRating(double rating) async {
     if (shopIdFromArgs == null) return;

@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import 'package:ffb_fe_flutter/app/service/shipper_service.dart';
 import '../../../models/order.dart';
 import '../../../models/user_profile.dart';
+import '../../../service/notification_service.dart';
 import '../../../service/user_service.dart';
 
 class ShipperHomeController extends GetxController {
@@ -109,6 +110,11 @@ class ShipperHomeController extends GetxController {
 
 
       orders.value = result1 + result2 + result3;
+      // 🛎️ 🛎️ Sau khi load xong, kiểm tra nếu có đơn ship_pending thì bắn noti
+      if (result1.isNotEmpty) {
+        await NotificationService.showNewOrderNotification(result1.length);
+      }
+
 
       // Thống kê
       doneOrders.value = result3.where((o) => o.status == "DELIVERED").length;

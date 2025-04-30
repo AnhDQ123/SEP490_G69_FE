@@ -532,35 +532,52 @@ class CartView extends StatelessWidget {
         color: Colors.white,
         border: Border(top: BorderSide(color: Colors.grey)),
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Obx(() {
-            return Text(
-              "Tổng tiền: ${controller.formatCurrency(controller.getTotalAmount())}",
-              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-            );
-          }),
-          OutlinedButton(
-            onPressed: () => controller.proceedToCheckout(),
-            // Gọi hàm kiểm tra và chuyển trang
-            style: OutlinedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
-              ),
-              side: const BorderSide(color: Colors.black, width: 1.5),
-            ),
-            child: const Text(
-              "Mua hàng",
+          const Padding(
+            padding: EdgeInsets.only(bottom: 8.0),
+            child: Text(
+              "⚠️ Mỗi lần mua chỉ được phép mua tối đa 10 sản phẩm",
               style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black),
+                fontSize: 12,
+                color: Colors.redAccent,
+                fontWeight: FontWeight.w500,
+              ),
+              textAlign: TextAlign.center,
             ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Obx(() {
+                return Text(
+                  "Tổng tiền: ${controller.formatCurrency(controller.getTotalAmount())}",
+                  style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                );
+              }),
+              OutlinedButton(
+                onPressed: () => controller.proceedToCheckout(),
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  side: const BorderSide(color: Colors.black, width: 1.5),
+                ),
+                child: const Text(
+                  "Mua hàng",
+                  style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black),
+                ),
+              ),
+            ],
           ),
         ],
       ),
     );
   }
+
 }

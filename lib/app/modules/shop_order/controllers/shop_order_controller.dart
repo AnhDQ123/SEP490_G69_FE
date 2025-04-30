@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import '../../../models/order.dart';
+import '../../../service/notification_service.dart';
 import '../../../service/order_service.dart';
 
 class ShopOrderController extends GetxController {
@@ -37,6 +38,7 @@ class ShopOrderController extends GetxController {
       isLoading.value = true;
 
       pending.assignAll(await _orderService.fetchOrdersByShopAndStatus(id: shopId, status: "PENDING"));
+      await NotificationService.showPendingOrdersNotification(pending.length);
       processing.assignAll(await _orderService.fetchOrdersByShopAndStatus(id: shopId, status: "PROCESSING"));
       shipping.assignAll(await _orderService.fetchOrdersByShopAndStatus(id: shopId, status: "SHIPPING"));
       shipPending.assignAll(await _orderService.fetchOrdersByShopAndStatus(id: shopId, status: "SHIP_PENDING"));

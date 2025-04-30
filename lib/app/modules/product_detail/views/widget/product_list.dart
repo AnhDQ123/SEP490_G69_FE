@@ -48,9 +48,23 @@ class ProductListWidget extends StatelessWidget {
           double discountedPrice = originalPrice * (1 - activeDiscount.amount);
 
           return InkWell(
-            onTap: () {
-              Get.toNamed(Routes.PRODUCT_DETAIL, arguments: item.id, preventDuplicates: false);
+            // onTap: () async {
+            //   await Get.delete<ProductDetailController>(); // 🔥 Delete Controller cũ
+            //   Get.toNamed(Routes.PRODUCT_DETAIL, arguments: item.id, preventDuplicates: false);
+            // },
+            onTap: () async {
+              final controller = Get.find<ProductDetailController>();
+
+              // 🔥 Bắt đầu loading animation
+              controller.isAddingToCart.value = true; // Reuse biến này để show loading
+
+              // 🔥 Gọi fetch sản phẩm mới
+              await controller.loadNewProduct(item.id);
+
+              controller.isAddingToCart.value = false; // 🔥 Tắt loading sau khi load xong
             },
+
+
             child: Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
@@ -182,7 +196,7 @@ class ProductListWidget extends StatelessWidget {
                             border: Border.all(color: Colors.grey.shade300),
                           ),
                           child: Text(
-                            'Số lượng: ${item.quantity}',
+                            'Còn lại: ${item.quantity}',
                             style: const TextStyle(
                               fontSize: 10,
                               fontWeight: FontWeight.w500,

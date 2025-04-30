@@ -2,6 +2,7 @@ import 'package:ffb_fe_flutter/app/models/product.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../base/base_common.dart';
+import '../../../models/banner.dart';
 import '../../../service/home_api_service.dart';
 
 class HomeController extends GetxController {
@@ -19,6 +20,12 @@ class HomeController extends GetxController {
   var freshProductList = <Product>[].obs;       // Chợ tươi sống (getFresh)
   var cookedProductList = <Product>[].obs;      // Đồ ăn (getCooked)
 
+  var bannerList = <BannerDTO>[].obs; // 👈 Thay vì List<String> → List<BannerDTO>
+
+  final isLoading = false.obs;
+
+
+
   // Service gọi API
   final HomeApiService _apiService = HomeApiService();
 
@@ -32,11 +39,38 @@ class HomeController extends GetxController {
     fetchPopularProducts();
     fetchFreshProducts();
     fetchCookedProducts();
+    fetchBanners();
+  }
+
+  Future<void> refreshAllData() async {
+    isLoading.value = true;
+    try {
+      await fetchCategories(page: 0, size: 20);
+      await fetchAllProducts();
+      await fetchPopularProducts();
+      await fetchFreshProducts();
+      await fetchCookedProducts();
+      await fetchBanners();
+    } catch (e) {
+      print("❌ Lỗi khi refreshAllData: $e");
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+
+  Future<void> fetchBanners() async {
+    try {
+      final data = await _apiService.fetchBanners();
+      bannerList.value = data;
+    } catch (e) {
+      print('Lỗi khi fetch banners: $e');
+    }
   }
 
   //call api category
   // Cập nhật phương thức fetchCategories với các tham số phân trang
-  void fetchCategories({String? name, int page = 0, int size = 20}) async {
+  Future<void> fetchCategories({String? name, int page = 0, int size = 20}) async {
     try {
       final data = await _apiService.fetchCategories(name: name, page: page + 1, size: size);
       print('API categories data: $data');
@@ -48,7 +82,7 @@ class HomeController extends GetxController {
 
 
   //API để lấy danh sách sản phẩm
-  void fetchAllProducts() async {
+  Future<void> fetchAllProducts() async {
     try {
       final data = await _apiService.fetchAllProducts();
       productList.value = data;
@@ -58,7 +92,7 @@ class HomeController extends GetxController {
   }
 
   //API lấy danh sách sản phẩm bán chạy (getPopular)
-  void fetchPopularProducts() async {
+  Future<void> fetchPopularProducts() async {
     try {
       final data = await _apiService.fetchPopularProducts();
       popularProductList.value = data;
@@ -68,7 +102,7 @@ class HomeController extends GetxController {
   }
 
   //API lấy sản phẩm chợ tươi sống (getFresh)
-  void fetchFreshProducts() async {
+  Future<void> fetchFreshProducts() async {
     final userId = BaseCommon.instance.userId;
 
     // Chuyển userId từ String? thành int
@@ -85,7 +119,7 @@ class HomeController extends GetxController {
 
 
   //API lấy sản phẩm đồ ăn (getCooked)
-  void fetchCookedProducts() async {
+  Future<void> fetchCookedProducts() async {
     final userId = BaseCommon.instance.userId;
 
     // Chuyển userId từ String? thành int
@@ -113,4 +147,6 @@ class HomeController extends GetxController {
   void switchBottomNav(int index) {
     bottomNavIndex.value = index;
   }
+
+
 }

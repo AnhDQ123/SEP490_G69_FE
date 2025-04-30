@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import '../../../base/base_common.dart';
 import '../../../models/order.dart';
+import '../../../service/notification_service.dart';
 import '../../../service/order_service.dart';
 
 class MyOrderController extends GetxController {
@@ -63,6 +64,10 @@ class MyOrderController extends GetxController {
       returnRejectedOrders.assignAll(await _orderService.fetchOrdersByOwnerAndStatus(ownerId: userId, status: "RETURN_REJECTED"));
 
       print("📦 Đã nhận các đơn hàng theo trạng thái từ API");
+      // 👉 Nếu có đơn đã giao, hiển thị thông báo
+      if (deliveredOrders.isNotEmpty) {
+        await NotificationService.showDeliveredOrdersNotification(deliveredOrders.length);
+      }
     } catch (e) {
       print("❌ Lỗi khi loadOrders: $e");
     } finally {

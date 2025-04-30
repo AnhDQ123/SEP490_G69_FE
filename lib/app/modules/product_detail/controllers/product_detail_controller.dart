@@ -67,6 +67,44 @@ class ProductDetailController extends GetxController {
     ]);
   }
 
+  Future<void> loadNewProduct(dynamic productIdArg) async {
+    try {
+      _product.value = null;
+      quantity.value = 1;
+      selectedSizeIndex.value = 0;
+      extraOptions.clear();
+      similarProducts.clear();
+      menuProducts.clear();
+      drinkProducts.clear();
+      reviews.clear();
+      currentFeedbackPage.value = 1;
+      canLoadMoreFeedbacks.value = true;
+
+      final productId = productIdArg.toString();
+      print("🔄 Loading new Product ID: $productId");
+
+      Product detail = await apiService.getProductDetail(productId);
+      _product.value = detail;
+
+      // Load sản phẩm tương tự
+      final keyword = extractKeyword(detail.name);
+      List<Product> similar = await apiService.getSimilarProducts(keyword);
+      similarProducts.assignAll(similar);
+
+      // Load menu và đồ uống
+      await fetchMenuProducts();
+      await fetchDrinkProducts();
+
+      // Load feedback
+      await loadProductFeedbacks();
+
+      print("✅ Load xong sản phẩm mới: ${detail.name}");
+    } catch (e) {
+      print("❌ Error loading new product: $e");
+    }
+  }
+
+
   void fetchProductData() async {
     _product.value = null;
     quantity.value = 1;

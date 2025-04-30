@@ -122,7 +122,7 @@ class FoodList extends StatelessWidget {
                       child: TextConstant.subTile2(
                         context,
                         text: product.name,
-                        size: 10,
+                        size: 12,
                         fontWeight: FontWeight.normal,
                         color: Colors.black,
                       ),
@@ -136,7 +136,7 @@ class FoodList extends StatelessWidget {
                     TextConstant.subTile2(
                       context,
                       text: product.shop,
-                      size: 6,
+                      size: 8,
                       color: const Color.fromRGBO(212, 163, 115, 1),
                     ),
                     SizedBox(width: UtilsReponsive.width(2, context)),
@@ -153,9 +153,21 @@ class FoodList extends StatelessWidget {
                       TextConstant.subTile2(
                         context,
                         text: product.rate.toStringAsFixed(1),
-                        size: 8,
+                        size: 9,
                       ),
                     ],
+                  ),
+                SizedBox(height: UtilsReponsive.height(2, context)),
+                // 🛒 Còn lại bao nhiêu
+                if (product.quantity != null)
+                  TextConstant.subTile2(
+                    context,
+                    text: product.quantity > 0
+                        ? "Còn lại: ${product.quantity} suất"
+                        : "Hết hàng",
+                    size: 9,
+                    fontWeight: FontWeight.w600,
+                    color: product.quantity > 0 ? Colors.green : Colors.redAccent,
                   ),
                 SizedBox(height: UtilsReponsive.height(2, context)),
 
@@ -167,7 +179,7 @@ class FoodList extends StatelessWidget {
                         formatPrice(product.defaultPrice),
                         style: TextConstant.textStyleDefine(
                           context,
-                          size: 8,
+                          size: 9,
                           fontWeight: FontWeight.normal,
                           color: Colors.grey,
                         ).copyWith(decoration: TextDecoration.lineThrough),
@@ -177,7 +189,7 @@ class FoodList extends StatelessWidget {
                     TextConstant.titleH2(
                       context,
                       text: formatPrice(newPrice),
-                      size: 11,
+                      size: 12,
                       fontWeight: FontWeight.bold,
                       color: Colors.redAccent,
                     ),

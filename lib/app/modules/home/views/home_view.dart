@@ -44,40 +44,40 @@ class HomeView extends GetView<HomeController> {
         automaticallyImplyLeading: false,
         title: const CustomHeader(),
       ),
-      body: CustomScrollView(
-        slivers: [
-          // 🔹 Banner Slider
-          SliverToBoxAdapter(child: _sectionCard(context, BannerSlider(controller: controller))),
+      body: Obx(() {
+        if (controller.isLoading.value) {
+          return const Center(child: CircularProgressIndicator()); // ✅ Hiển thị loading
+        }
 
-          // 🔹 Category Section
-          SliverToBoxAdapter(child: _sectionCard(context, CategorySection(controller: controller))),
-
-          // 🔹 Best Seller Foods
-          SliverToBoxAdapter(child: _sectionCard(context, BestSellerFoods(controller: controller))),
-
-          // 🔹 FoodTabs (GIỮ CỐ ĐỊNH)
-          SliverPersistentHeader(
-            pinned: true, // 🔥 GIỮ `FoodTabs` cố định khi cuộn
-            floating: false,
-            delegate: _SliverAppBarDelegate(
-              minHeight: UtilsReponsive.height(55, context), // Tăng chiều cao tối thiểu
-              maxHeight: UtilsReponsive.height(60, context), // Tăng chiều cao tối đa
-              child: Container(
-                height: UtilsReponsive.height(60, context), // 🔥 Đặt chiều cao rõ ràng
-                color: Colors.white, // Đảm bảo nền trắng để không bị chìm
-                alignment: Alignment.center, // 🔥 Giữ nội dung ở giữa
-                child: FoodTabs(controller: controller),
+        return RefreshIndicator(
+          onRefresh: () => controller.refreshAllData(),
+          child: CustomScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            slivers: [
+              SliverToBoxAdapter(child: _sectionCard(context, BannerSlider(controller: controller))),
+              SliverToBoxAdapter(child: _sectionCard(context, CategorySection(controller: controller))),
+              SliverToBoxAdapter(child: _sectionCard(context, BestSellerFoods(controller: controller))),
+              SliverPersistentHeader(
+                pinned: true,
+                floating: false,
+                delegate: _SliverAppBarDelegate(
+                  minHeight: UtilsReponsive.height(55, context),
+                  maxHeight: UtilsReponsive.height(60, context),
+                  child: Container(
+                    height: UtilsReponsive.height(60, context),
+                    color: Colors.white,
+                    alignment: Alignment.center,
+                    child: FoodTabs(controller: controller),
+                  ),
+                ),
               ),
-            ),
+              SliverToBoxAdapter(child: _sectionCard(context, FoodList(controller: controller))),
+              SliverToBoxAdapter(child: SizedBox(height: UtilsReponsive.height(16, context))),
+            ],
           ),
+        );
+      }),
 
-          // 🔹 FoodList (Cuộn tự do)
-          SliverToBoxAdapter(child: _sectionCard(context, FoodList(controller: controller))),
-
-          // 🔹 Khoảng cách cuối
-          SliverToBoxAdapter(child: SizedBox(height: UtilsReponsive.height(16, context))),
-        ],
-      ),
       // Ở trang Home, set sẵn initialIndex là 2 (theo ánh xạ Routes.HOME)
       bottomNavigationBar: const BottomNav(initialIndex: 2),
     );
