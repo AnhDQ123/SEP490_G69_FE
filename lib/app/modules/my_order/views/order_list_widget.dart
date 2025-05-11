@@ -276,7 +276,7 @@ class OrderListWidget extends StatelessWidget {
                                     mainAxisAlignment: MainAxisAlignment.end,
                                     children: [
                                       Text(
-                                        "Thành tiền: ${formatPrice(order.total)}", // Dùng itemSubtotal đã tính
+                                        "Thành tiền: ${formatPrice(item.total)}", // Dùng itemSubtotal đã tính
                                         style: const TextStyle(fontSize: 8, fontWeight: FontWeight.w500),
                                       ),
                                     ],
@@ -313,10 +313,38 @@ class OrderListWidget extends StatelessWidget {
                                 ),
                               ],
                             ),
-                          Text(
-                            "Tổng tiền: ${formatPrice(total)}",
-                            style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
-                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              if (order.voucherAmount >= 0)
+                                Row(
+                                  children: [
+                                    const Icon(Icons.local_offer, size: 10, color: Colors.red),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      "Voucher giảm: -${(order.voucherAmount * 100).toInt()}%",
+                                      style: const TextStyle(fontSize: 10, color: Colors.red),
+                                    ),
+                                  ],
+                                ),
+                              if ((order.shippingFee ?? 0) >= 0)
+                                Row(
+                                  children: [
+                                    const Icon(Icons.delivery_dining, size: 10, color: Colors.green),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      "Phí giao hàng: ${formatPrice(order.shippingFee ?? 0)}",
+                                      style: const TextStyle(fontSize: 10, color: Colors.green),
+                                    ),
+                                  ],
+                                ),
+                              Text(
+                                "Tổng tiền: ${formatPrice(total)}",
+                                style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          )
+
                         ],
                       ),
                       actionWidgetBuilder != null

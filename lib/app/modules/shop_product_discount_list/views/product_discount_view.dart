@@ -22,18 +22,24 @@ class ProductDiscountView extends StatelessWidget {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            _sectionTitle("🔥 Đang giảm giá"),
-            Obx(() => _buildDiscountTable(controller.activeDiscountProducts)),
-            const SizedBox(height: 12),
-            _sectionTitle("📅 Sắp diễn ra"),
-            Obx(() => _buildDiscountTable(controller.scheduledDiscountProducts)),
-            const SizedBox(height: 12),
-            _sectionTitle("🚫 Chưa có giảm giá"),
-            Obx(() => _buildNoDiscountTable(controller.noDiscountProducts)),
-          ],
+      body: RefreshIndicator(
+        onRefresh: () async {
+          await controller.fetchProducts(); // Gọi lại API khi refresh
+        },
+        child:
+        SingleChildScrollView(
+          child: Column(
+            children: [
+              _sectionTitle("🔥 Đang giảm giá"),
+              Obx(() => _buildDiscountTable(controller.activeDiscountProducts)),
+              const SizedBox(height: 12),
+              _sectionTitle("📅 Sắp diễn ra"),
+              Obx(() => _buildDiscountTable(controller.scheduledDiscountProducts)),
+              const SizedBox(height: 12),
+              _sectionTitle("🚫 Chưa có giảm giá"),
+              Obx(() => _buildNoDiscountTable(controller.noDiscountProducts)),
+            ],
+          ),
         ),
       ),
     );

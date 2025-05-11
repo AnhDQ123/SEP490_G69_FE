@@ -51,8 +51,10 @@ class ShipperHomeController extends GetxController {
       print("API Response: ${response.message}");  // Kiểm tra phản hồi
       if (response.success) {
         // Loại bỏ văn bản "Doanh thu: " trước khi chuyển đổi thành số
-        final revenueString = response.message.replaceAll(RegExp(r'[^\d]'), ''); // Loại bỏ tất cả ký tự không phải số
-        totalEarnings.value = double.tryParse(revenueString) ?? 0.0;
+        final revenueMatch = RegExp(r'([\d.]+)').firstMatch(response.message);
+        final rawRevenue = revenueMatch?.group(1);
+        totalEarnings.value = double.tryParse(rawRevenue ?? '0.0') ?? 0.0;
+
         print("Updated Total Earnings: ${totalEarnings.value}");  // Kiểm tra sau khi cập nhật
       } else {
         Get.snackbar("Lỗi", response.message);

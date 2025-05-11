@@ -213,7 +213,7 @@ class ProductHeader extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
           child: Obx(() {
             // Lấy giá trực tiếp từ controller
-            final unitPrice = controller.currentPrice;
+            final unitPrice = controller.baseCurrentPrice;
             final totalPrice = unitPrice * controller.quantity.value;
 
             return Row(
@@ -225,7 +225,7 @@ class ProductHeader extends StatelessWidget {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        if (controller.originalPrice > controller.currentPrice) ...[
+                        if (controller.originalPrice > controller.baseCurrentPrice) ...[
                           Text(
                             'Giá gốc: ${formatPrice(controller.originalPrice * controller.quantity.value)}',
                             style: const TextStyle(
@@ -236,7 +236,7 @@ class ProductHeader extends StatelessWidget {
                           ),
                         ],
                         Text(
-                          ' ${formatPrice(controller.currentPrice * controller.quantity.value)}',
+                          ' ${formatPrice(controller.baseCurrentPrice * controller.quantity.value)}',
                           style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,

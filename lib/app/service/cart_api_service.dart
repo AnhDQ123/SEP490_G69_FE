@@ -148,4 +148,17 @@ class CartApiService {
     }
   }
 
+  Future<void> deleteItemFromCart(int cartId, int productId) async {
+    final url = Uri.parse("$baseUrl/api/cart/item/delete?cartId=$cartId&id=$productId");
+
+    final response = await http.delete(url);
+
+    if (response.statusCode != 200) {
+      throw Exception("❌ Failed to delete item from cart: ${response.statusCode}");
+    } else {
+      print("✅ Sản phẩm đã được xóa khỏi giỏ hàng");
+    }
+  }
+
+
 }

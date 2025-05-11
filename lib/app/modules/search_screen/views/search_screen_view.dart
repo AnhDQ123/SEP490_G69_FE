@@ -82,10 +82,17 @@ class _SearchScreenState extends State<SearchScreenView> {
                       ),
                       style: TextStyle(
                         fontSize: 12,
-                        color: Colors.black,  // Màu chữ khi nhập
+                        color: Colors.black,
                       ),
                       onChanged: _onSearch,
+                      onSubmitted: (value) {
+                        if (value.trim().isNotEmpty) {
+                          Get.toNamed('/filter', arguments: {'searchKeyword': value.trim()});
+                        }
+                      },
+                      textInputAction: TextInputAction.search, // Hiển thị nút "search" hoặc "done" trên bàn phím
                     ),
+
                   ),
                 ],
               ),

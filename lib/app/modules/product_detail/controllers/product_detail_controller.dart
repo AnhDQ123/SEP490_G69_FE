@@ -409,7 +409,7 @@ class ProductDetailController extends GetxController {
       final cart = CartDTO(
         id: 0,
         userId: parsedUserId,
-        shopId: 0,
+        shopId: currentProduct.shopId,
         shopName: currentProduct.shop,
         price: totalPrice,
         status: "PENDING",
@@ -503,4 +503,26 @@ class ProductDetailController extends GetxController {
     return words.length > 1 ? "${words[0]} ${words[1]}" : words[0];
   }
 
+  double get baseCurrentPrice {
+    if (_product.value == null) return 0;
+
+    final sizeOptions = _product.value!.foodOptions.where((opt) => opt.typeId == 2).toList();
+    if (sizeOptions.isEmpty) return 0;
+
+    double sizePrice = sizeOptions[selectedSizeIndex.value].price;
+
+    final activeDiscount = _product.value!.discount.firstWhere(
+          (discount) => discount.status == 'ACTIVE',
+      orElse: () => Discount(
+        id: 0,
+        amount: 0.0,
+        startDate: '',
+        endDate: '',
+        status: 'INACTIVE',
+      ),
+    );
+
+    double discountValue = activeDiscount.amount < 1 ? activeDiscount.amount * 100 : activeDiscount.amount;
+    return sizePrice - (sizePrice * (discountValue / 100));
+  }
 }

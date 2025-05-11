@@ -37,7 +37,7 @@ class OrderService {
     required int ownerId,
     required String status,
     int page = 0,
-    int size = 10,
+    int size = 50,
   }) async {
     try {
       final url = Uri.parse('$baseUrl/status?id=$ownerId&status=$status&page=$page&size=$size');
@@ -64,7 +64,7 @@ class OrderService {
     required int id,
     required String status,
     int page = 0,
-    int size = 10,
+    int size = 50,
   }) async {
     try {
       final url = Uri.parse('$baseUrl/shop/status?id=$id&status=$status&page=$page&size=$size');
@@ -211,9 +211,14 @@ class OrderService {
 
 
   /// 🛑 Hủy đơn hàng
-  Future<void> cancelOrder(int id) async {
+  Future<void> cancelOrder(int id, String reason) async {
     try {
-      final url = Uri.parse('$baseUrl/cancel?id=$id');
+      final url = Uri.parse('$baseUrl/cancel')
+          .replace(queryParameters: {
+        'id': id.toString(),
+        'reason': reason,
+      });
+
       final response = await http.post(url);
 
       print("🛑 [POST] $url");
@@ -225,6 +230,7 @@ class OrderService {
       rethrow;
     }
   }
+
 
   /// ✅ Shop chấp nhận đơn hàng
   Future<void> acceptOrder(int id) async {
@@ -337,7 +343,7 @@ class OrderService {
   Future<void> acceptReturn(int orderId) async {
     try {
       final url = Uri.parse('$baseUrl/acceptReturn?id=$orderId');
-      final response = await http.post(url);
+      final response = await http.put(url);
 
       print("✅ [POST] $url");
       print("🔥 STATUS: ${response.statusCode}");
@@ -464,6 +470,29 @@ class OrderService {
       rethrow;
     }
   }
+
+  Future<String?> generateQrForReturn(int orderId, int userId) async {
+    try {
+      final url = Uri.parse('$baseUrl/getCustomerQr?orderId=$orderId&userId=$userId');
+      final response = await http.get(url);
+
+      print("📲 [GET QR] $url");
+      print("🔥 STATUS: ${response.statusCode}");
+      print("🔥 BODY: ${response.body}");
+
+      if (response.statusCode == 200 && response.body.isNotEmpty) {
+        return response.body; // ❗ KHÔNG decode JSON nữa
+      }
+
+      return null;
+    } catch (e) {
+      print("❌ Lỗi generateQrForReturn: $e");
+      return null;
+    }
+  }
+
+
+
 
 
 

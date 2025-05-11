@@ -64,6 +64,8 @@ abstract class Routes {
   static const MAP_PICKER = _Paths.MAP_PICKER;
   static const GOOGLE_MAP_PAGE = _Paths.GOOGLE_MAP_PAGE;
   static const USER_MAP = _Paths.USER_MAP;
+  static const RETURN_QR = _Paths.RETURN_QR;
+  static const SHIPPER_QR = _Paths.SHIPPER_QR;
 }
 
 abstract class _Paths {
@@ -129,4 +131,6 @@ abstract class _Paths {
   static const MAP_PICKER = '/map-picker';
   static const GOOGLE_MAP_PAGE = '/google-map-page';
   static const USER_MAP = '/user-map';
+  static const RETURN_QR = '/return-qr';
+  static const SHIPPER_QR = '/shipper-qr';
 }

@@ -39,7 +39,7 @@ class CustomHeader extends StatelessWidget {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     image: const DecorationImage(
-                      image: AssetImage('assets/images/logo.png'),
+                      image: AssetImage('assets/images/logo.jpg'),
                       fit: BoxFit.cover,
                     ),
                   ),

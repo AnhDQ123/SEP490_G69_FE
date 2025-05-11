@@ -24,27 +24,29 @@ class ShipperHomeView extends GetView<ShipperHomeController> {
           onPressed: () => Get.back(),
         ),
       ),
-      body: Obx(() => SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildProfileCard(),
-                const SizedBox(height: 16),
-                _buildBusyToggle(),
-                const SizedBox(height: 16),
-                buildEarningsSummary(controller),
-                const SizedBox(height: 16),
-                Obx(
-                  () => _buildOrderSummary(context, controller),
-                ),
-                const SizedBox(height: 16),
-                _buildOrderTableHeader(),
-                const SizedBox(height: 8),
-                _buildOrderTable(context),
-              ],
-            ),
-          )),
+      body: RefreshIndicator(
+        onRefresh: () async {
+          await controller.fetchOrders();
+          await controller.fetchShipperRevenue();
+        },
+        child: Obx(() => ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
+            _buildProfileCard(),
+            const SizedBox(height: 16),
+            _buildBusyToggle(),
+            const SizedBox(height: 16),
+            buildEarningsSummary(controller),
+            const SizedBox(height: 16),
+            _buildOrderSummary(context, controller),
+            const SizedBox(height: 16),
+            _buildOrderTableHeader(),
+            const SizedBox(height: 8),
+            _buildOrderTable(context),
+          ],
+        )),
+      ),
+
     );
   }
 

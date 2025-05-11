@@ -12,7 +12,7 @@ class PasswordVerificationView extends GetView<PasswordVerificationController> {
     return Scaffold(
       body: Column(
         children: [
-          HeaderWidget(backgroundColor: Color.fromRGBO(249, 244, 241, 1)),
+          HeaderWidget(backgroundColor: Color.fromRGBO(212, 163, 115, 1)),
           Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),

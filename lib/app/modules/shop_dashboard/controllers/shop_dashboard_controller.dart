@@ -33,24 +33,28 @@ class ShopDashboardController extends GetxController {
         dashboardService.fetchOrdersByStatusByMonth(shopId, "DELIVERED"),
         dashboardService.fetchOrdersByStatusByMonth(shopId, "REJECTED"),
         dashboardService.fetchOrdersByStatusByMonth(shopId, "CANCELLED"),
+        dashboardService.fetchOrdersByStatusByMonth(shopId, "RETURN_REJECTED"),
         dashboardService.fetchOrdersByStatusByDay(shopId, "DELIVERED"),
         dashboardService.fetchOrdersByStatusByDay(shopId, "REJECTED"),
         dashboardService.fetchOrdersByStatusByDay(shopId, "CANCELLED"),
+        dashboardService.fetchOrdersByStatusByDay(shopId, "RETURN_REJECTED"),
         dashboardService.fetchTopSellingProductsByMonth(shopId),
       ]);
 
       // Xử lý dữ liệu theo tháng
-      orders_S.assignAll(results[0]);
+      final successMonthlyOrders = [...results[0], ...results[3]];
+      orders_S.assignAll(_combineOrders(successMonthlyOrders, isDaily: false));
       final failedMonthlyOrders = [...results[1], ...results[2]];
       orders_F.assignAll(_combineOrders(failedMonthlyOrders, isDaily: false));
 
       // Xử lý dữ liệu theo ngày
-      orders_S_Daily.assignAll(results[3]);
-      final failedDailyOrders = [...results[4], ...results[5]];
+      final successDailyOrders = [...results[4], ...results[7]];
+      orders_S_Daily.assignAll(_combineOrders(successDailyOrders, isDaily: true));
+      final failedDailyOrders = [...results[5], ...results[6]];
       orders_F_Daily.assignAll(_combineOrders(failedDailyOrders, isDaily: true));
 
       // Top sản phẩm
-      topProducts.assignAll(results[6]);
+      topProducts.assignAll(results[8]);
 
     } catch (e) {
       Get.snackbar('Lỗi', 'Không thể tải dữ liệu dashboard: ${e.toString()}');

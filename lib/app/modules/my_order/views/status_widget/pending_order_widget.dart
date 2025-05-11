@@ -40,7 +40,7 @@ class PendingOrderWidget extends StatelessWidget {
               print("Lý do huỷ đơn: $reason");
 
               // Gọi huỷ đơn như cũ (không cần truyền lý do)
-              await OrderService().cancelOrder(order.id);
+              await OrderService().cancelOrder(order.id,reason);
 
               // Thông báo và load lại danh sách
               Get.snackbar("Thông báo", "Đơn hàng đã được huỷ", snackPosition: SnackPosition.BOTTOM);

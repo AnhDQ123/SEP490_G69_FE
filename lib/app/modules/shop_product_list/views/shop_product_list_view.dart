@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
 import '../../../resources/util_common.dart';
 import '../../../routes/app_pages.dart';
 import '../controllers/shop_product_list_controller.dart';
@@ -115,65 +114,66 @@ class ShopProductListView extends GetView<ShopProductListController> {
       return Center(child: Text("Không có sản phẩm nào"));
     }
 
-    return ListView.builder(
-      itemCount: products.length,
-      itemBuilder: (_, index) {
-        final product = products[index];
-        return Card(
-          margin: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-          child: ListTile(
-            leading: Image.network(product.image, width: 50, height: 50, fit: BoxFit.cover),
-            title: Text(product.name),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(UtilCommon.formatMoney(product.defaultPrice)),
-                Text("Số lượng: ${product.quantity}"),
-              ],
-            ),
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                IconButton(
-                  icon: Icon(Icons.edit),
-                  onPressed: () {
-                    // Truyền productId tới màn hình Add Product
-                    Get.toNamed(Routes.SHOP_ADD_PRODUCT, arguments: product.id);
-                  },
-                ),
-
-                IconButton(
-                  icon: Icon(Icons.delete, color: Colors.red,),
-                  onPressed: () async {
-                    final confirmed = await Get.dialog<bool>(
-                      AlertDialog(
-                        title: Text("Xác nhận xoá"),
-                        content: Text("Bạn có chắc chắn muốn xoá sản phẩm này không?"),
-                        actions: [
-                          TextButton(
-                            child: Text("Huỷ"),
-                            onPressed: () => Get.back(result: false),
-                          ),
-                          ElevatedButton(
-                            child: Text("Xoá"),
-                            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                            onPressed: () => Get.back(result: true),
-                          ),
-                        ],
-                      ),
-                    );
-
-                    if (confirmed == true) {
-                      controller.deleteProductFromServer(product);
-                    }
-                  },
-
-                ),
-              ],
-            ),
-          ),
-        );
+    return RefreshIndicator(
+      onRefresh: () async {
+        controller.fetchProducts(); // Gọi lại API khi refresh
       },
+      child: ListView.builder(
+        itemCount: products.length,
+        itemBuilder: (_, index) {
+          final product = products[index];
+          return Card(
+            margin: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            child: ListTile(
+              leading: Image.network(product.image, width: 50, height: 50, fit: BoxFit.cover),
+              title: Text(product.name),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(UtilCommon.formatMoney(product.defaultPrice)),
+                  Text("Số lượng: ${product.quantity}"),
+                ],
+              ),
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.edit),
+                    onPressed: () {
+                      Get.toNamed(Routes.SHOP_ADD_PRODUCT, arguments: product.id);
+                    },
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.delete, color: Colors.red),
+                    onPressed: () async {
+                      final confirmed = await Get.dialog<bool>(
+                        AlertDialog(
+                          title: Text("Xác nhận xoá"),
+                          content: Text("Bạn có chắc chắn muốn xoá sản phẩm này không?"),
+                          actions: [
+                            TextButton(
+                              child: Text("Huỷ"),
+                              onPressed: () => Get.back(result: false),
+                            ),
+                            ElevatedButton(
+                              child: Text("Xoá"),
+                              style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                              onPressed: () => Get.back(result: true),
+                            ),
+                          ],
+                        ),
+                      );
+                      if (confirmed == true) {
+                        controller.deleteProductFromServer(product);
+                      }
+                    },
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
     );
   }
 

@@ -105,7 +105,7 @@ class FoodList extends StatelessWidget {
                           child: TextConstant.subTile3(
                             context,
                             text: '-${(activeDiscount.amount < 1 ? activeDiscount.amount * 100 : activeDiscount.amount).toStringAsFixed(0)}%',
-                            size: 7,
+                            size: 10,
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
                           ),

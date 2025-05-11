@@ -27,7 +27,7 @@ class PreparingOrderWidget extends StatelessWidget {
           onPressed: () async {
             try {
               // Gọi API hủy đơn hàng
-              await OrderService().cancelOrder(order.id);
+              await OrderService().cancelOrder(order.id, order.reason!);
               // Hiển thị thông báo thành công (có thể dùng Get.snackbar hoặc toast)
               Get.snackbar("Thông báo", "Đơn hàng đã được huỷ", snackPosition: SnackPosition.BOTTOM);
               // Sau đó, bạn nên refresh lại danh sách đơn hàng

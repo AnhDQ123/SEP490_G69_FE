@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class SearchService {
-  static const String apiUrl = 'http://172.20.10.5:5001//predict';
+  static const String apiUrl = 'https://product-search-api-318865989290.asia-southeast1.run.app//predict';
 
   // Gửi yêu cầu tìm kiếm đến API
   Future<List<Map<String, dynamic>>> searchProducts(String query) async {

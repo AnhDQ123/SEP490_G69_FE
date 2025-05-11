@@ -50,10 +50,11 @@ class MyOrderView extends GetView<MyOrderController> {
       length: 10,
       child: Scaffold(
         appBar: AppBar(
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: () => Get.back(),
-          ),
+          // leading: IconButton(
+          //   icon: const Icon(Icons.arrow_back),
+          //   onPressed: () => Get.back(),
+          // ),
+          automaticallyImplyLeading: false,
           title: const Text("Đơn hàng của bạn"),
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(30),
@@ -71,9 +72,9 @@ class MyOrderView extends GetView<MyOrderController> {
                 Tab(text: "Bị từ chối"),
                 Tab(text: "Từ chối trả"),      // ✅ mới
               ],
-              labelColor: Colors.orange,
+              labelColor: Color.fromRGBO(212, 163, 115, 1),
               unselectedLabelColor: Colors.grey,
-              indicatorColor: Colors.orange,
+              indicatorColor: Color.fromRGBO(212, 163, 115, 1),
             ),
           ),
         ),

@@ -13,7 +13,7 @@ class OtpVerificationView extends GetView<OtpVerificationController> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            HeaderWidget(backgroundColor: Color.fromRGBO(249, 244, 241, 1)),
+            HeaderWidget(backgroundColor: Color.fromRGBO(212, 163, 115, 1)),
             SizedBox(height: 20),
             Obx(() => Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),

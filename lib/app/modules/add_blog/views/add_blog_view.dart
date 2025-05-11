@@ -1,8 +1,8 @@
+
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:photo_manager/photo_manager.dart';
+import 'package:image_picker/image_picker.dart';
 import '../controllers/add_blog_controller.dart';
 
 class AddBlogView extends GetView<AddBlogController> {
@@ -53,7 +53,9 @@ class AddBlogView extends GetView<AddBlogController> {
                       fontSize: 16,
                     ),
                   ),
-                  child: const Text('ĐĂNG'),
+                  child: Obx(() {
+                    return Text(controller.isEditing.value ? 'CẬP NHẬT' : 'ĐĂNG');
+                  }),
                 ),
               );
             }
@@ -110,7 +112,7 @@ class AddBlogView extends GetView<AddBlogController> {
                     ),
                     const SizedBox(height: 16),
 
-                    // Selected media grid
+                    // Selected media grid (hiển thị ảnh đã chọn)
                     Obx(() {
                       final hasOld = controller.existingImageUrls.isNotEmpty;
                       final hasNew = controller.selectedAssets.isNotEmpty;
@@ -133,7 +135,7 @@ class AddBlogView extends GetView<AddBlogController> {
                         itemCount: totalCount,
                         itemBuilder: (context, index) {
                           if (index < controller.existingImageUrls.length) {
-                            // 👉 ẢNH CŨ (từ server)
+                            // Ảnh cũ (từ server)
                             final imageUrl = controller.existingImageUrls[index];
                             return Stack(
                               fit: StackFit.expand,
@@ -164,79 +166,58 @@ class AddBlogView extends GetView<AddBlogController> {
                               ],
                             );
                           } else {
-                            // 👉 ẢNH MỚI (từ picker)
+                            // Ảnh mới (từ picker)
                             final assetIndex = index - controller.existingImageUrls.length;
                             final asset = controller.selectedAssets[assetIndex];
-                            return FutureBuilder<File?>(
-                              future: asset.file,
-                              builder: (context, snapshot) {
-                                if (!snapshot.hasData) return _buildLoadingIndicator();
-                                final file = snapshot.data!;
-                                return Stack(
-                                  fit: StackFit.expand,
-                                  children: [
-                                    ClipRRect(
-                                      borderRadius: BorderRadius.circular(12),
-                                      child: Image.file(file, fit: BoxFit.cover),
-                                    ),
-                                    Positioned(
-                                      top: 4,
-                                      right: 4,
-                                      child: GestureDetector(
-                                        onTap: () => controller.removeAsset(assetIndex),
-                                        child: Container(
-                                          decoration: const BoxDecoration(
-                                            color: Colors.black54,
-                                            shape: BoxShape.circle,
-                                          ),
-                                          padding: const EdgeInsets.all(4),
-                                          child: const Icon(Icons.close, size: 16, color: Colors.white),
-                                        ),
+                            return Stack(
+                              fit: StackFit.expand,
+                              children: [
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(12),
+                                  child: Image.file(
+                                    File(asset.path),
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                                Positioned(
+                                  top: 4,
+                                  right: 4,
+                                  child: GestureDetector(
+                                    onTap: () => controller.removeAsset(assetIndex),
+                                    child: Container(
+                                      decoration: const BoxDecoration(
+                                        color: Colors.black54,
+                                        shape: BoxShape.circle,
                                       ),
+                                      padding: const EdgeInsets.all(4),
+                                      child: const Icon(Icons.close, size: 16, color: Colors.white),
                                     ),
-                                  ],
-                                );
-                              },
+                                  ),
+                                ),
+                              ],
                             );
                           }
                         },
                       );
                     }),
-
                   ],
                 ),
               ),
             ),
-
-            // Phần icon cố định ở dưới (không bị đẩy lên bởi bàn phím)
-            Positioned(
-              bottom: 0,
-              left: 0,
-              right: 0,
-              child: Container(
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-                child: Column(
-                  children: [
-                    const Divider(height: 1),
-                    _buildVerticalIconButton(Icons.photo_library, "Ảnh/video", Colors.green, () => controller.pickAssets()),
-                    _buildVerticalIconButton(Icons.emoji_emotions, "Cảm xúc cá nhân", Colors.amber, () {}),
-                    // _buildVerticalIconButton(Icons.location_on, "Thêm vị trí", Colors.red, () {}),
-                    _buildVerticalIconButton(Icons.camera_alt, "Camera", Colors.purple, () {}),
-                  ],
-                ),
+            // Phần icon cố định ở dưới
+            Container(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+              child: Column(
+                children: [
+                  const Divider(height: 1),
+                  _buildVerticalIconButton(Icons.photo_library, "Ảnh", Colors.green, () => controller.pickAssets()),
+                  _buildVerticalIconButton(Icons.emoji_emotions, "Cảm xúc cá nhân", Colors.amber, () {}),
+                  _buildVerticalIconButton(Icons.camera_alt, "Camera", Colors.purple, () {}),
+                ],
               ),
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildLoadingIndicator() {
-    return const Center(
-      child: CircularProgressIndicator(
-        strokeWidth: 2,
-        valueColor: AlwaysStoppedAnimation<Color>(Colors.grey),
       ),
     );
   }
@@ -260,10 +241,7 @@ class AddBlogView extends GetView<AddBlogController> {
             const SizedBox(width: 10),
             Text(
               label,
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey.shade800,
-              ),
+              style: TextStyle(fontSize: 14, color: Colors.grey.shade800),
             ),
           ],
         ),

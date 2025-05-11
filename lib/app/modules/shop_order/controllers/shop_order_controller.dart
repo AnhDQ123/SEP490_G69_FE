@@ -7,6 +7,8 @@ class ShopOrderController extends GetxController {
   late final int shopId;
   final isLoading = true.obs;
   final currentIndex = 0.obs;
+  final scannedOrderIds = <int>{}.obs;
+
 
   final pending = <Order>[].obs;
   final processing = <Order>[].obs;

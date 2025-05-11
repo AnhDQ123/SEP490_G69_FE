@@ -47,11 +47,18 @@ class CartView extends StatelessWidget {
               if (controller.carts.isEmpty) {
                 return const Center(child: Text("Giỏ hàng trống"));
               }
+              // return ListView(
+              //   children: controller.carts.map((shop) {
+              //     return _buildShopSection(context, shop);
+              //   }).toList(),
+              // );
               return ListView(
-                children: controller.carts.map((shop) {
-                  return _buildShopSection(context, shop);
-                }).toList(),
+                children: controller.carts
+                    .where((shop) => shop.cartItemDTOList.isNotEmpty)
+                    .map((shop) => _buildShopSection(context, shop))
+                    .toList(),
               );
+
             }),
           ),
           // Total amount and checkout button
@@ -75,13 +82,17 @@ class CartView extends StatelessWidget {
               // Checkbox chọn shop
               Obx(() {
                 bool isShopSelected = controller.isShopSelected(shop.shopId);
+                bool isDisabled = controller.selectedShopId.value != null &&
+                    controller.selectedShopId.value != shop.shopId;
+
                 return Checkbox(
                   value: isShopSelected,
-                  onChanged: (bool? value) {
+                  onChanged: isDisabled ? null : (bool? value) {
                     controller.toggleShopSelection(shop.shopId, value ?? false);
                   },
                 );
               }),
+
 
               // Icon cửa hàng + tên cửa hàng
               const Icon(Icons.store, size: 24, color: Colors.blue),
@@ -96,10 +107,10 @@ class CartView extends StatelessWidget {
               ),
 
               // Nút xóa shop
-              IconButton(
-                icon: const Icon(Icons.close),
-                onPressed: () => controller.removeShop(shop.shopId),
-              ),
+              // IconButton(
+              //   icon: const Icon(Icons.close),
+              //   onPressed: () => controller.removeShop(shop.shopId),
+              // ),
               const SizedBox(width: 8),
             ],
           ),
@@ -164,17 +175,18 @@ class CartView extends StatelessWidget {
                 children: [
                   // Checkbox chọn sản phẩm
                   Obx(() {
-                    bool isSelected = controller.selectedItems[shopId]
-                        ?.contains(item.productId) ??
-                        false;
+                    bool isSelected = controller.selectedItems[shopId]?.contains(item.productId) ?? false;
+                    bool isDisabled = controller.selectedShopId.value != null &&
+                        controller.selectedShopId.value != shopId;
+
                     return Checkbox(
                       value: isSelected,
-                      onChanged: (bool? value) {
-                        controller.toggleItemSelection(
-                            shopId, item.productId, value ?? false);
+                      onChanged: isDisabled ? null : (bool? value) {
+                        controller.toggleItemSelection(shopId, item.productId, value ?? false);
                       },
                     );
                   }),
+
 
                   // Hình ảnh sản phẩm
                   ClipRRect(

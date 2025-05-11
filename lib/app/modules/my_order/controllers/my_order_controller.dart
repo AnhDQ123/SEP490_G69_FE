@@ -1,8 +1,11 @@
 import 'package:get/get.dart';
 import '../../../base/base_common.dart';
 import '../../../models/order.dart';
+import '../../../models/product.dart';
+import '../../../service/home_api_service.dart';
 import '../../../service/notification_service.dart';
 import '../../../service/order_service.dart';
+import '../../product_detail/controllers/product_detail_controller.dart';
 
 class MyOrderController extends GetxController {
   var currentIndex = 4.obs;
@@ -19,7 +22,12 @@ class MyOrderController extends GetxController {
   final shipPendingOrders = <Order>[].obs;
   final returnRejectedOrders = <Order>[].obs;
 
+  final popularProducts = <Product>[].obs;
+
+
   final OrderService _orderService = OrderService();
+
+
 
   late int userId; // Thêm biến userId
 
@@ -37,6 +45,7 @@ class MyOrderController extends GetxController {
     }
 
     loadOrders();
+
   }
 
 
@@ -78,4 +87,6 @@ class MyOrderController extends GetxController {
   void changeTabIndex(int index) {
     currentIndex.value = index;
   }
+
+
 }

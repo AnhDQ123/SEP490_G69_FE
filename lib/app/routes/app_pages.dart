@@ -46,6 +46,8 @@ import '../modules/qr_payment/bindings/qr_payment_binding.dart';
 import '../modules/qr_payment/views/qr_payment_view.dart';
 import '../modules/return_order_detail_page/bindings/return_order_detail_page_binding.dart';
 import '../modules/return_order_detail_page/views/return_order_detail_page_view.dart';
+import '../modules/return_qr/bindings/return_qr_binding.dart';
+import '../modules/return_qr/views/return_qr_view.dart';
 import '../modules/search_screen/bindings/search_screen_binding.dart';
 import '../modules/search_screen/views/search_screen_view.dart';
 import '../modules/send_report/bindings/send_report_binding.dart';
@@ -56,6 +58,8 @@ import '../modules/shipper_order_detail/bindings/shipper_order_detail_binding.da
 import '../modules/shipper_order_detail/views/shipper_order_detail_view.dart';
 import '../modules/shipper_order_list/bindings/shipper_order_list_binding.dart';
 import '../modules/shipper_order_list/views/shipper_order_list_view.dart';
+import '../modules/shipper_qr/bindings/shipper_qr_binding.dart';
+import '../modules/shipper_qr/views/shipper_qr_view.dart';
 import '../modules/shipper_register/bindings/shipper_register_binding.dart';
 import '../modules/shipper_register/views/shipper_register_view.dart';
 import '../modules/shop_add_discount/bindings/shop_add_discount_binding.dart';
@@ -212,11 +216,6 @@ class AppPages {
       binding: ShopProductListBinding(),
     ),
     GetPage(
-      name: _Paths.SPLASH_SCREEN,
-      page: () => const SplashScreenView(),
-      binding: SplashScreenBinding(),
-    ),
-    GetPage(
       name: _Paths.PRODUCT_DETAIL,
       page: () => const ProductDetailView(),
       binding: ProductDetailBinding(),
@@ -363,8 +362,18 @@ class AppPages {
     ),
     GetPage(
       name: _Paths.USER_MAP,
-      page: () =>  UserMapView(),
+      page: () => UserMapView(),
       binding: UserMapBinding(),
+    ),
+    GetPage(
+      name: _Paths.RETURN_QR,
+      page: () => const ReturnQrView(),
+      binding: ReturnQrBinding(),
+    ),
+    GetPage(
+      name: _Paths.SHIPPER_QR,
+      page: () => const ShipperQrView(),
+      binding: ShipperQrBinding(),
     ),
   ];
 }

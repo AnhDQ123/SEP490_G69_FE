@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import '../controllers/user_view_shop_detail_controller.dart';
 
 class UserViewShopDetailView extends GetView<UserViewShopDetailController> {
@@ -322,9 +323,12 @@ class UserViewShopDetailView extends GetView<UserViewShopDetailController> {
             const SizedBox(height: 12),
             // Dùng Obx để theo dõi sự thay đổi của topSellingProducts
             Obx(() {
-              if (controller.topSellingProducts.isEmpty) {
-                return const Center(child: CircularProgressIndicator());  // Hiển thị loading nếu không có dữ liệu
+              if (controller.isLoading.value) {
+                return const Center(child: CircularProgressIndicator());
+              } else if (controller.topSellingProducts.isEmpty) {
+                return const Center(child: Text('Chưa có sản phẩm bán chạy nào.'));
               }
+
               return SizedBox(
                 height: 200,
                 child: ListView.builder(
@@ -333,16 +337,16 @@ class UserViewShopDetailView extends GetView<UserViewShopDetailController> {
                   itemBuilder: (context, index) {
                     final product = controller.topSellingProducts[index];
                     return _bestSellerItem(
-                      imageUrl: 'https://via.placeholder.com/150',  // hoặc sửa sau
+                      imageUrl: product.image ?? 'https://via.placeholder.com/150',
                       title: product.name,
-                      price: 'Giá trị: ${product.totalValue.toStringAsFixed(0)}đ',
+                      price: 'Giá trị: ${NumberFormat.currency(locale: 'vi_VN', symbol: '₫', decimalDigits: 0).format(product.totalValue)}',
                       sold: 'Đã bán: ${product.totalQuantity} hôm nay',
                     );
-
                   },
                 ),
               );
-            }),
+            })
+
           ],
         ),
       ),

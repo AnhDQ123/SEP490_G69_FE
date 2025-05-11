@@ -90,15 +90,24 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_launcher_icons: ^0.14.3
   flutter_lints: ^5.0.0
-#  flutter_icons:
-#    android: true
-#    ios: true
-#    image_path: "assets/images/logo.jpg"
+  flutter_native_splash:
 
-#flutter_icons:
+
+#flutter_launcher_icons:
 #  android: true
 #  ios: true
-#  image_path: "assets/images/logo.png"
+#  image_path: "assets/images/logo.jpg" # Hoặc đổi lại thành .png nếu bạn có
+
+
+flutter_native_splash:
+  color: "#205295"
+  image: assets/images/logo.jpg
+  android: true
+  ios: true
+  web: false
+  android_gravity: center
+  ios_content_mode: center
+
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
@@ -109,11 +118,11 @@ flutter:
     - assets/images/banner2.avif
     - assets/images/banner3.avif
     - assets/images/placeholder.png
-    - assets/images/logo.png
     - assets/shop1_logo.png
     - assets/terms_and_conditions.pdf
     - assets/images/default_food.avif
     - assets/images/logo.jpg
+    - assets/images/backgroud.jpg
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

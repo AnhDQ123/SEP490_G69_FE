@@ -15,8 +15,8 @@ class HeaderWidget extends StatelessWidget {
         child: Center(
           child: CircleAvatar(
             radius: 40,
-            backgroundImage: AssetImage("assets/images/logo.png"),
-            backgroundColor: Colors.grey[300],
+            backgroundImage: AssetImage("assets/images/logo.jpg"),
+            backgroundColor: Color.fromRGBO(212, 163, 115, 1),
           ),
         ),
       ),

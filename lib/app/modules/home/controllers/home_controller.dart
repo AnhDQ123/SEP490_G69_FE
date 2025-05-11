@@ -109,7 +109,7 @@ class HomeController extends GetxController {
     int userIdInt = int.tryParse(userId ?? '') ?? 0;
 
     try {
-      final data = await _apiService.fetchFreshProducts(userId: userIdInt, top: 10);
+      final data = await _apiService.fetchFreshProducts(userId: userIdInt, top: 30);
       freshProductList.value = data;
     } catch (e) {
       print('Lỗi khi fetch sản phẩm chợ tươi sống: $e');
@@ -126,7 +126,7 @@ class HomeController extends GetxController {
     int userIdInt = int.tryParse(userId ?? '') ?? 0;
 
     try {
-      final data = await _apiService.fetchCookedProducts(userId: userIdInt, top: 10);  // Gọi API với userId đã chuyển thành int
+      final data = await _apiService.fetchCookedProducts(userId: userIdInt, top: 30);
       cookedProductList.value = data;
     } catch (e) {
       print('Lỗi khi fetch sản phẩm đồ ăn: $e');

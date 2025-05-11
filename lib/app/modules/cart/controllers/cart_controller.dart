@@ -20,6 +20,8 @@ class CartController extends GetxController {
   var selectedItems = <int, List<int>>{}.obs;
   var productOptions = <int, List<CartItemOptionDTO>>{}.obs;
   var isLoadingOptions = false.obs;
+  var selectedShopId = RxnInt(); // Nullable int
+
 
   Future<void> fetchProductOptions(int productId) async {
     try {
@@ -300,15 +302,20 @@ class CartController extends GetxController {
   }
 
   void toggleSelectAll(bool isSelected) {
-    for (var shop in carts) {
-      selectedItems[shop.shopId] = isSelected ? shop.cartItemDTOList.map((item) => item.productId).toList() : [];
-    }
-    selectedItems.refresh();
+    if (selectedShopId.value == null) return;
 
-    // Log trạng thái đã chọn tất cả
-    print("🔄 Đã thay đổi trạng thái chọn tất cả: ${isSelected ? 'Chọn tất cả' : 'Bỏ chọn tất cả'}");
-    print("📋 Tất cả sản phẩm đã chọn: $selectedItems");
+    final shopId = selectedShopId.value!;
+    var shop = carts.firstWhereOrNull((s) => s.shopId == shopId);
+
+    if (shop != null) {
+      selectedItems[shopId] = isSelected
+          ? shop.cartItemDTOList.map((item) => item.productId).toList()
+          : [];
+    }
+
+    selectedItems.refresh();
   }
+
 
 
   bool isAllSelected() {
@@ -327,12 +334,19 @@ class CartController extends GetxController {
 
   void toggleShopSelection(int shopId, bool isSelected) {
     var shop = carts.firstWhere((s) => s.shopId == shopId);
-    selectedItems[shopId] = isSelected ? shop.cartItemDTOList.map((item) => item.productId).toList() : [];
-    selectedItems.refresh();
 
-    // Log trạng thái cửa hàng đã chọn hoặc bỏ chọn
-    print("🔄 Đã thay đổi trạng thái cửa hàng $shopId: ${isSelected ? 'Chọn' : 'Bỏ chọn'}");
-    print("📋 Sản phẩm đã chọn trong cửa hàng $shopId: ${selectedItems[shopId]}");
+    if (isSelected) {
+      // Nếu chọn shop, gán selectedShopId = shopId
+      selectedShopId.value = shopId;
+      selectedItems.clear(); // Bỏ chọn tất cả sản phẩm ở các shop khác
+      selectedItems[shopId] = shop.cartItemDTOList.map((item) => item.productId).toList();
+    } else {
+      // Nếu bỏ chọn, clear selectedShopId
+      selectedShopId.value = null;
+      selectedItems[shopId] = [];
+    }
+
+    selectedItems.refresh();
   }
 
 
@@ -363,14 +377,45 @@ class CartController extends GetxController {
     carts.refresh();
   }
 
-  void removeItem(int shopId, int productId) {
-    var shop = carts.firstWhere((s) => s.shopId == shopId);
-    shop.cartItemDTOList.removeWhere((item) => item.productId == productId);
-    if (shop.cartItemDTOList.isEmpty) {
-      carts.removeWhere((s) => s.shopId == shopId);
+  // void removeItem(int shopId, int productId) {
+  //   var shop = carts.firstWhere((s) => s.shopId == shopId);
+  //   shop.cartItemDTOList.removeWhere((item) => item.productId == productId);
+  //   if (shop.cartItemDTOList.isEmpty) {
+  //     carts.removeWhere((s) => s.shopId == shopId);
+  //   }
+  //   carts.refresh();
+  // }
+
+  void removeItem(int shopId, int productId) async {
+    try {
+      var shop = carts.firstWhere((s) => s.shopId == shopId);
+      final cartId = shop.id ?? 0;
+
+      // Gọi API để xóa sản phẩm
+      await cartService.deleteItemFromCart(cartId, productId);
+
+      // Xóa sản phẩm khỏi danh sách local
+      shop.cartItemDTOList.removeWhere((item) => item.productId == productId);
+
+      if (shop.cartItemDTOList.isEmpty) {
+        // Xóa shop khỏi carts nếu không còn sản phẩm
+        carts.removeWhere((s) => s.shopId == shopId);
+
+        // Xóa dữ liệu chọn liên quan tới shop
+        selectedItems.remove(shopId);
+        if (selectedShopId.value == shopId) {
+          selectedShopId.value = null;
+        }
+      }
+
+      carts.refresh();
+      selectedItems.refresh();
+    } catch (e) {
+      print("❌ Lỗi khi xóa sản phẩm: $e");
     }
-    carts.refresh();
   }
+
+
 
   // void proceedToCheckout() {
   //   bool hasSelectedProduct = selectedItems.values.any((products) => products.isNotEmpty);
@@ -446,6 +491,19 @@ class CartController extends GetxController {
 
       if (createdOrders.isNotEmpty) {
         final createdOrder = createdOrders.first;
+        for (var shop in filteredSelectedCarts) {
+          final cartId = shop.id ?? 0;
+          for (var item in shop.cartItemDTOList) {
+            await cartService.deleteItemFromCart(cartId, item.productId);
+          }
+        }
+
+        await fetchCart();
+
+        // Sau khi checkout thành công và xóa item đã mua
+        // selectedItems.clear();
+        // selectedShopId.value = null;
+
         Get.toNamed(Routes.CHECK_OUT, arguments: createdOrder);
       } else {
         Get.snackbar("Lỗi", "Không tạo được đơn hàng");

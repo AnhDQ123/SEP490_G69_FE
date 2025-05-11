@@ -202,24 +202,44 @@ class ReturnOrderDetailPageView extends GetView<ReturnOrderDetailController> {
                       final confirm = await Get.dialog<bool>(
                         AlertDialog(
                           title: const Text("Xác nhận"),
-                          content: const Text("Xác nhận đồng ý trả hàng?"),
+                          content: const Text("Xác nhận đồng ý trả hàng và tạo mã QR?"),
                           actions: [
                             TextButton(onPressed: () => Get.back(result: false), child: const Text("Hủy")),
                             TextButton(onPressed: () => Get.back(result: true), child: const Text("Xác nhận")),
                           ],
                         ),
                       );
+
+                      // if (confirm == true) {
+                      //   final order = controller.returnOrder.value?.order;
+                      //   if (order == null) return;
+                      //
+                      //   final result = await Get.toNamed('/return-qr', arguments: {
+                      //     'orderId': order.id,
+                      //     'userId': order.ownerId, // hoặc sử dụng user hiện tại nếu khác
+                      //   });
+                      //
+                      //   if (result == true) {
+                      //     try {
+                      //       await controller.acceptReturn();
+                      //       Get.back(result: true); // Quay lại màn trước
+                      //       Get.snackbar("✅ Đã đồng ý", "Đơn trả hàng đã được chấp nhận");
+                      //     } catch (e) {
+                      //       Get.snackbar("Lỗi", "Không thể chấp nhận trả hàng");
+                      //     }
+                      //   }
+                      // }
                       if (confirm == true) {
                         try {
-                          // Trong nút đồng ý
-                          await controller.acceptReturn();
-                          Get.back(result: true); // ✅ Trả kết quả về màn trước
-                          Get.snackbar("✅ Đã đồng ý", "Đơn trả hàng đã được chấp nhận");
+                          await controller.acceptReturn(); // Chấp nhận ngay tại đây
+                          Get.back(result: true); // Quay về màn pending để gọi fetchAll()
+                          Get.snackbar("✅ Đã đồng ý", "Đơn trả hàng đã chuyển sang 'Đã trả'");
                         } catch (e) {
                           Get.snackbar("Lỗi", "Không thể chấp nhận trả hàng");
                         }
                       }
                     },
+
                   ),
                 ],
               ),

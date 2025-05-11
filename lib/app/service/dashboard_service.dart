@@ -39,22 +39,24 @@ class DashboardService {
     }
   }
 
-  // Hàm lấy top sản phẩm bán chạy với giải mã UTF-8
   Future<List<Map<String, dynamic>>> fetchTopSellingProductsByMonth(int shopId) async {
     final url = '${ApiBaseUrl.baseUrl}/api/product/top-selling/month?shopId=$shopId';
     final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
-      // Thêm giải mã UTF-8
+      // Giải mã UTF-8
       final responseBody = utf8.decode(response.bodyBytes);
       final List<dynamic> data = json.decode(responseBody);
+
       return data.map((e) => {
-        'productId': e[0],
-        'productName': e[1],
-        'quantitySold': e[2],
+        'name': e['name'],
+        'totalQuantity': e['totalQuantity'],
+        'totalValue': e['totalValue'],
+        'image': e['image'],
       }).toList();
     } else {
-      throw Exception('Failed to load top selling products');
+      throw Exception('Không thể tải dữ liệu sản phẩm bán chạy');
     }
   }
+
 }

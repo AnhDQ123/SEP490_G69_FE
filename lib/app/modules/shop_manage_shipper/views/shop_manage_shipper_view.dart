@@ -144,8 +144,11 @@ class ShopManageShipperView extends GetView<ShopManageShipperController> {
       child: InkWell(
         borderRadius: BorderRadius.circular(12),
         onTap: () {
-          // Xử lý khi nhấn vào shipper
+          Get.toNamed('/shipper-qr', arguments: {
+            'userId': stat.shipperId,
+          });
         },
+
         child: Padding(
           padding: const EdgeInsets.all(12),
           child: Row(

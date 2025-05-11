@@ -251,6 +251,28 @@ class ShipperService {
     }
   }
 
+  Future<String?> getQrCodeForShipper(int userId) async {
+    final url = Uri.parse('$baseUrl/shippers/QrCode/$userId');
+
+    try {
+      final response = await http.get(url);
+
+      print("📲 [GET QR for Shipper] $url");
+      print("🔥 STATUS: ${response.statusCode}");
+      print("🔥 BODY: ${response.body}");
+
+      if (response.statusCode == 200 && response.body.isNotEmpty) {
+        return response.body; // BE trả về trực tiếp chuỗi data:image/png;base64,...
+      } else {
+        return null;
+      }
+    } catch (e) {
+      print("❌ Lỗi getQrCodeForShipper: $e");
+      return null;
+    }
+  }
+
+
 }
 
 class ApiResponse {

@@ -7,6 +7,9 @@ class UserProfile {
   final String dob;
   final String phone;
   final String email;
+  final String? accountNumber;
+  final String? bankCode;
+
 
   UserProfile({
     required this.id,
@@ -17,6 +20,8 @@ class UserProfile {
     required this.dob,
     required this.phone,
     required this.email,
+    this.accountNumber,
+    this.bankCode,
   });
 
   factory UserProfile.fromJson(Map<String, dynamic> json) {
@@ -29,6 +34,8 @@ class UserProfile {
       dob: json['dob'] ?? '',
       phone: json['phone'] ?? '',
       email: json['email'] ?? '',
+      accountNumber: json['accountNumber'] ?? '',
+      bankCode: json['bankCode'] ?? '',  // đây sẽ là bin
     );
   }
 }

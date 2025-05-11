@@ -13,7 +13,7 @@ class RegisterView extends BaseView<RegisterController> {
     return Scaffold(
       body: Column(
         children: [
-          HeaderWidget(backgroundColor: Color.fromRGBO(249, 244, 241, 1)),
+          HeaderWidget(backgroundColor: Color.fromRGBO(212, 163, 115, 1)),
           TabSwitchWidget(isLogin: false),
 
           Expanded(

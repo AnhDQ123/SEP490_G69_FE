@@ -329,10 +329,59 @@ class ShopDashboardView extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Ảnh sản phẩm
+          ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: Image.network(
+              product['image'] ?? '',
+              width: 48,
+              height: 48,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                return Container(
+                  width: 48,
+                  height: 48,
+                  color: Colors.grey[300],
+                  child: const Icon(Icons.image_not_supported, color: Colors.grey),
+                );
+              },
+            ),
+          ),
+          const SizedBox(width: 12),
+          // Nội dung chính
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  product['name'] ?? 'Không có tên',
+                  style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+                ),
+                const SizedBox(height: 4),
+                RichText(
+                  text: TextSpan(
+                    style: const TextStyle(fontSize: 12, color: Colors.black87),
+                    children: [
+                      TextSpan(
+                        text: '${product['totalQuantity']} đã bán - ',
+                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                      ),
+                      TextSpan(
+                        text: _formatCurrency(product['totalValue']),
+                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          // Huy hiệu thứ hạng
           Container(
-            width: 32,
-            height: 32,
+            width: 48,
+            height: 48,
             decoration: BoxDecoration(
               color: _getRankColor(rank),
               borderRadius: BorderRadius.circular(8),
@@ -343,36 +392,7 @@ class ShopDashboardView extends StatelessWidget {
               style: const TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  product['productName'] ?? 'Không có tên',
-                  style: const TextStyle(fontWeight: FontWeight.w500),
-                ),
-                Text(
-                  'ID: ${product['productId']}',
-                  style: const TextStyle(fontSize: 12, color: Colors.grey),
-                ),
-              ],
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-            decoration: BoxDecoration(
-              color: Colors.green[50],
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Text(
-              '${product['quantitySold']} đơn',
-              style: TextStyle(
-                color: Colors.green[800],
-                fontWeight: FontWeight.bold,
+                fontSize: 20,
               ),
             ),
           ),
@@ -380,6 +400,13 @@ class ShopDashboardView extends StatelessWidget {
       ),
     );
   }
+
+  String _formatCurrency(dynamic value) {
+    if (value == null) return '';
+    final formatted = (value as num).toStringAsFixed(0);
+    return '${formatted.replaceAllMapped(RegExp(r'\B(?=(\d{3})+(?!\d))'), (match) => '.')} đ';
+  }
+
 
   Color _getRankColor(int rank) {
     switch (rank) {

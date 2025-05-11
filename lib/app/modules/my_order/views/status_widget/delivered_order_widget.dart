@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../../models/order.dart';
+import '../../../../service/config_service.dart';
 import '../../../../service/order_service.dart';
 import '../../controllers/my_order_controller.dart';
 import '../order_list_widget.dart';
@@ -40,20 +41,84 @@ class _DeliveredOrderWidgetState extends State<DeliveredOrderWidget> {
               runSpacing: 4,
               children: [
                 OutlinedButton(
+                  // onPressed: () async {
+                  //   // Hiển thị bottom sheet chọn lý do
+                  //   final reason = await showModalBottomSheet<String>(
+                  //     context: context,
+                  //     isScrollControlled: true,
+                  //     shape: const RoundedRectangleBorder(
+                  //       borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                  //     ),
+                  //     builder: (_) => ReturnReasonSheet(),
+                  //   );
+                  //
+                  //   if (reason == null || reason.isEmpty) return;
+                  //
+                  //   // Chọn ảnh
+                  //   final picker = ImagePicker();
+                  //   final XFile? pickedFile = await picker.pickImage(source: ImageSource.gallery);
+                  //
+                  //   if (pickedFile == null) {
+                  //     ScaffoldMessenger.of(context).showSnackBar(
+                  //       const SnackBar(content: Text('Vui lòng chọn ảnh minh chứng')),
+                  //     );
+                  //     return;
+                  //   }
+                  //
+                  //   final file = File(pickedFile.path);
+                  //
+                  //   // Gọi API
+                  //   try {
+                  //     final orderService = OrderService();
+                  //     await orderService.returnOrder(
+                  //       orderId: order.id,
+                  //       userId: order.ownerId,
+                  //       reason: reason,
+                  //       avatarFile: file,
+                  //     );
+                  //
+                  //     ScaffoldMessenger.of(context).showSnackBar(
+                  //       const SnackBar(content: Text('🎉 Đã gửi yêu cầu trả hàng thành công')),
+                  //     );
+                  //
+                  //     setState(() {
+                  //       returnDetails[order.id] = {
+                  //         'reason': reason,
+                  //         'image': file,
+                  //       };
+                  //     });
+                  //
+                  //     Get.find<MyOrderController>().loadOrders();
+                  //
+                  //
+                  //
+                  //   } catch (e) {
+                  //     ScaffoldMessenger.of(context).showSnackBar(
+                  //       SnackBar(content: Text('❌ Lỗi gửi yêu cầu trả hàng: $e')),
+                  //     );
+                  //   }
+                  // },
                   onPressed: () async {
-                    // Hiển thị bottom sheet chọn lý do
+                    // 1. Lấy danh sách lý do từ API
+                    final configService = ConfigService();
+                    final configs = await configService.fetchReturnReasons();
+                    final reasonValues = configs.map((e) => e.value).toList();
+
+                    // 2. Gọi bottom sheet với danh sách lý do
                     final reason = await showModalBottomSheet<String>(
                       context: context,
                       isScrollControlled: true,
                       shape: const RoundedRectangleBorder(
                         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
                       ),
-                      builder: (_) => ReturnReasonSheet(),
+                      builder: (_) => ReturnReasonSheet(
+                        reasons: [...reasonValues, "Khác (vui lòng nhập lý do)"], // truyền động
+                      ),
                     );
 
                     if (reason == null || reason.isEmpty) return;
 
-                    // Chọn ảnh
+                    // 3. Chọn ảnh
                     final picker = ImagePicker();
                     final XFile? pickedFile = await picker.pickImage(source: ImageSource.gallery);
 
@@ -66,7 +131,7 @@ class _DeliveredOrderWidgetState extends State<DeliveredOrderWidget> {
 
                     final file = File(pickedFile.path);
 
-                    // Gọi API
+                    // 4. Gọi API trả hàng
                     try {
                       final orderService = OrderService();
                       await orderService.returnOrder(
@@ -89,14 +154,13 @@ class _DeliveredOrderWidgetState extends State<DeliveredOrderWidget> {
 
                       Get.find<MyOrderController>().loadOrders();
 
-
-
                     } catch (e) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text('❌ Lỗi gửi yêu cầu trả hàng: $e')),
                       );
                     }
                   },
+
                   style: OutlinedButton.styleFrom(
                     side: const BorderSide(color: Colors.redAccent, width: 1.5),
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),

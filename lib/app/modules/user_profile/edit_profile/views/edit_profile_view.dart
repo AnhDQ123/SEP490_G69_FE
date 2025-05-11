@@ -53,6 +53,30 @@ class EditProfileView extends StatelessWidget {
               _buildTextField("Số điện thoại", controller.phoneController),
               _buildTextField("Email", controller.emailController),
               _buildTextField("Địa chỉ", controller.addressController),
+              Obx(() {
+                return DropdownButtonFormField<String>(
+                  value: controller.selectedBankCode.value.isNotEmpty
+                      ? controller.selectedBankCode.value
+                      : null,
+                  decoration: const InputDecoration(
+                    labelText: "Ngân hàng",
+                    border: OutlineInputBorder(),
+                  ),
+                  items: controller.bankList.map((bank) {
+                    return DropdownMenuItem<String>(
+                      value: bank.bin, // ✅ Lưu bin khi chọn
+                      child: Text(bank.shortName), // ✅ Hiển thị shortName
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    controller.selectedBankCode.value = value!;
+                    controller.bankCodeController.text = value; // ✅ Sẽ là bin
+                  },
+                );
+              }),
+
+              _buildTextField("Số tài khoản", controller.accountController),
+
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () => controller.updateUserProfile(),
